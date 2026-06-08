@@ -9,7 +9,7 @@ const companyLinks = [
 const solutionLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
-  { label: 'Insights', href: '/insights' },
+  { label: 'Intelligence', href: '/intelligence' },
   { label: 'Wayfinder AI', href: '/wayfinder' },
 ];
 

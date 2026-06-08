@@ -1071,7 +1071,7 @@ function TechSection() {
 
         <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Wayfinder AI with live sparkline */}
-          <Link href="/wayfinder" className="reveal stagger-3 group relative gradient-border gradient-border-active glass-card-elevated p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-tt-teal">
+          <Link href="/wayfinder" passHref className="reveal stagger-3 group relative gradient-border gradient-border-active glass-card-elevated p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#229FA1]">
             {/* Orange heat accent glow (2 of 3) */}
             <div className="pointer-events-none absolute -inset-8 z-[-1]" aria-hidden="true" style={{
               background: 'radial-gradient(circle, rgba(232, 121, 58, 0.08) 0%, transparent 65%)',
@@ -1128,7 +1128,7 @@ function TechSection() {
           </Link>
 
           {/* Feed Optimization with animated stacked bars */}
-          <Link href="/capabilities#feed-optimization" className="reveal stagger-4 group relative glass-card gradient-border p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-tt-teal">
+          <Link href="/capabilities" passHref className="reveal stagger-4 group relative glass-card gradient-border p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#229FA1]">
             <div className="flex items-center gap-3 mb-6">
               <span className="block h-3 w-3 rounded-full bg-tt-orange" />
               <span className="text-xs font-semibold text-tt-orange uppercase tracking-wider">Platform</span>
@@ -1475,7 +1475,7 @@ function IntelligenceSection() {
           {articles.map((article, i) => (
             <Link
               key={article.slug}
-              href={`/insights/${article.slug}`}
+              href={`/intelligence/${article.slug}`}
               className={`reveal stagger-${i + 1} group relative glass-card card-shimmer block overflow-hidden`}
             >
               {/* Abstract hero visual */}
@@ -1521,7 +1521,7 @@ function IntelligenceSection() {
         </div>
 
         <div className="reveal stagger-5 mt-16 text-center">
-          <Link href="/insights" className="btn-ghost">
+          <Link href="/intelligence" className="btn-ghost">
             Explore all research
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />

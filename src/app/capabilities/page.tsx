@@ -214,7 +214,7 @@ const capabilities: Capability[] = [
         'Our proprietary GEO monitoring tracks brand mentions across 6 AI platforms, informing content strategy that drives measurable AI referral traffic.',
     },
     linkLabel: 'Read our GEO intelligence',
-    linkHref: '/insights',
+    linkHref: '/intelligence',
     gradient: { from: '#2d7a7a', to: '#1a5c5c', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'AI Search Visibility Map', icon: 'globe-alt' },
   },

@@ -6,9 +6,10 @@ import Link from 'next/link';
 const navLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
+  { label: 'TT AI-Tools', href: '/ai-tools' },
   { label: 'Wayfinder AI', href: '/wayfinder' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
-  { label: 'Insights', href: '/insights' },
+  { label: 'Intelligence', href: '/intelligence' },
   { label: 'Company', href: '/company' },
 ];
 

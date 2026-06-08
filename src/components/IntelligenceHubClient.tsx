@@ -180,7 +180,7 @@ function Swimlane({ title, posts }: { title: string; posts: BlogPost[] }) {
         {posts.map((post) => (
           <Link
             key={post.slug}
-            href={`/insights/${post.slug}`}
+            href={`/intelligence/${post.slug}`}
             className="group flex-none w-[300px] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(91,164,164,0.06)]"
             style={{
               background: '#1B2126',
@@ -214,7 +214,7 @@ function Swimlane({ title, posts }: { title: string; posts: BlogPost[] }) {
 function ArticleCard({ post, delay = 0 }: { post: BlogPost; delay?: number }) {
   return (
     <Link
-      href={`/insights/${post.slug}`}
+      href={`/intelligence/${post.slug}`}
       className="group block rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(91,164,164,0.06)]"
       style={{
         background: '#1B2126',
@@ -281,7 +281,7 @@ function DeepReportsBanner() {
               {DEEP_REPORTS.map((report) => (
                 <Link
                   key={report.slug}
-                  href={`/insights/${report.slug}`}
+                  href={`/intelligence/${report.slug}`}
                   className="group rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
@@ -392,18 +392,21 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
           }`}
         >
           <p className="text-sm font-semibold uppercase tracking-[4px] text-tt-teal">
-            Intelligence
+            Intelligence Series
           </p>
           <h1 className="mt-4 text-4xl font-extrabold text-white md:text-5xl lg:text-6xl max-w-4xl leading-tight">
-            Strategic research and tactical playbooks for the performance era.
+            Eye of the Tiger: Intelligence Series
           </h1>
+          <p className="mt-4 text-lg text-tt-gray-400 max-w-2xl">
+            Strategic research and tactical playbooks for the performance era.
+          </p>
         </div>
 
         {/* Hero featured article: 50/50 split */}
         {featured && (
           <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-8">
             <Link
-              href={`/insights/${featured.slug}`}
+              href={`/intelligence/${featured.slug}`}
               className="group block rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(91,164,164,0.08)]"
               style={{
                 background: '#1B2126',

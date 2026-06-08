@@ -40,7 +40,7 @@ export function ArticlePageClient({ article }: { article: BlogPost }) {
           }`}
         >
           <Link
-            href="/insights"
+            href="/intelligence"
             className="inline-flex items-center gap-1 text-sm text-tt-gray-400 transition hover:text-tt-teal"
           >
             &larr; Back to Intelligence
@@ -180,7 +180,7 @@ export function ArticlePageClient({ article }: { article: BlogPost }) {
             {related.map((post) => (
               <Link
                 key={post.slug}
-                href={`/insights/${post.slug}`}
+                href={`/intelligence/${post.slug}`}
                 className="group overflow-hidden rounded-xl border border-tt-gray-200 bg-white transition hover:shadow-lg"
               >
                 <div className="flex h-48 items-center justify-center bg-tt-gray-100">
@@ -214,7 +214,7 @@ export function ArticlePageClient({ article }: { article: BlogPost }) {
         headline="Put This Research Into Action"
         subheadline="Book a free audit and see how these insights apply to your specific business."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
-        secondaryCTA={{ text: 'Read More Research', href: '/insights' }}
+        secondaryCTA={{ text: 'Read More Research', href: '/intelligence' }}
         dark
       />
     </>
