@@ -1,0 +1,205 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { caseStudies } from '@/data/caseStudies';
+import { CaseStudyCard } from '@/components/CaseStudyCard';
+import { CTASection } from '@/components/CTASection';
+import { useInView } from '@/hooks/useInView';
+
+/* ------------------------------------------------------------------ */
+/*  Filter Configuration                                               */
+/* ------------------------------------------------------------------ */
+
+const filters = [
+  'All',
+  'DTC',
+  'E-Commerce',
+  'Finance',
+  'Health',
+  'Beauty',
+  'Telecom',
+  'Real Estate',
+  'B2C',
+  'Google',
+  'Meta',
+  'TikTok',
+  'Multi-Channel',
+];
+
+/* ------------------------------------------------------------------ */
+/*  Section 1 — Hero                                                   */
+/* ------------------------------------------------------------------ */
+
+function HeroSection() {
+  const { ref, inView } = useInView({ threshold: 0.15 });
+
+  return (
+    <section className="relative bg-tt-black min-h-[40vh] flex items-center overflow-hidden">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full bg-tt-teal/[.06] blur-[120px]" />
+        <div className="absolute bottom-[-15%] right-[-5%] h-[400px] w-[400px] rounded-full bg-tt-orange/[.04] blur-[100px]" />
+      </div>
+
+      <div
+        ref={ref}
+        className={`relative z-10 mx-auto max-w-5xl px-6 py-28 md:py-36 transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <p className="text-tt-teal uppercase tracking-[4px] text-sm font-semibold mb-6">
+          CASE STUDIES
+        </p>
+        <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.08] tracking-tight">
+          Results That Speak
+          <br className="hidden md:block" />
+          for Themselves
+        </h1>
+        <p className="mt-6 text-xl text-tt-gray-400 max-w-3xl leading-relaxed">
+          12+ case studies with hard metrics. Filter by channel, industry, or
+          outcome.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 2 — Filters                                                */
+/* ------------------------------------------------------------------ */
+
+function FilterBar({
+  activeFilter,
+  onFilterChange,
+}: {
+  activeFilter: string;
+  onFilterChange: (filter: string) => void;
+}) {
+  return (
+    <div className="sticky top-16 z-30 bg-white border-b border-tt-gray-200">
+      <div className="mx-auto max-w-6xl px-6 py-4">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mb-1">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => onFilterChange(filter)}
+              className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition cursor-pointer ${
+                activeFilter === filter
+                  ? 'bg-tt-teal text-white'
+                  : 'bg-tt-gray-100 text-tt-gray-600 hover:bg-tt-gray-200'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 — Case Study Grid                                        */
+/* ------------------------------------------------------------------ */
+
+function CaseStudyGrid({ activeFilter }: { activeFilter: string }) {
+  const { ref, inView } = useInView({ threshold: 0.05 });
+
+  const filtered =
+    activeFilter === 'All'
+      ? caseStudies
+      : caseStudies.filter(
+          (cs) =>
+            cs.industry === activeFilter ||
+            cs.channels.includes(activeFilter)
+        );
+
+  return (
+    <section className="bg-white py-20 px-6">
+      <div ref={ref} className="mx-auto max-w-6xl">
+        {filtered.length > 0 ? (
+          <div
+            key={activeFilter}
+            className={`grid gap-8 md:grid-cols-2 lg:grid-cols-3 transition-all duration-500 ${
+              inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            }`}
+          >
+            {filtered.map((cs, i) => (
+              <div
+                key={cs.slug}
+                className="animate-fade-in"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <CaseStudyCard
+                  slug={cs.slug}
+                  client={cs.client}
+                  heroMetric={cs.heroMetric}
+                  heroMetricLabel={cs.heroMetricLabel}
+                  category={cs.category}
+                  channels={cs.channels}
+                  summary={cs.summary}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-20 text-center">
+            <p className="text-lg text-tt-gray-500">
+              No case studies match this filter.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Fade-in keyframe */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out both;
+        }
+      `}</style>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
+
+export default function CaseStudiesPage() {
+  const [activeFilter, setActiveFilter] = useState('All');
+
+  return (
+    <main>
+      {/* Section 1 — Hero */}
+      <HeroSection />
+
+      {/* Section 2 — Filters */}
+      <FilterBar
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+      />
+
+      {/* Section 3 — Case Study Grid */}
+      <CaseStudyGrid activeFilter={activeFilter} />
+
+      {/* Section 4 — CTA */}
+      <CTASection
+        headline="Get Results Like These"
+        subheadline="Book a free audit and get a 90-day roadmap built around your actual numbers."
+        primaryCTA={{ text: 'Book Your Free Audit', href: '/get-started' }}
+        dark
+      />
+    </main>
+  );
+}

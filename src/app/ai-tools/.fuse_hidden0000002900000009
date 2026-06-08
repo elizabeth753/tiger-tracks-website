@@ -1,0 +1,207 @@
+'use client';
+
+import Link from 'next/link';
+import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
+import { useEffect, useState } from 'react';
+
+const aiTools = [
+  {
+    title: 'Video & Image Optimization',
+    description: 'AI-driven creative analysis and optimization — key to performance on Meta Ads, TikTok, and emerging short-form platforms.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Targeting, Analytics & Measurement',
+    description: 'Proprietary audience intelligence and attribution modeling that eliminates wasted spend and surfaces true incrementality.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+      </svg>
+    ),
+  },
+  {
+    title: 'LTV Extension',
+    description: 'Lifecycle marketing intelligence that predicts churn, optimizes send cadence, and maximizes customer lifetime value across email, SMS, and push.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Website Optimization & CRO',
+    description: 'Materially increase conversion rate of landing pages and overall site through AI-powered testing, personalization, and UX intelligence.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+      </svg>
+    ),
+  },
+  {
+    title: 'GEO & AEO',
+    description: 'Optimize your site to show up in LLM results (ChatGPT, Claude, Gemini, Perplexity) and bolster organic traffic through generative and answer engine optimization.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'SEO & Content Marketing',
+    description: 'AI-powered content strategy, keyword intelligence, and technical SEO that builds compounding organic growth.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Paid Social, Paid Search & Upper-Funnel',
+    description: 'Automated bid management, audience expansion, and creative rotation across Meta, Google, TikTok, programmatic, and CTV — optimized in real time.',
+    icon: (
+      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
+      </svg>
+    ),
+  },
+];
+
+export default function AIToolsPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-tt-black">
+        {/* Hero */}
+        <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
+          {/* Background */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <div
+              className="absolute top-[-10%] left-[20%] h-[600px] w-[600px] rounded-full animate-mesh-drift"
+              style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.12) 0%, transparent 60%)', filter: 'blur(80px)' }}
+            />
+            <div
+              className="absolute bottom-[10%] right-[10%] h-[400px] w-[400px] rounded-full animate-float-slower"
+              style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.07) 0%, transparent 60%)', filter: 'blur(100px)' }}
+            />
+            <div className="absolute inset-0 dot-grid-subtle animate-dot-pulse" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+            {/* Badge */}
+            <div
+              className={`inline-flex items-center gap-2.5 rounded-full border border-tt-teal/20 bg-tt-teal/5 px-5 py-2 mb-8 transition-all duration-1000 ${
+                mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
+              </span>
+              <span className="text-sm font-medium text-tt-teal tracking-wide">Proprietary AI Technology</span>
+            </div>
+
+            <h1
+              className={`text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl transition-all duration-1000 delay-200 ${
+                mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+            >
+              TT AI-Tools
+            </h1>
+
+            <p
+              className={`mx-auto mt-6 max-w-2xl text-lg text-tt-gray-300 sm:text-xl leading-relaxed transition-all duration-1000 delay-500 ${
+                mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              Reach out to us directly for a demo and free trial of any of Tiger Tracks&apos; proprietary in-house AI tools. Our custom, LLM-based AI products are cutting-edge solutions developed for specific performance-marketing use cases, each of which augments performance including CaC reduction, LTV extension, organic &amp; viral marketing, and of course EBITDA and enterprise value growth.
+            </p>
+
+            <p
+              className={`mx-auto mt-4 text-base text-tt-gray-400 italic transition-all duration-1000 delay-700 ${
+                mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              These tools include the below and many more.
+            </p>
+
+            <div
+              className={`mt-10 transition-all duration-1000 delay-900 ${
+                mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <Link href="/get-started" className="btn-primary text-lg">
+                Request a Demo
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Tools Grid */}
+        <section className="relative py-20 sm:py-28 overflow-hidden">
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/20 to-transparent" />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-6xl px-6 lg:px-8">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {aiTools.map((tool, i) => (
+                <div
+                  key={tool.title}
+                  className={`group relative rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 transition-all duration-500 hover:border-tt-teal/20 hover:bg-white/[0.04] hover:-translate-y-1 ${
+                    mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                  }`}
+                  style={{ transitionDelay: `${800 + i * 100}ms` }}
+                >
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'radial-gradient(600px circle at 50% 0%, rgba(91,164,164,0.04), transparent 60%)' }} />
+
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-tt-teal/10 text-tt-teal ring-1 ring-tt-teal/20 transition-all duration-300 group-hover:bg-tt-teal/15 group-hover:ring-tt-teal/30">
+                        {tool.icon}
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{tool.title}</h3>
+                    <p className="text-sm text-tt-gray-400 leading-relaxed">{tool.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-16 text-center">
+              <div className="glass-card-elevated inline-block rounded-2xl border border-tt-teal/15 p-8 sm:p-10 max-w-2xl">
+                <h3 className="text-xl font-bold text-white mb-3">Ready to see these tools in action?</h3>
+                <p className="text-tt-gray-400 mb-6 text-sm leading-relaxed">
+                  Schedule a personalized demo and receive a complimentary trial of any Tiger Tracks AI tool — see the impact on your performance metrics firsthand.
+                </p>
+                <Link href="/get-started" className="btn-primary">
+                  Get Your Free Trial
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

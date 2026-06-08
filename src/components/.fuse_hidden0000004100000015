@@ -1,0 +1,104 @@
+'use client';
+
+import { useCountUp } from '@/hooks/useCountUp';
+import { useInView } from '@/hooks/useInView';
+import { useState, useEffect } from 'react';
+
+interface AnimatedCounterProps {
+  value: string;
+  label: string;
+  className?: string;
+}
+
+function parseValue(value: string): {
+  prefix: string;
+  number: number;
+  suffix: string;
+  hasDecimal: boolean;
+} {
+  const match = value.match(/^([^\d]*?)([\d,]+\.?\d*)(.*?)$/);
+  if (!match) {
+    return { prefix: '', number: 0, suffix: value, hasDecimal: false };
+  }
+
+  const prefix = match[1];
+  const numStr = match[2].replace(/,/g, '');
+  const number = parseFloat(numStr);
+  const suffix = match[3];
+  const hasDecimal = numStr.includes('.');
+
+  return { prefix, number, suffix, hasDecimal };
+}
+
+function formatNumber(num: number, hasDecimal: boolean): string {
+  if (hasDecimal) {
+    return num.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+  }
+  return Math.round(num).toLocaleString('en-US');
+}
+
+export function AnimatedCounter({
+  value,
+  label,
+  className = '',
+}: AnimatedCounterProps) {
+  const { ref, inView } = useInView({ threshold: 0.05 });
+  const { prefix, number, suffix, hasDecimal } = parseValue(value);
+  const count = useCountUp(number, 2200, 0, inView);
+  const [completed, setCompleted] = useState(false);
+
+  // Detect completion for glow pulse
+  useEffect(() => {
+    if (inView && count >= number * 0.99) {
+      const t = setTimeout(() => setCompleted(true), 100);
+      return () => clearTimeout(t);
+    }
+  }, [count, number, inView]);
+
+  return (
+    <div ref={ref} className={`text-center group ${className}`}>
+      <div
+        className={`text-5xl font-extrabold tracking-tight transition-all duration-700 ${
+          inView ? 'text-white opacity-100 translate-y-0' : 'text-white/0 opacity-0 translate-y-4'
+        }`}
+      >
+        <span
+          className={`inline-block gradient-text transition-all duration-500 ${
+            completed ? 'scale-100' : inView ? 'scale-105' : 'scale-90'
+          }`}
+          style={{
+            // Spring-physics overshoot: scale up slightly past 1.0 then settle
+            transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          }}
+        >
+          {prefix}
+          {formatNumber(count, hasDecimal)}
+          {suffix}
+        </span>
+      </div>
+      <div
+        className={`mt-3 text-sm uppercase tracking-widest text-tt-gray-500 transition-all duration-700 delay-200 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+        }`}
+      >
+        {label}
+      </div>
+      {/* Glow pulse line on completion */}
+      <div
+        className={`mx-auto mt-4 h-px w-16 transition-all duration-1000 delay-500 ${
+          completed
+            ? 'opacity-100 scale-x-100 shadow-[0_0_12px_rgba(91,164,164,0.3)]'
+            : inView
+            ? 'opacity-60 scale-x-75'
+            : 'opacity-0 scale-x-0'
+        }`}
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(91,164,164,0.5), transparent)',
+        }}
+      />
+    </div>
+  );
+}

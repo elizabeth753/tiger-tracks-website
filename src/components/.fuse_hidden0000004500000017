@@ -1,0 +1,249 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { BlogPost } from '@/data/blogPosts';
+import { CTASection } from '@/components/CTASection';
+import { useInView } from '@/hooks/useInView';
+
+const categories = [
+  'All',
+  'AI & Automation',
+  'Measurement & Attribution',
+  'Creative & Content',
+  'Platform Strategy',
+  'PE/VC',
+  'Agency Strategy',
+];
+
+export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const { ref: heroRef, inView: heroInView } = useInView({ threshold: 0.1 });
+  const { ref: gridRef, inView: gridInView } = useInView({ threshold: 0.05 });
+
+  const featured = posts[0];
+
+  const filteredPosts =
+    activeCategory === 'All'
+      ? posts
+      : posts.filter((p) => p.category === activeCategory);
+
+  return (
+    <>
+      {/* ── Section 1: Hero ─────────────────────────────────────── */}
+      <section ref={heroRef} className="bg-tt-black py-24 px-6">
+        <div
+          className={`mx-auto max-w-6xl transition-all duration-700 ${
+            heroInView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          }`}
+        >
+          <p className="text-sm font-semibold uppercase tracking-[4px] text-tt-teal">
+            INTELLIGENCE
+          </p>
+          <h1 className="mt-4 text-5xl font-extrabold text-white md:text-7xl">
+            Eye of the Tiger
+            <br />
+            Intelligence Series
+          </h1>
+          <p className="mt-6 max-w-3xl text-xl text-tt-gray-400">
+            Strategic research designed to give you a forward-looking advantage.
+            Each report combines deep trend research, cross-trend influence
+            mapping, scenario planning, and tactical playbooks.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Section 2: Featured Article ─────────────────────────── */}
+      {featured && (
+        <section className="bg-white py-16 px-6">
+          <div className="mx-auto max-w-6xl">
+            <Link
+              href={`/intelligence/${featured.slug}`}
+              className="block rounded-2xl bg-tt-gray-50 p-8 md:flex md:items-center md:gap-12 md:p-12 group"
+            >
+              {/* Left */}
+              <div className="md:w-2/3">
+                <span className="inline-block rounded-full bg-tt-teal/10 px-3 py-1 text-xs font-semibold text-tt-teal-dark">
+                  {featured.category}
+                </span>
+                <h2 className="mt-4 text-3xl font-bold text-tt-gray-900 group-hover:text-tt-teal transition">
+                  {featured.title}
+                </h2>
+                <p className="mt-4 text-tt-gray-600 leading-relaxed">
+                  {featured.excerpt}
+                </p>
+                <span className="mt-6 inline-block text-tt-teal font-semibold">
+                  Read the full report →
+                </span>
+              </div>
+
+              {/* Right — Thumbnail placeholder */}
+              <div className="mt-8 md:mt-0 md:w-1/3">
+                <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-tt-gray-200">
+                  <svg
+                    className="h-16 w-16 text-tt-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ── Section 3: Category Filters ─────────────────────────── */}
+      <div className="sticky top-16 z-30 border-b border-tt-gray-200 bg-white py-4 px-6">
+        <div className="mx-auto max-w-6xl overflow-x-auto">
+          <div className="flex gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
+                  activeCategory === cat
+                    ? 'bg-tt-teal text-white'
+                    : 'bg-tt-gray-100 text-tt-gray-600 hover:bg-tt-gray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Section 4: Article Grid ─────────────────────────────── */}
+      <section ref={gridRef} className="bg-white py-12 px-6">
+        <div className="mx-auto max-w-6xl">
+          {filteredPosts.length === 0 ? (
+            <p className="py-16 text-center text-tt-gray-400">
+              No articles in this category yet.
+            </p>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {filteredPosts.map((post, i) => (
+                <Link
+                  key={post.slug}
+                  href={`/intelligence/${post.slug}`}
+                  className={`group overflow-hidden rounded-xl border border-tt-gray-200 bg-white transition hover:shadow-lg ${
+                    gridInView
+                      ? 'translate-y-0 opacity-100'
+                      : 'translate-y-6 opacity-0'
+                  }`}
+                  style={{ transitionDelay: `${i * 50}ms`, transitionDuration: '500ms' }}
+                >
+                  {/* Thumbnail placeholder */}
+                  <div className="flex h-48 items-center justify-center bg-tt-gray-100">
+                    <span className="text-sm font-semibold uppercase tracking-widest text-tt-gray-300">
+                      {post.category}
+                    </span>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-6">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-tt-teal">
+                      {post.category}
+                    </span>
+                    <h3 className="mt-2 text-lg font-semibold text-tt-gray-900 transition group-hover:text-tt-teal">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm text-tt-gray-600">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className="text-xs text-tt-gray-400">
+                        {post.date}
+                      </span>
+                      <span className="text-xs text-tt-gray-400">
+                        {post.readTime}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Section 5: Gated Content / Deep Reports ─────────────── */}
+      <section className="bg-tt-gray-50 py-20 px-6">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-2xl font-bold text-tt-gray-900">Deep Reports</h2>
+          <p className="mt-2 text-tt-gray-600">
+            In-depth research that requires more than a blog post. Download our
+            premium reports.
+          </p>
+
+          <div className="mt-10 grid gap-8 md:grid-cols-2">
+            {/* Report 1 */}
+            <div className="rounded-xl border border-tt-gray-200 bg-white p-8">
+              <span className="inline-block rounded-full bg-tt-teal/10 px-3 py-1 text-xs font-semibold text-tt-teal-dark">
+                PE/VC
+              </span>
+              <h3 className="mt-4 text-xl font-bold text-tt-gray-900">
+                Unlocking General Catalyst&apos;s Customer Value Fund
+              </h3>
+              <p className="mt-2 text-tt-gray-600">
+                Top US subscription companies poised for non-dilutive growth
+                capital.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <span className="font-semibold text-tt-teal">
+                  Download Report →
+                </span>
+                <span className="text-xs text-tt-gray-400">
+                  (Email required)
+                </span>
+              </div>
+            </div>
+
+            {/* Report 2 */}
+            <div className="rounded-xl border border-tt-gray-200 bg-white p-8">
+              <span className="inline-block rounded-full bg-tt-teal/10 px-3 py-1 text-xs font-semibold text-tt-teal-dark">
+                AI &amp; Automation
+              </span>
+              <h3 className="mt-4 text-xl font-bold text-tt-gray-900">
+                The AI Efficiency Playbook
+              </h3>
+              <p className="mt-2 text-tt-gray-600">
+                Which model wins for every task — a comprehensive comparison for
+                marketers.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <span className="font-semibold text-tt-teal">
+                  Download Report →
+                </span>
+                <span className="text-xs text-tt-gray-400">
+                  (Email required)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 6: CTA ──────────────────────────────────────── */}
+      <CTASection
+        headline="Stay Ahead of the Curve"
+        subheadline="Subscribe to the Eye of the Tiger Intelligence Series for strategic research delivered to your inbox."
+        primaryCTA={{ text: 'Book Your Free Audit', href: '/get-started' }}
+        dark
+      />
+    </>
+  );
+}

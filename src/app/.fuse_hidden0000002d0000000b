@@ -1,0 +1,1574 @@
+'use client';
+
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Link from 'next/link';
+import { LogoBar } from '@/components/LogoBar';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { ParticleField } from '@/components/ParticleField';
+
+/* ================================================================
+   HOOKS
+   ================================================================ */
+
+/** Reveal system — fires IntersectionObserver to add .revealed */
+function useReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .reveal-right').forEach((child) => {
+            child.classList.add('revealed');
+          });
+          if (el.classList.contains('reveal') || el.classList.contains('reveal-scale')) {
+            el.classList.add('revealed');
+          }
+          observer.unobserve(el);
+        }
+      },
+      { threshold }
+    );
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, [threshold]);
+
+  return ref;
+}
+
+/** Velocity-damped mouse parallax — tracks cursor velocity for natural deceleration */
+function useMouseParallax(intensity = 0.02) {
+  const ref = useRef<HTMLDivElement>(null);
+  const velocity = useRef({ x: 0, y: 0 });
+  const target = useRef({ x: 0, y: 0 });
+  const current = useRef({ x: 0, y: 0 });
+  const raf = useRef<number>(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      target.current = { x: nx * intensity * 100, y: ny * intensity * 100 };
+    };
+
+    const tick = () => {
+      const damping = 0.08; // low = more fluid, high = snappy
+      current.current.x += (target.current.x - current.current.x) * damping;
+      current.current.y += (target.current.y - current.current.y) * damping;
+
+      el.style.setProperty('--mx', `${current.current.x}px`);
+      el.style.setProperty('--my', `${current.current.y}px`);
+      raf.current = requestAnimationFrame(tick);
+    };
+
+    el.addEventListener('mousemove', handleMove);
+    raf.current = requestAnimationFrame(tick);
+
+    return () => {
+      el.removeEventListener('mousemove', handleMove);
+      cancelAnimationFrame(raf.current);
+    };
+  }, [intensity]);
+
+  return ref;
+}
+
+/** Perspective tilt on mouse track — sets --rx / --ry CSS vars */
+function useTilt(maxDeg = 6) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    el.style.setProperty('--ry', `${(x - 0.5) * maxDeg}deg`);
+    el.style.setProperty('--rx', `${(0.5 - y) * maxDeg}deg`);
+  }, [maxDeg]);
+
+  const handleLeave = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty('--rx', '0deg');
+    el.style.setProperty('--ry', '0deg');
+  }, []);
+
+  return { ref, handleMove, handleLeave };
+}
+
+/** Cursor proximity glow — creates a radial glow that follows the cursor */
+function useCursorGlow() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      el.style.setProperty('--glow-x', `${x}px`);
+      el.style.setProperty('--glow-y', `${y}px`);
+    };
+
+    el.addEventListener('mousemove', handleMove);
+    return () => el.removeEventListener('mousemove', handleMove);
+  }, []);
+
+  return ref;
+}
+
+/* ================================================================
+   MINI COMPONENTS
+   ================================================================ */
+
+/** Live sparkline SVG with animated drawing */
+function Sparkline({ data, color = '#5BA4A4', areaColor, className = '' }: {
+  data: number[];
+  color?: string;
+  areaColor?: string;
+  className?: string;
+}) {
+  const { ref, inView } = useInViewLocal({ threshold: 0.3 });
+  const w = 200;
+  const h = 60;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / range) * (h - 8) - 4;
+    return `${x},${y}`;
+  });
+
+  const linePath = `M${points.join(' L')}`;
+  const areaPath = `${linePath} L${w},${h} L0,${h} Z`;
+
+  return (
+    <svg ref={ref} viewBox={`0 0 ${w} ${h}`} className={className} preserveAspectRatio="none">
+      {areaColor && (
+        <path
+          d={areaPath}
+          fill={areaColor}
+          className={`sparkline-area ${inView ? 'drawn' : ''}`}
+        />
+      )}
+      <path
+        d={linePath}
+        stroke={color}
+        className={`sparkline-path ${inView ? 'drawn' : ''}`}
+      />
+    </svg>
+  );
+}
+
+/** Simple inView hook for smaller components */
+function useInViewLocal(opts: { threshold?: number } = {}) {
+  const ref = useRef<SVGSVGElement & HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setInView(true); obs.unobserve(el); } },
+      { threshold: opts.threshold ?? 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.unobserve(el);
+  }, [opts.threshold]);
+
+  return { ref, inView };
+}
+
+/** Animated bar chart */
+function AnimatedBars({ bars, inView }: {
+  bars: { label: string; value: number; color: string }[];
+  inView: boolean;
+}) {
+  const max = Math.max(...bars.map(b => b.value));
+
+  return (
+    <div className="flex items-end gap-2 h-20">
+      {bars.map((bar, i) => (
+        <div key={bar.label} className="flex-1 flex flex-col items-center gap-1">
+          <div className="w-full rounded-t-sm overflow-hidden relative" style={{ height: '100%' }}>
+            <div
+              className="absolute bottom-0 left-0 right-0 rounded-t-sm transition-all duration-1000"
+              style={{
+                height: inView ? `${(bar.value / max) * 100}%` : '0%',
+                background: bar.color,
+                transitionDelay: `${i * 120}ms`,
+                transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+            />
+          </div>
+          <span className="text-[9px] text-tt-gray-500 truncate w-full text-center">{bar.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Progress ring SVG */
+function ProgressRing({ percent, size = 80, strokeWidth = 4, color = '#5BA4A4', inView }: {
+  percent: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  inView: boolean;
+}) {
+  const r = (size - strokeWidth) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (percent / 100) * circ;
+
+  return (
+    <svg width={size} height={size} className="transform -rotate-90">
+      <circle
+        cx={size / 2} cy={size / 2} r={r}
+        fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={strokeWidth}
+      />
+      <circle
+        cx={size / 2} cy={size / 2} r={r}
+        fill="none" stroke={color} strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeDasharray={circ}
+        strokeDashoffset={inView ? offset : circ}
+        style={{
+          transition: 'stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1)',
+          transitionDelay: '0.3s',
+        }}
+      />
+    </svg>
+  );
+}
+
+
+/* ================================================================
+   SECTION 1 — CINEMATIC HERO
+   Velocity-damped multi-layer parallax, cursor glow, staggered blur-to-sharp
+   ================================================================ */
+
+function HeroSection() {
+  const [mounted, setMounted] = useState(false);
+  const parallaxRef = useMouseParallax(0.012);
+  const cursorGlowRef = useCursorGlow();
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <section
+      ref={(el: HTMLDivElement | null) => {
+        (parallaxRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        (cursorGlowRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      }}
+      className="relative min-h-screen flex items-center justify-center bg-tt-black overflow-hidden noise-overlay"
+    >
+      {/* Cursor proximity glow */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[2] opacity-40"
+        style={{
+          background: 'radial-gradient(600px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(91,164,164,0.06), transparent 60%)',
+        }}
+      />
+
+      {/* Particle network animation */}
+      <div className="pointer-events-none absolute inset-0 z-[1]">
+        <ParticleField particleCount={90} color="#5BA4A4" />
+      </div>
+
+      {/* Animated gradient mesh — Layer 1 */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true"
+        style={{
+          transform: 'translate(calc(var(--mx, 0px) * 2), calc(var(--my, 0px) * 2))',
+          transition: 'transform 0.1s linear',
+        }}
+      >
+        <div
+          className="absolute top-[-20%] left-[-15%] h-[800px] w-[800px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.14) 0%, transparent 70%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute bottom-[-10%] right-[-10%] h-[600px] w-[600px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.09) 0%, transparent 70%)', filter: 'blur(100px)' }}
+        />
+        <div
+          className="absolute top-[35%] right-[10%] h-[400px] w-[400px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.07) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+      </div>
+
+      {/* Layer 2 — mid-depth orbs */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true"
+        style={{
+          transform: 'translate(calc(var(--mx, 0px) * 0.8), calc(var(--my, 0px) * 0.8))',
+          transition: 'transform 0.1s linear',
+        }}
+      >
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[900px] rounded-full"
+          style={{ background: 'radial-gradient(ellipse, rgba(91,164,164,0.05) 0%, transparent 60%)', filter: 'blur(40px)' }}
+        />
+        <div className="absolute inset-0 dot-grid-subtle animate-dot-pulse" />
+      </div>
+
+      {/* Layer 3 — horizontal accent lines */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-[30%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/10 to-transparent" />
+        <div className="absolute top-[70%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-orange/5 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div
+        className="relative z-10 mx-auto max-w-5xl px-6 text-center"
+        style={{
+          transform: 'translate(calc(var(--mx, 0px) * 0.3), calc(var(--my, 0px) * 0.3))',
+          transition: 'transform 0.15s linear',
+        }}
+      >
+        {/* Status badge */}
+        <div
+          className={`inline-flex items-center gap-2.5 rounded-full border border-tt-teal/20 bg-tt-teal/5 px-5 py-2 mb-10 transition-all duration-1000 ${
+            mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-6 blur-sm'
+          }`}
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
+          </span>
+          <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing — #123</span>
+        </div>
+
+        {/* Tiger Tracks wordmark — staggered letter reveal */}
+        <div className="mb-6">
+          <h1 className="text-6xl font-extrabold tracking-tight text-white sm:text-8xl md:text-9xl" style={{ letterSpacing: '-0.03em', lineHeight: 0.95 }}>
+            {'TIGER'.split('').map((letter, i) => (
+              <span
+                key={`t-${i}`}
+                className={`inline-block gradient-text-hero transition-all duration-700 ${
+                  mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-12 blur-md'
+                }`}
+                style={{ transitionDelay: `${200 + i * 60}ms` }}
+              >
+                {letter}
+              </span>
+            ))}
+            <span
+              className={`inline-block transition-all duration-700 ${
+                mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-12 blur-md'
+              }`}
+              style={{ transitionDelay: '480ms' }}
+            >
+              &nbsp;
+            </span>
+            {'TRACKS'.split('').map((letter, i) => (
+              <span
+                key={`k-${i}`}
+                className={`inline-block text-white transition-all duration-700 ${
+                  mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-12 blur-md'
+                }`}
+                style={{ transitionDelay: `${500 + i * 60}ms` }}
+              >
+                {letter}
+              </span>
+            ))}
+          </h1>
+        </div>
+
+        {/* Tagline — editorial, chic */}
+        <p
+          className={`text-xl font-light tracking-wide text-tt-gray-300 sm:text-2xl md:text-3xl transition-all duration-1000 delay-500 ${
+            mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-10 blur-md'
+          }`}
+          style={{ letterSpacing: '0.04em' }}
+        >
+          Where precision meets growth.
+        </p>
+
+        {/* Sub-description */}
+        <p
+          className={`mx-auto mt-6 max-w-2xl text-base text-tt-gray-400 sm:text-lg leading-relaxed transition-all duration-1000 delay-700 ${
+            mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-8 blur-sm'
+          }`}
+        >
+          Ex-Google performance marketing leaders, powered by proprietary AI — delivering
+          measurable revenue growth for the world&apos;s most ambitious brands.
+        </p>
+
+        {/* CTA buttons */}
+        <div
+          className={`mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-1000 delay-1000 ${
+            mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-8 blur-sm'
+          }`}
+        >
+          <Link href="/get-started" className="btn-primary text-lg">
+            Book Your Free Audit
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+          <Link href="/case-studies" className="btn-ghost">
+            View Case Studies
+          </Link>
+        </div>
+
+        {/* Proof metrics — compact row */}
+        <div
+          className={`mt-16 mx-auto max-w-3xl transition-all duration-1000 delay-[1200ms] ${
+            mounted ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-10 blur-md'
+          }`}
+        >
+          <div className="grid grid-cols-3 gap-px rounded-2xl overflow-hidden border border-white/[0.06]">
+            {[
+              { value: '2,954%', label: 'Revenue Growth' },
+              { value: '+51%', label: 'Customers YoY (AG1)' },
+              { value: '50+', label: 'Growth Brands' },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/[0.02] backdrop-blur-sm px-6 py-6 text-center">
+                <AnimatedCounter value={stat.value} label={stat.label} className="[&>div:first-child]:text-2xl sm:[&>div:first-child]:text-3xl [&>div:last-of-type]:mt-1.5" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-scroll-bounce">
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-xs text-tt-gray-500 uppercase tracking-widest">Scroll</span>
+          <svg className="w-5 h-5 text-tt-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7" />
+          </svg>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 2 — LOGO BAR
+   ================================================================ */
+
+function LogoBarSection() {
+  return (
+    <section className="relative bg-atmosphere overflow-hidden">
+      <div className="section-divider-glow" />
+      <div className="pointer-events-none absolute inset-0 scanlines opacity-40" aria-hidden="true" />
+      <div className="relative z-10 py-12">
+        <LogoBar />
+      </div>
+      <div className="section-divider" />
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 3 — ASYMMETRIC BENTO CAPABILITIES
+   Featured 2-col card with live sparkline + smaller tight cards
+   ================================================================ */
+
+const capabilities = [
+  {
+    title: 'Media Buying',
+    description: 'Paid search, social, programmatic, retail media, and CTV — at scale.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    featured: true,
+    sparklineData: [12, 19, 15, 28, 24, 38, 35, 52, 48, 65, 58, 78],
+    stat: '+147%',
+    statLabel: 'Avg ROAS lift',
+  },
+  {
+    title: 'Creative & UGC',
+    description: 'Thumb-stopping image, video, UGC, and influencer creative — tested and iterated weekly.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+      </svg>
+    ),
+    accent: 'orange' as const,
+    featured: false,
+  },
+  {
+    title: 'Website & CRO',
+    description: 'Landing pages, site builds, and conversion rate optimization that turns traffic into revenue.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    featured: false,
+  },
+  {
+    title: 'Organic Growth',
+    description: 'SEO, ASO, and generative engine optimization (GEO) — own the search results AI reads.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    featured: false,
+  },
+  {
+    title: 'Lifecycle & Retention',
+    description: 'Email, SMS, and LTV programs that make every acquired customer worth more.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+      </svg>
+    ),
+    accent: 'orange' as const,
+    featured: false,
+  },
+  {
+    title: 'Analytics & Intelligence',
+    description: 'Attribution, media mix modeling, incrementality testing, and the data layer that makes every other channel smarter.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    featured: false,
+  },
+] as const;
+
+function BentoCapabilities() {
+  const sectionRef = useReveal(0.08);
+
+  const featured = capabilities.find(c => c.featured);
+  const others = capabilities.filter(c => !c.featured);
+
+  return (
+    <section className="relative bg-atmosphere py-28 sm:py-36 overflow-hidden glow-top">
+      {/* Background elements */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/15 to-transparent" />
+        {/* Large orbs for atmospheric depth */}
+        <div
+          className="absolute top-[10%] right-[-10%] h-[600px] w-[600px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.09) 0%, transparent 60%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute bottom-[5%] left-[-8%] h-[500px] w-[500px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.05) 0%, transparent 65%)', filter: 'blur(100px)' }}
+        />
+        {/* Dot grid */}
+        <div className="absolute inset-0 dot-grid animate-dot-pulse" />
+        {/* Crosshatch accent */}
+        <div className="absolute inset-0 crosshatch-grid opacity-40" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Header */}
+        <div className="mx-auto max-w-3xl text-center mb-20">
+          <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
+            Capabilities
+          </span>
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Full-funnel marketing<br />
+            <span className="gradient-text">that compounds.</span>
+          </h2>
+          <p className="reveal stagger-3 mt-6 text-lg text-tt-gray-400 leading-relaxed">
+            Each layer amplifies the others. Media drives signal, creative converts,
+            lifecycle extends value, and measurement fuels smarter decisions.
+          </p>
+        </div>
+
+        {/* Asymmetric bento — featured card spans 2 cols */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Featured card — 2 col span with live sparkline */}
+          {featured && (
+            <div className="reveal stagger-1 md:col-span-2 group relative glass-card-elevated gradient-border card-shimmer p-8 md:p-10 cursor-default">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-tt-teal/10 text-tt-teal transition-all duration-300 group-hover:scale-110">
+                      {featured.icon}
+                    </div>
+                    <div className="relative">
+                      <span className="flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-tt-teal transition-colors duration-300">
+                    {featured.title}
+                  </h3>
+                  <p className="text-sm text-tt-gray-400 leading-relaxed mb-4">
+                    {featured.description}
+                  </p>
+                  {featured.stat && (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-extrabold gradient-text metric-glow">{featured.stat}</span>
+                      <span className="text-xs text-tt-gray-500 uppercase tracking-wider">{featured.statLabel}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Live sparkline viz */}
+                {featured.sparklineData && (
+                  <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] text-tt-gray-500 uppercase tracking-wider">Performance Trend</span>
+                      <span className="text-[10px] text-tt-teal font-semibold">Live</span>
+                    </div>
+                    <Sparkline
+                      data={[...featured.sparklineData]}
+                      color="#5BA4A4"
+                      areaColor="rgba(91,164,164,0.08)"
+                      className="w-full h-16"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* First smaller card */}
+          <div className="reveal stagger-2 group relative glass-card card-shimmer p-8 cursor-default">
+            <div
+              className="absolute top-0 left-6 right-6 h-px transition-all duration-500 group-hover:left-0 group-hover:right-0 bg-gradient-to-r from-transparent via-tt-orange/40 to-transparent"
+            />
+            <div className="mb-5 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-tt-orange/10 text-tt-orange transition-all duration-300 group-hover:scale-110">
+              {others[0].icon}
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-tt-teal transition-colors duration-300">{others[0].title}</h3>
+            <p className="text-sm text-tt-gray-400 leading-relaxed">{others[0].description}</p>
+          </div>
+
+          {/* Remaining cards */}
+          {others.slice(1).map((cap, i) => (
+            <div
+              key={cap.title}
+              className={`reveal stagger-${i + 3} group relative glass-card card-shimmer p-8 cursor-default`}
+            >
+              <div
+                className={`absolute top-0 left-6 right-6 h-px transition-all duration-500 group-hover:left-0 group-hover:right-0 ${
+                  cap.accent === 'teal'
+                    ? 'bg-gradient-to-r from-transparent via-tt-teal/40 to-transparent'
+                    : 'bg-gradient-to-r from-transparent via-tt-orange/40 to-transparent'
+                }`}
+              />
+              <div
+                className={`mb-5 inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 group-hover:scale-110 ${
+                  cap.accent === 'teal' ? 'bg-tt-teal/10 text-tt-teal' : 'bg-tt-orange/10 text-tt-orange'
+                }`}
+              >
+                {cap.icon}
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-tt-teal transition-colors duration-300">{cap.title}</h3>
+              <p className="text-sm text-tt-gray-400 leading-relaxed">{cap.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 4 — METRICS WITH VERTICAL GLOWING PILLAR DIVIDERS
+   ================================================================ */
+
+const metrics = [
+  { value: '2,954%', label: 'Three-year revenue growth', glow: true },
+  { value: '34%', label: 'Avg CAC reduction in 90 days', glow: false },
+  { value: '2x', label: 'Avg ROAS improvement', glow: false },
+  { value: '50+', label: 'Brands served', glow: false },
+  { value: '18 mo', label: 'Avg client tenure', glow: false },
+] as const;
+
+function MetricsSection() {
+  const sectionRef = useReveal(0.2);
+
+  return (
+    <section className="relative bg-cinematic py-24 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-0 dot-grid opacity-50" />
+        <div className="absolute inset-0 scanlines opacity-30" />
+        {/* Accent orbs behind metrics */}
+        <div
+          className="absolute top-[-30%] left-[20%] h-[400px] w-[600px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(ellipse, rgba(91,164,164,0.08) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        <div
+          className="absolute bottom-[-20%] right-[30%] h-[300px] w-[400px] rounded-full"
+          style={{ background: 'radial-gradient(ellipse, rgba(232,121,58,0.04) 0%, transparent 60%)', filter: 'blur(80px)' }}
+        />
+      </div>
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row items-stretch justify-center gap-0">
+          {metrics.map((m, i) => (
+            <div key={m.label} className="flex items-stretch">
+              <div className={`reveal stagger-${i + 1} flex-1 px-6 md:px-8 py-6`}>
+                <AnimatedCounter
+                  value={m.value}
+                  label={m.label}
+                  className={m.glow ? 'metric-glow' : ''}
+                />
+              </div>
+              {/* Vertical glowing pillar divider */}
+              {i < metrics.length - 1 && (
+                <div className="hidden md:block metric-divider self-stretch my-2" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 section-divider-glow" />
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 5 — CASE STUDIES (full-bleed immersive with perspective tilt)
+   ================================================================ */
+
+const caseStudies = [
+  {
+    slug: 'ag1-meta',
+    client: 'AG1',
+    heroMetric: '+51%',
+    heroMetricLabel: 'Customers YoY',
+    category: 'DTC / Multi-Channel',
+    channels: ['Meta', 'Google'],
+    summary: 'Restructured Meta campaigns to drive compounding acquisition growth across channels.',
+    gradientFrom: 'rgba(91,164,164,0.25)',
+    gradientTo: 'rgba(91,164,164,0.03)',
+    accentOrb: 'rgba(232,121,58,0.12)',
+    patternOpacity: 0.15,
+  },
+  {
+    slug: 'monarch-money',
+    client: 'Monarch Money',
+    heroMetric: '+368%',
+    heroMetricLabel: 'Users',
+    category: 'Finance',
+    channels: ['Multi-Channel'],
+    summary: 'Scaled user acquisition for the personal finance platform PE funds are watching.',
+    gradientFrom: 'rgba(232,121,58,0.20)',
+    gradientTo: 'rgba(91,164,164,0.05)',
+    accentOrb: 'rgba(91,164,164,0.15)',
+    patternOpacity: 0.12,
+  },
+  {
+    slug: 'online-labels',
+    client: 'Online Labels',
+    heroMetric: '+151%',
+    heroMetricLabel: 'Profit in 90 Days',
+    category: 'E-Commerce',
+    channels: ['Google'],
+    summary: 'From 18,000 keywords and declining performance to record-breaking profitability.',
+    gradientFrom: 'rgba(91,164,164,0.20)',
+    gradientTo: 'rgba(232,121,58,0.06)',
+    accentOrb: 'rgba(232,121,58,0.10)',
+    patternOpacity: 0.18,
+  },
+] as const;
+
+function TiltCaseStudyCard({ cs, delay }: {
+  cs: typeof caseStudies[number];
+  delay: number;
+}) {
+  const { ref, handleMove, handleLeave } = useTilt(8);
+
+  return (
+    <div className={`reveal stagger-${delay}`}>
+      <Link
+        href={`/case-studies/${cs.slug}`}
+        className="group block"
+      >
+        <div
+          ref={ref}
+          onMouseMove={handleMove}
+          onMouseLeave={handleLeave}
+          className="tilt-card glass-card gradient-border card-shimmer overflow-hidden transition-all duration-500 hover:scale-[1.02]"
+        >
+          {/* Abstract gradient visual — top of card */}
+          <div className="relative h-40 overflow-hidden group-hover:h-44 transition-all duration-700">
+            <div
+              className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+              style={{
+                background: `radial-gradient(ellipse at 30% 50%, ${cs.gradientFrom}, transparent 70%), radial-gradient(ellipse at 80% 20%, ${cs.accentOrb}, transparent 60%), linear-gradient(135deg, ${cs.gradientTo}, transparent)`,
+              }}
+            />
+            {/* Dot pattern overlay */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0)',
+                backgroundSize: '20px 20px',
+                opacity: cs.patternOpacity,
+              }}
+            />
+            {/* Floating abstract shapes */}
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid slice">
+              <circle cx="320" cy="40" r="60" fill="rgba(255,255,255,0.03)" />
+              <circle cx="80" cy="120" r="40" fill="rgba(255,255,255,0.02)" />
+              <path d="M200 20 Q250 80 300 40 Q350 0 380 60" stroke="rgba(255,255,255,0.06)" strokeWidth="1" fill="none" />
+              <path d="M20 80 Q80 30 160 90 Q200 110 260 70" stroke="rgba(255,255,255,0.04)" strokeWidth="1" fill="none" />
+            </svg>
+            {/* Bottom fade to card bg */}
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[rgba(2,2,5,0.9)] to-transparent" />
+          </div>
+
+          <div className="relative p-8 md:p-10 pt-4">
+            {/* Top accent line */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/30 to-transparent group-hover:via-tt-teal/60 transition-all duration-500" />
+
+            {/* Client & category */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-sm font-bold uppercase tracking-wider text-tt-teal">{cs.client}</span>
+              <span className="h-px flex-1 bg-gradient-to-r from-tt-teal/20 to-transparent" />
+            </div>
+            <p className="text-xs text-tt-gray-500 mb-6">{cs.category}</p>
+
+            {/* MASSIVE hero metric — dominates the card face */}
+            <div className="mb-6">
+              <p className="text-6xl md:text-7xl font-extrabold text-white metric-glow group-hover:text-tt-teal transition-colors duration-500 leading-none">
+                {cs.heroMetric}
+              </p>
+              <p className="mt-3 text-sm text-tt-gray-400">{cs.heroMetricLabel}</p>
+            </div>
+
+            {/* Channel tags */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {cs.channels.map((channel) => (
+                <span
+                  key={channel}
+                  className="rounded-full bg-tt-teal/8 border border-tt-teal/15 px-3 py-1 text-xs font-medium text-tt-teal"
+                >
+                  {channel}
+                </span>
+              ))}
+            </div>
+
+            {/* Summary */}
+            <p className="text-sm leading-relaxed text-tt-gray-400">{cs.summary}</p>
+
+            {/* Read more */}
+            <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-tt-teal">
+              <span>Read full story</span>
+              <svg
+                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+function CaseStudiesSection() {
+  const sectionRef = useReveal(0.08);
+
+  return (
+    <section className="relative bg-atmosphere-dark py-28 sm:py-36 overflow-hidden noise-overlay glow-top glow-bottom">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Large center wash */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[700px] w-[900px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(ellipse, rgba(91,164,164,0.07) 0%, transparent 55%)', filter: 'blur(80px)' }}
+        />
+        {/* Corner accent orbs */}
+        <div
+          className="absolute top-[-5%] right-[-5%] h-[400px] w-[400px] rounded-full animate-float-slow"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.06) 0%, transparent 60%)', filter: 'blur(70px)' }}
+        />
+        <div
+          className="absolute bottom-[-5%] left-[-5%] h-[350px] w-[350px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.05) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        {/* Crosshatch pattern */}
+        <div className="absolute inset-0 crosshatch-grid opacity-30" />
+        {/* Dot grid */}
+        <div className="absolute inset-0 dot-grid-subtle animate-dot-pulse" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center mb-20">
+          <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-orange uppercase tracking-widest mb-4">
+            Proof, Not Promises
+          </span>
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Results that make<br />
+            <span className="gradient-text-warm">CFOs smile.</span>
+          </h2>
+        </div>
+
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
+          {caseStudies.map((cs, i) => (
+            <TiltCaseStudyCard key={cs.slug} cs={cs} delay={i + 1} />
+          ))}
+        </div>
+
+        <div className="reveal stagger-5 mt-16 text-center">
+          <Link href="/case-studies" className="btn-ghost">
+            View all case studies
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 6 — PROPRIETARY TECH (animated real-time data viz)
+   ================================================================ */
+
+function TechSection() {
+  const sectionRef = useReveal(0.08);
+  const barsRef = useRef<HTMLDivElement>(null);
+  const [barsVisible, setBarsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = barsRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setBarsVisible(true); obs.unobserve(el); } },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.unobserve(el);
+  }, []);
+
+  const feedBars = [
+    { label: 'Titles', value: 72, color: 'linear-gradient(to top, rgba(91,164,164,0.6), rgba(91,164,164,0.2))' },
+    { label: 'Desc', value: 58, color: 'linear-gradient(to top, rgba(91,164,164,0.5), rgba(91,164,164,0.15))' },
+    { label: 'Images', value: 85, color: 'linear-gradient(to top, rgba(232,121,58,0.6), rgba(232,121,58,0.2))' },
+    { label: 'Price', value: 92, color: 'linear-gradient(to top, rgba(232,121,58,0.65), rgba(232,121,58,0.25))' },
+    { label: 'GTINs', value: 68, color: 'linear-gradient(to top, rgba(91,164,164,0.55), rgba(91,164,164,0.18))' },
+    { label: 'Custom', value: 45, color: 'linear-gradient(to top, rgba(91,164,164,0.4), rgba(91,164,164,0.1))' },
+    { label: 'Overall', value: 95, color: 'linear-gradient(to top, rgba(232,121,58,0.7), rgba(232,121,58,0.3))' },
+  ];
+
+  return (
+    <section className="relative bg-atmosphere py-28 sm:py-36 overflow-hidden noise-overlay glow-bottom">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-0 dot-grid opacity-50" />
+        <div className="absolute inset-0 scanlines opacity-20" />
+        {/* Multiple animated orbs for depth */}
+        <div
+          className="absolute top-[-10%] left-[20%] h-[700px] w-[700px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.10) 0%, transparent 55%)', filter: 'blur(100px)' }}
+        />
+        <div
+          className="absolute bottom-[-15%] right-[10%] h-[500px] w-[500px] rounded-full animate-float-slow"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.07) 0%, transparent 55%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute top-[30%] right-[-5%] h-[400px] w-[400px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.06) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        {/* Ring pattern */}
+        <div className="absolute inset-0 ring-grid opacity-60" />
+        {/* Accent lines */}
+        <div className="absolute top-[25%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/8 to-transparent" />
+        <div className="absolute top-[75%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-orange/5 to-transparent" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center mb-20">
+          <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
+            Proprietary Technology
+          </span>
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Other agencies use your tools.<br />
+            <span className="gradient-text">We built our own.</span>
+          </h2>
+        </div>
+
+        <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Wayfinder AI — with live sparkline */}
+          <div className="reveal stagger-3 group relative gradient-border gradient-border-active glass-card-elevated p-8 md:p-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="relative">
+                <span className="block h-3 w-3 rounded-full bg-tt-teal" />
+                <span className="absolute inset-0 h-3 w-3 rounded-full bg-tt-teal animate-ping opacity-30" />
+              </div>
+              <span className="text-xs font-semibold text-tt-teal uppercase tracking-wider">Live</span>
+            </div>
+
+            <h3 className="text-2xl font-bold text-white mb-4">Wayfinder AI</h3>
+            <p className="text-tt-gray-400 leading-relaxed mb-6">
+              Predictive budget allocation that optimizes spend across channels in real time. Built by the team that built campaigns at Google.
+            </p>
+
+            {/* Live sparkline data viz */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4 mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] text-tt-gray-500 uppercase tracking-wider">Budget Reallocation Score</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-tt-teal animate-pulse" />
+                  <span className="text-[10px] text-tt-teal font-semibold">Optimizing</span>
+                </span>
+              </div>
+              <Sparkline
+                data={[22, 28, 25, 35, 32, 45, 42, 55, 50, 62, 58, 72, 68, 80, 75, 85]}
+                color="#5BA4A4"
+                areaColor="rgba(91,164,164,0.06)"
+                className="w-full h-14"
+              />
+            </div>
+
+            <ul className="space-y-3 mb-8">
+              {['Cross-platform intelligence', 'ML-driven recommendations', 'Unified data layer', 'Real-time optimization'].map((f) => (
+                <li key={f} className="flex items-center gap-3 text-sm text-tt-gray-300">
+                  <svg className="w-4 h-4 text-tt-teal flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              href="/wayfinder"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-tt-teal group-hover:text-tt-teal-muted transition-colors"
+            >
+              See Wayfinder in action
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+
+          {/* Feed Optimization — with animated stacked bars */}
+          <div className="reveal stagger-4 group relative glass-card gradient-border p-8 md:p-10">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="block h-3 w-3 rounded-full bg-tt-orange" />
+              <span className="text-xs font-semibold text-tt-orange uppercase tracking-wider">Platform</span>
+            </div>
+
+            <h3 className="text-2xl font-bold text-white mb-4">Feed Optimization</h3>
+            <p className="text-tt-gray-400 leading-relaxed mb-6">
+              AI-powered product feed management that transforms e-commerce shopping campaigns. Automated at scale, measured to the SKU.
+            </p>
+
+            <ul className="space-y-3 mb-6">
+              {['AI title & description optimization', 'Real-time processing at scale', 'Quality scoring & ROI tracking'].map((f) => (
+                <li key={f} className="flex items-center gap-3 text-sm text-tt-gray-300">
+                  <svg className="w-4 h-4 text-tt-orange flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            {/* Animated bar chart */}
+            <div ref={barsRef} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] text-tt-gray-500 uppercase tracking-wider">Feed Quality Scores</span>
+                <span className="text-[10px] text-tt-orange font-semibold">+34% avg</span>
+              </div>
+              <div className="flex items-end gap-1.5 h-20">
+                {feedBars.map((bar, i) => (
+                  <div key={bar.label} className="flex-1 flex flex-col items-center gap-1">
+                    <div className="w-full relative" style={{ height: '64px' }}>
+                      <div
+                        className="absolute bottom-0 left-0 right-0 rounded-t-sm transition-all"
+                        style={{
+                          height: barsVisible ? `${bar.value}%` : '0%',
+                          background: bar.color,
+                          transitionDuration: '1.2s',
+                          transitionDelay: `${i * 100}ms`,
+                          transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                        }}
+                      />
+                    </div>
+                    <span className="text-[8px] text-tt-gray-600 truncate w-full text-center">{bar.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 7 — TESTIMONIAL
+   ================================================================ */
+
+function TestimonialSection() {
+  const sectionRef = useReveal(0.2);
+
+  return (
+    <section className="relative bg-atmosphere-dark py-28 sm:py-36 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Dramatic center glow */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[700px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(ellipse, rgba(91,164,164,0.08) 0%, transparent 55%)', filter: 'blur(80px)' }}
+        />
+        {/* Corner accents */}
+        <div
+          className="absolute top-[-10%] left-[-5%] h-[300px] w-[300px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.04) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        <div
+          className="absolute bottom-[-10%] right-[-5%] h-[300px] w-[300px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.04) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        <div className="absolute inset-0 dot-grid-subtle opacity-40" />
+        <div className="absolute inset-0 crosshatch-grid opacity-20" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-4xl px-6 lg:px-8">
+        <div className="reveal stagger-1">
+          <div className="relative gradient-border gradient-border-active rounded-2xl">
+            <div className="relative bg-tt-black rounded-2xl p-10 md:p-16">
+              <div className="absolute top-6 left-8 md:top-8 md:left-12 text-tt-teal/10">
+                <svg width="80" height="64" viewBox="0 0 40 32" fill="currentColor">
+                  <path d="M12.8 0C5.728 0 0 5.728 0 12.8c0 10.752 9.6 19.2 19.2 19.2l1.6-6.4C14.4 25.6 6.4 20.48 6.4 12.8h6.4c3.52 0 6.4-2.88 6.4-6.4S16.32 0 12.8 0zm20.8 0c-7.072 0-12.8 5.728-12.8 12.8 0 10.752 9.6 19.2 19.2 19.2l1.6-6.4C35.2 25.6 27.2 20.48 27.2 12.8h6.4c3.52 0 6.4-2.88 6.4-6.4S37.12 0 33.6 0z" />
+                </svg>
+              </div>
+
+              <blockquote className="relative z-10 text-2xl md:text-3xl font-medium leading-relaxed text-white">
+                &ldquo;Partnering with Tiger Tracks has been amazing. They work fast, execute
+                flawlessly and apply specialized knowledge of ad platforms with a relentless
+                focus on hitting growth goals.&rdquo;
+              </blockquote>
+
+              <div className="relative z-10 mt-10 flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-tt-teal/30 to-tt-teal/10 flex items-center justify-center">
+                  <span className="text-sm font-bold text-tt-teal">JM</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-white">Jason Marshall</p>
+                  <p className="text-sm text-tt-gray-400">Chief Growth Officer, AG1</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 8 — PE PARTNERSHIP (interactive timeline + progress ring)
+   ================================================================ */
+
+function PEPartnershipSection() {
+  const sectionRef = useReveal(0.08);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const [timelineVisible, setTimelineVisible] = useState(false);
+
+  useEffect(() => {
+    const el = timelineRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setTimelineVisible(true); obs.unobserve(el); } },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.unobserve(el);
+  }, []);
+
+  const timeline = [
+    { time: 'Week 1-2', label: 'Forensic audit & diagnostics', percent: 100 },
+    { time: 'Week 3-4', label: 'Strategy & quick wins deployed', percent: 100 },
+    { time: 'Month 2-3', label: 'Full-funnel execution at scale', percent: 75 },
+  ];
+
+  return (
+    <section className="relative bg-cinematic py-28 sm:py-36 overflow-hidden glow-top">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-0 dot-grid opacity-40" />
+        <div className="absolute inset-0 scanlines opacity-20" />
+        {/* Animated orbs */}
+        <div
+          className="absolute top-[10%] right-[-8%] h-[600px] w-[600px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.08) 0%, transparent 55%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute bottom-[5%] left-[-5%] h-[500px] w-[500px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.07) 0%, transparent 60%)', filter: 'blur(90px)' }}
+        />
+        <div
+          className="absolute top-[50%] left-[40%] h-[300px] w-[300px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.05) 0%, transparent 60%)', filter: 'blur(50px)' }}
+        />
+        {/* Ring pattern */}
+        <div className="absolute inset-0 ring-grid opacity-40" />
+        {/* Accent lines */}
+        <div className="absolute top-[40%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-orange/6 to-transparent" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
+          {/* Left — copy */}
+          <div>
+            <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-orange uppercase tracking-widest mb-4">
+              For PE & VC Funds
+            </span>
+            <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Accelerate portfolio growth with a team that&apos;s done it 40+ times.
+            </h2>
+            <p className="reveal stagger-3 mt-6 text-lg leading-relaxed text-tt-gray-400">
+              We partner with PE and VC funds to inject performance marketing muscle into
+              portfolio companies. Forensic audits, proprietary AI tooling, and a team built at Google — deployed on your timeline.
+            </p>
+
+            {/* Mini stats with progress rings */}
+            <div className="reveal stagger-4 mt-10 grid grid-cols-3 gap-6">
+              {[
+                { val: '12', label: 'Fund partners' },
+                { val: '40+', label: 'Portfolio companies' },
+                { val: '3.1x', label: 'Avg revenue lift' },
+              ].map((s) => (
+                <AnimatedCounter key={s.label} value={s.val} label={s.label} className="metric-glow [&>div:first-child]:text-2xl" />
+              ))}
+            </div>
+
+            <div className="reveal stagger-5 mt-10">
+              <Link href="/pe-vc" className="btn-primary">
+                Learn about fund partnerships
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right — interactive timeline with animated fill + progress ring */}
+          <div className="reveal-right stagger-3 relative">
+            <div className="relative glass-card-elevated p-8 md:p-10">
+              {/* Progress ring */}
+              <div className="flex items-center justify-center mb-8">
+                <div className="relative">
+                  <ProgressRing percent={90} size={100} strokeWidth={5} color="#5BA4A4" inView={timelineVisible} />
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-2xl font-extrabold text-white">90%+</span>
+                    <span className="text-[9px] text-tt-gray-500 uppercase tracking-wider">Expand</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-center text-tt-gray-400 text-sm mb-8">
+                of fund-referred clients expand scope within 6 months
+              </p>
+
+              {/* Animated timeline */}
+              <div ref={timelineRef} className="relative">
+                {/* Animated fill line */}
+                <div className="absolute left-4 top-0 bottom-0 w-px bg-white/5" />
+                <div
+                  className="absolute left-4 top-0 w-px transition-all"
+                  style={{
+                    height: timelineVisible ? '100%' : '0%',
+                    background: 'linear-gradient(180deg, #5BA4A4 0%, #E8793A 100%)',
+                    transitionDuration: '1.5s',
+                    transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                    transitionDelay: '0.3s',
+                  }}
+                />
+
+                {timeline.map((step, i) => (
+                  <div key={step.time} className="relative pl-12 pb-8 last:pb-0">
+                    {/* Node dot */}
+                    <div
+                      className="absolute left-[9px] top-1 h-3.5 w-3.5 rounded-full border-2 border-tt-teal bg-tt-black transition-all"
+                      style={{
+                        borderColor: timelineVisible ? '#5BA4A4' : 'rgba(255,255,255,0.1)',
+                        boxShadow: timelineVisible ? '0 0 12px rgba(91,164,164,0.3)' : 'none',
+                        transitionDuration: '0.6s',
+                        transitionDelay: `${0.5 + i * 0.3}s`,
+                      }}
+                    />
+                    <p
+                      className="text-xs font-semibold text-tt-teal uppercase tracking-wider transition-all"
+                      style={{
+                        opacity: timelineVisible ? 1 : 0,
+                        transform: timelineVisible ? 'translateX(0)' : 'translateX(-10px)',
+                        transitionDuration: '0.6s',
+                        transitionDelay: `${0.6 + i * 0.3}s`,
+                      }}
+                    >
+                      {step.time}
+                    </p>
+                    <p
+                      className="mt-1 text-sm text-tt-gray-300 transition-all"
+                      style={{
+                        opacity: timelineVisible ? 1 : 0,
+                        transform: timelineVisible ? 'translateX(0)' : 'translateX(-10px)',
+                        transitionDuration: '0.6s',
+                        transitionDelay: `${0.7 + i * 0.3}s`,
+                      }}
+                    >
+                      {step.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 9 — INTELLIGENCE (editorial)
+   ================================================================ */
+
+const articles = [
+  {
+    category: 'AI & Automation',
+    title: 'Beyond the Chatbox: The No-Shame Guide to the Agentic AI Era of 2026',
+    readTime: '12 min',
+    slug: 'agentic-ai-era-2026',
+    gradient: 'linear-gradient(135deg, rgba(91,164,164,0.22), rgba(232,121,58,0.08) 50%, rgba(91,164,164,0.04))',
+    svgPattern: 'M20 40 Q60 10 100 40 Q140 70 180 35 Q220 5 260 45' as const,
+  },
+  {
+    category: 'Platform Strategy',
+    title: 'GEO Is the New SEO: Why Generative Engine Optimization Is Not Optional in 2026',
+    readTime: '10 min',
+    slug: 'geo-is-the-new-seo',
+    gradient: 'linear-gradient(135deg, rgba(232,121,58,0.18), rgba(91,164,164,0.10) 50%, rgba(232,121,58,0.03))',
+    svgPattern: 'M10 30 Q50 60 100 25 Q150 -5 200 35 Q250 70 280 30' as const,
+  },
+  {
+    category: 'Measurement',
+    title: 'The Cookieless Reckoning: First-Party Data, Incrementality, and the Measurement Stack That Survives',
+    readTime: '14 min',
+    slug: 'cookieless-reckoning',
+    gradient: 'linear-gradient(135deg, rgba(91,164,164,0.16), rgba(91,164,164,0.06) 40%, rgba(232,121,58,0.10))',
+    svgPattern: 'M30 50 Q80 15 130 45 Q180 75 230 30 Q260 10 280 40' as const,
+  },
+] as const;
+
+function IntelligenceSection() {
+  const sectionRef = useReveal(0.08);
+
+  return (
+    <section className="relative bg-atmosphere-dark py-28 sm:py-36 overflow-hidden noise-overlay glow-top">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 section-divider-glow" />
+        {/* Atmospheric orbs */}
+        <div
+          className="absolute top-[15%] left-[-5%] h-[500px] w-[500px] rounded-full animate-float-slow"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.06) 0%, transparent 60%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute bottom-[10%] right-[-5%] h-[400px] w-[400px] rounded-full animate-mesh-drift-alt"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.04) 0%, transparent 60%)', filter: 'blur(70px)' }}
+        />
+        <div className="absolute inset-0 crosshatch-grid opacity-25" />
+        <div className="absolute inset-0 dot-grid-subtle animate-dot-pulse" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center mb-20">
+          <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
+            Intelligence Series
+          </span>
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Eye of the Tiger
+          </h2>
+          <p className="reveal stagger-3 mt-4 text-lg text-tt-gray-400">
+            Strategic research designed to give you a forward-looking advantage.
+          </p>
+        </div>
+
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
+          {articles.map((article, i) => (
+            <Link
+              key={article.slug}
+              href={`/intelligence/${article.slug}`}
+              className={`reveal stagger-${i + 1} group relative glass-card card-shimmer block overflow-hidden`}
+            >
+              {/* Abstract hero visual */}
+              <div className="relative h-36 overflow-hidden">
+                <div
+                  className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+                  style={{ background: article.gradient }}
+                />
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 80" preserveAspectRatio="xMidYMid slice">
+                  <path d={article.svgPattern} stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" fill="none" />
+                  <circle cx="240" cy="25" r="30" fill="rgba(255,255,255,0.03)" />
+                  <circle cx="60" cy="55" r="20" fill="rgba(255,255,255,0.02)" />
+                </svg>
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)',
+                    backgroundSize: '24px 24px',
+                  }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[rgba(2,2,5,0.95)] to-transparent" />
+              </div>
+
+              <div className="p-8 pt-4">
+                <span className="inline-flex items-center rounded-full bg-tt-teal/10 px-3 py-1 text-xs font-semibold text-tt-teal">
+                  {article.category}
+                </span>
+                <h3 className="mt-5 text-lg font-bold text-white leading-snug group-hover:text-tt-teal transition-colors duration-300">
+                  {article.title}
+                </h3>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-sm text-tt-gray-500">{article.readTime} read</span>
+                  <svg
+                    className="w-5 h-5 text-tt-gray-600 group-hover:text-tt-teal transition-all duration-300 group-hover:translate-x-1"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="reveal stagger-5 mt-16 text-center">
+          <Link href="/intelligence" className="btn-ghost">
+            Explore all research
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SECTION 10 — FINAL CTA (proximity-reactive gradient mesh)
+   ================================================================ */
+
+function FinalCTA() {
+  const sectionRef = useReveal(0.15);
+  const cursorRef = useCursorGlow();
+
+  return (
+    <section
+      ref={(el: HTMLDivElement | null) => {
+        (cursorRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      }}
+      className="relative bg-cinematic py-32 sm:py-40 overflow-hidden noise-overlay"
+    >
+      {/* Proximity-reactive gradient mesh — follows cursor */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] opacity-60"
+        style={{
+          background: 'radial-gradient(900px circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(91,164,164,0.10), rgba(232,121,58,0.03) 40%, transparent 65%)',
+        }}
+      />
+
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Large animated orbs */}
+        <div
+          className="absolute top-[-20%] left-[-10%] h-[700px] w-[700px] rounded-full animate-mesh-drift"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.12) 0%, transparent 55%)', filter: 'blur(100px)' }}
+        />
+        <div
+          className="absolute bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.08) 0%, transparent 55%)', filter: 'blur(80px)' }}
+        />
+        <div
+          className="absolute top-[20%] right-[20%] h-[400px] w-[400px] rounded-full animate-mesh-pulse"
+          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.06) 0%, transparent 60%)', filter: 'blur(60px)' }}
+        />
+        {/* Dense pattern layers */}
+        <div className="absolute inset-0 dot-grid opacity-40" />
+        <div className="absolute inset-0 crosshatch-grid opacity-30" />
+        <div className="absolute inset-0 scanlines opacity-15" />
+        {/* Ring pattern */}
+        <div className="absolute inset-0 ring-grid opacity-40" />
+        {/* Accent lines */}
+        <div className="absolute top-[35%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/10 to-transparent" />
+        <div className="absolute top-[65%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-orange/6 to-transparent" />
+      </div>
+
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+        <h2 className="reveal stagger-1 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+          Your Revenue Is Leaking.<br />
+          <span className="gradient-text-warm">We&apos;ll Find Where.</span>
+        </h2>
+
+        <p className="reveal stagger-2 mt-6 text-xl text-tt-gray-400 max-w-2xl mx-auto">
+          A 90-day roadmap built around your actual numbers — across paid, organic,
+          creative, and attribution.
+        </p>
+
+        <div className="reveal stagger-3 mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link href="/get-started" className="btn-primary text-lg">
+            Book Your Free Audit
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+          <Link href="/case-studies" className="btn-ghost">
+            View Case Studies
+          </Link>
+        </div>
+
+        <div className="reveal stagger-4 mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-tt-gray-500">
+          {['Inc. 5000 #123', 'Meta Business Partner', 'Founded by Ex-Google'].map((badge, i) => (
+            <span key={badge} className="flex items-center gap-3">
+              {i > 0 && <span className="h-1 w-1 rounded-full bg-tt-gray-700" />}
+              {badge}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   PAGE
+   ================================================================ */
+
+export default function Home() {
+  return (
+    <main>
+      <HeroSection />
+      <LogoBarSection />
+      <BentoCapabilities />
+      <MetricsSection />
+      <CaseStudiesSection />
+      <TechSection />
+      <TestimonialSection />
+      <PEPartnershipSection />
+      <IntelligenceSection />
+      <FinalCTA />
+    </main>
+  );
+}

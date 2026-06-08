@@ -1,0 +1,222 @@
+'use client';
+
+import Link from 'next/link';
+import { BlogPost, blogPosts } from '@/data/blogPosts';
+import { CTASection } from '@/components/CTASection';
+import { useInView } from '@/hooks/useInView';
+
+export function ArticlePageClient({ article }: { article: BlogPost }) {
+  const { ref: heroRef, inView: heroInView } = useInView({ threshold: 0.1 });
+  const { ref: bodyRef, inView: bodyInView } = useInView({ threshold: 0.05 });
+
+  const sameCat = blogPosts.filter(
+    (p) => p.category === article.category && p.slug !== article.slug
+  );
+  const otherPosts = blogPosts.filter(
+    (p) => p.category !== article.category && p.slug !== article.slug
+  );
+  const related = [...sameCat, ...otherPosts].slice(0, 3);
+
+  const sourceBadge = article.source === 'notion' ? 'Research Report' : 'Article';
+
+  return (
+    <>
+      {/* Hero */}
+      <section ref={heroRef} className="relative py-24 px-6 overflow-hidden" style={{
+        background: `
+          radial-gradient(ellipse 50% 50% at 50% 30%, rgba(91, 164, 164, 0.04) 0%, transparent 60%),
+          #0A1119
+        `,
+      }}>
+        <div className="pointer-events-none absolute inset-0 z-[0]" aria-hidden="true" style={{
+          backgroundImage: 'url(/images/intelligence-hero.webp)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.15,
+        }} />
+        <div
+          className={`relative z-10 mx-auto max-w-4xl transition-all duration-700 ${
+            heroInView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          }`}
+        >
+          <Link
+            href="/insights"
+            className="inline-flex items-center gap-1 text-sm text-tt-gray-400 transition hover:text-tt-teal"
+          >
+            &larr; Back to Intelligence
+          </Link>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <span className="inline-block rounded-full bg-tt-teal/20 px-4 py-1 text-sm font-semibold text-tt-teal">
+              {article.category}
+            </span>
+            <span className="inline-block rounded-full border border-tt-gray-700 px-3 py-1 text-xs font-medium text-tt-gray-400">
+              {sourceBadge}
+            </span>
+          </div>
+
+          <h1 className="mt-4 text-4xl font-extrabold leading-tight text-white md:text-6xl">
+            {article.title}
+          </h1>
+
+          <div className="mt-6 flex items-center gap-3 text-sm text-tt-gray-500">
+            <span>{article.date}</span>
+            <span>&bull;</span>
+            <span>{article.readTime} read</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Article Body */}
+      <section ref={bodyRef} className="bg-white py-16 px-6">
+        <div
+          className={`mx-auto max-w-3xl transition-all duration-700 ${
+            bodyInView ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+          }`}
+        >
+          <div className="rounded-r-lg border-l-4 border-tt-teal bg-tt-gray-50 p-6">
+            <h2 className="text-lg font-bold text-tt-gray-900">Executive Summary</h2>
+            <p className="mt-2 leading-relaxed text-tt-gray-600">
+              {article.excerpt} This research report is part of the Eye of the Tiger
+              Intelligence Series. Full content is published through our Notion research
+              platform.
+            </p>
+          </div>
+
+          <div className="mt-12 space-y-10">
+            <div>
+              <h2 className="text-2xl font-bold text-tt-gray-900">Key Findings</h2>
+              <div className="mt-4 space-y-3">
+                {[
+                  'The competitive landscape is shifting rapidly as new technologies redefine how brands connect with their audiences, requiring marketers to rethink foundational strategies.',
+                  'Early adopters who invest in this area are seeing measurable advantages in efficiency, reach, and return on ad spend compared to industry benchmarks.',
+                  'The window for competitive advantage is narrowing, and organizations that delay adoption risk falling behind peers who have already operationalized these capabilities.',
+                ].map((text, i) => (
+                  <div key={i} className="flex gap-3">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-tt-teal" />
+                    <p className="text-tt-gray-600 leading-relaxed">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-tt-gray-900">Market Context</h2>
+              <p className="mt-4 text-tt-gray-600 leading-relaxed">
+                This section explores the broader market dynamics driving the trends
+                analyzed in this report. Understanding the macroeconomic, regulatory, and
+                technological forces at play is critical to interpreting the tactical
+                recommendations that follow.
+              </p>
+              <div className="mt-6 rounded-xl bg-tt-gray-50 p-6">
+                <p className="text-sm italic text-tt-gray-500">
+                  Full market analysis with data tables and charts available in the
+                  complete research report on our Notion platform.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-tt-gray-900">Strategic Implications</h2>
+              <p className="mt-4 text-tt-gray-600 leading-relaxed">
+                Based on our analysis, we identify three primary strategic pathways for
+                brands looking to capitalize on these trends. Each pathway is evaluated
+                across feasibility, investment requirements, and expected time-to-impact.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-tt-gray-900">Tactical Playbook</h2>
+              <p className="mt-4 text-tt-gray-600 leading-relaxed">
+                Our tactical recommendations are designed for immediate implementation.
+                Each action item includes priority level, resource requirements, and key
+                performance indicators to track progress.
+              </p>
+              <div className="mt-6 rounded-xl bg-tt-gray-50 p-6">
+                <p className="text-sm italic text-tt-gray-500">
+                  Detailed playbook with step-by-step implementation guides available in
+                  the complete research report on our Notion platform.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-tt-gray-200 pt-10">
+              <h2 className="text-xl font-bold text-tt-gray-900">Methodology</h2>
+              <p className="mt-4 text-sm text-tt-gray-500 leading-relaxed">
+                This research combines primary and secondary data sources including
+                proprietary campaign performance data, industry analyst reports, platform
+                API data, and expert interviews.
+              </p>
+            </div>
+
+            <div className="border-t border-tt-gray-200 pt-10">
+              <h2 className="text-xl font-bold text-tt-gray-900">
+                References &amp; Further Reading
+              </h2>
+              <ul className="mt-4 space-y-2 text-sm text-tt-gray-500">
+                <li className="flex gap-2">
+                  <span className="text-tt-teal">1.</span>
+                  <span>Industry benchmark data and platform performance reports (2025-2026)</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-tt-teal">2.</span>
+                  <span>Tiger Tracks proprietary campaign performance database (n = 500+ campaigns)</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-tt-teal">3.</span>
+                  <span>Expert interviews with senior marketing and technology leaders</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Articles */}
+      <section className="bg-tt-gray-50 py-16 px-6">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-2xl font-bold text-tt-gray-900">Related Research</h2>
+          <div className="mt-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {related.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/insights/${post.slug}`}
+                className="group overflow-hidden rounded-xl border border-tt-gray-200 bg-white transition hover:shadow-lg"
+              >
+                <div className="flex h-48 items-center justify-center bg-tt-gray-100">
+                  <span className="text-sm font-semibold uppercase tracking-widest text-tt-gray-300">
+                    {post.category}
+                  </span>
+                </div>
+                <div className="p-6">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-tt-teal">
+                    {post.category}
+                  </span>
+                  <h3 className="mt-2 text-lg font-semibold text-tt-gray-900 transition group-hover:text-tt-teal">
+                    {post.title}
+                  </h3>
+                  <p className="mt-2 line-clamp-2 text-sm text-tt-gray-600">
+                    {post.excerpt}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-xs text-tt-gray-400">{post.date}</span>
+                    <span className="text-xs text-tt-gray-400">{post.readTime}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <CTASection
+        headline="Put This Research Into Action"
+        subheadline="Book a free audit and see how these insights apply to your specific business."
+        primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
+        secondaryCTA={{ text: 'Read More Research', href: '/insights' }}
+        dark
+      />
+    </>
+  );
+}

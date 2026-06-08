@@ -1,0 +1,261 @@
+export interface CaseStudy {
+  slug: string;
+  client: string;
+  heroMetric: string;
+  heroMetricLabel: string;
+  category: string;
+  channels: string[];
+  industry: string;
+  summary: string;
+  challenge: string;
+  solution: string;
+  results: { metric: string; value: string }[];
+  testimonial?: { quote: string; name: string; title: string; company: string };
+}
+
+export const caseStudies: CaseStudy[] = [
+  {
+    slug: 'ag1-meta',
+    client: 'AG1',
+    heroMetric: '+51%',
+    heroMetricLabel: 'Monthly Acquired Customers YoY',
+    category: 'DTC / Multi-Channel',
+    channels: ['Meta'],
+    industry: 'DTC',
+    summary:
+      'How we restructured Meta campaigns and Google Brand Search to drive compounding acquisition growth.',
+    challenge:
+      'Meta performance plateaued under legacy account/campaign structure limiting learning velocity. Legacy ad set structure forced delivery to spread thin.',
+    solution:
+      'Rebuilt campaign structure aligned with Meta best practices and full-funnel optimization. Moved creative testing to mid-funnel. Implemented disciplined creative analysis process.',
+    results: [
+      { metric: 'Monthly Acquired Customers', value: '+51% YoY' },
+      { metric: 'Customer Acquisition Cost', value: '-5% YoY' },
+    ],
+    testimonial: {
+      quote:
+        'Partnering with Tiger Tracks has been amazing. They work fast, execute flawlessly and apply specialized knowledge of ad platforms with a relentless focus on hitting growth goals.',
+      name: 'Jason Marshall',
+      title: 'Chief Growth Officer',
+      company: 'AG1',
+    },
+  },
+  {
+    slug: 'ag1-brand-search',
+    client: 'AG1',
+    heroMetric: '-31%',
+    heroMetricLabel: 'Brand Search CAC',
+    category: 'DTC / Google',
+    channels: ['Google'],
+    industry: 'DTC',
+    summary:
+      'Reducing Brand Search overspend to unlock incremental growth budget.',
+    challenge:
+      'Heavy investment in Google Brand Search limited budget for incremental growth. Overinvestment on brand queries targeting users already likely to convert.',
+    solution:
+      'Reset role of Brand Search in overall channel mix. Audited performance, systematically reduced brand spend, reallocated to higher-incrementality channels.',
+    results: [{ metric: 'Brand Search CAC', value: '-31%' }],
+    testimonial: {
+      quote:
+        'Partnering with Tiger Tracks has been amazing. They work fast, execute flawlessly and apply specialized knowledge of ad platforms with a relentless focus on hitting growth goals.',
+      name: 'Jason Marshall',
+      title: 'Chief Growth Officer',
+      company: 'AG1',
+    },
+  },
+  {
+    slug: 'anastasia-beverly-hills',
+    client: 'Anastasia Beverly Hills',
+    heroMetric: '+22%',
+    heroMetricLabel: 'Meta ROAS',
+    category: 'Beauty / TikTok + Meta',
+    channels: ['TikTok', 'Meta'],
+    industry: 'Beauty',
+    summary:
+      'UGC-first TikTok strategy driving off-platform conversions for prestige beauty.',
+    challenge:
+      'Meet ROAS goals through off-platform conversions. Previous TikTok Shop hurt margins and premium brand perception.',
+    solution:
+      'UGC-first TikTok creative system (tutorials, GRWM, product reactions, shade tests, before/after). Optimized for reach, engagement, qualified traffic. Kept all conversions off-platform.',
+    results: [{ metric: 'Meta ROAS', value: '+22%' }],
+  },
+  {
+    slug: 'monarch-money',
+    client: 'Monarch Money',
+    heroMetric: '+368%',
+    heroMetricLabel: 'Increase in Users',
+    category: 'Finance / Multi-Channel',
+    channels: ['Multi-Channel'],
+    industry: 'Finance',
+    summary:
+      'Scaling user acquisition for the personal finance platform PE funds are watching.',
+    challenge:
+      'Needed to rapidly scale user acquisition while maintaining efficient unit economics.',
+    solution:
+      'Full-funnel user acquisition strategy across multiple channels with rigorous measurement.',
+    results: [{ metric: 'Users', value: '+368%' }],
+  },
+  {
+    slug: 'rho-nutrition',
+    client: 'Rho Nutrition',
+    heroMetric: '+78%',
+    heroMetricLabel: 'Revenue During Partnership',
+    category: 'DTC / Multi-Channel',
+    channels: ['Multi-Channel'],
+    industry: 'DTC',
+    summary:
+      'Driving sustainable revenue growth through optimized multi-channel performance.',
+    challenge:
+      'Needed to scale revenue while maintaining profitability across channels.',
+    solution:
+      'Multi-channel performance optimization with focus on unit economics.',
+    results: [{ metric: 'Revenue', value: '+78%' }],
+  },
+  {
+    slug: 'aura-health',
+    client: 'Aura Health',
+    heroMetric: '-37%',
+    heroMetricLabel: 'Cost Per Trial YoY',
+    category: 'Health / Multi-Channel',
+    channels: ['Multi-Channel'],
+    industry: 'Health',
+    summary:
+      'Reducing cost per trial while scaling health app user acquisition.',
+    challenge: 'High cost per trial limiting scalable growth.',
+    solution:
+      'Optimized acquisition funnel and creative strategy to improve trial conversion efficiency.',
+    results: [{ metric: 'Cost Per Trial', value: '-37% YoY' }],
+  },
+  {
+    slug: 'online-labels',
+    client: 'Online Labels',
+    heroMetric: '+151%',
+    heroMetricLabel: 'Profit Growth',
+    category: 'E-Commerce / Google',
+    channels: ['Google'],
+    industry: 'E-Commerce',
+    summary:
+      'From 18,000 keywords and declining performance to record-breaking profitability.',
+    challenge:
+      'Post-COVID regression in Google Ads performance. Account had 18,000 keywords, 15,000 ads, 11,000 products.',
+    solution:
+      'Two-pronged approach: revenue growth via keyword expansion + profit via eliminating wasted spend. Used automated bidding, new ad copy, custom audiences.',
+    results: [
+      { metric: 'Profit', value: '+151%' },
+      { metric: 'Revenue', value: '+42%' },
+      { metric: 'CTR', value: '+41%' },
+      { metric: 'Avg. Order Value', value: '+37%' },
+    ],
+    testimonial: {
+      quote:
+        'The Tiger Tracks team boosted the profitability of our non-branded search campaigns by 151% in the first few months, and set new overall ad revenue records shortly after.',
+      name: 'Steven Leung',
+      title: 'Director of Marketing',
+      company: 'Online Labels',
+    },
+  },
+  {
+    slug: 'lightyear',
+    client: 'Lightyear',
+    heroMetric: '+100%',
+    heroMetricLabel: 'Qualified Leads Per Month',
+    category: 'Telecom / Google',
+    channels: ['Google'],
+    industry: 'Telecom',
+    summary: 'Doubling qualified leads for enterprise telecom.',
+    challenge:
+      'Ran Google Ads with another agency for 1+ year with limited success. Struggling to deliver qualified leads for sales teams.',
+    solution:
+      'Revamped campaign architecture, keyword segmentation, and conversion tracking.',
+    results: [{ metric: 'Qualified Leads Per Month', value: '+100%' }],
+    testimonial: {
+      quote:
+        'Through their deep sophistication in analytics, funnel attribution, and campaign execution, Tiger Tracks took our performance marketing to the next level.',
+      name: 'Matt McGill',
+      title: 'VP of Performance Marketing',
+      company: 'Lightyear',
+    },
+  },
+  {
+    slug: 'leonard-truck',
+    client: 'Leonard Truck Outfitters',
+    heroMetric: '+39%',
+    heroMetricLabel: 'Leads',
+    category: 'B2C / Google',
+    channels: ['Google'],
+    industry: 'B2C',
+    summary:
+      'Consolidating multi-agency chaos into conversion-driving performance.',
+    challenge:
+      'Complex digital structure: multiple agencies with overlapping responsibilities, fragmented campaign ownership.',
+    solution:
+      'Consolidated conversion signals, rebuilt structure to accelerate algorithm learning, segmented by geography and product.',
+    results: [
+      { metric: 'Leads', value: '+39.45%' },
+      { metric: 'Conversion Rate', value: '+63.42%' },
+      { metric: 'CPA Reduction', value: '-12.22%' },
+    ],
+    testimonial: {
+      quote:
+        "I believe the learning curve was accelerated by the team's accessibility and strategic thinking.",
+      name: 'Rick Coffee',
+      title: 'Head of Marketing',
+      company: 'Leonard Truck Outfitters',
+    },
+  },
+  {
+    slug: 'sovereign-labs',
+    client: 'Sovereign Labs',
+    heroMetric: '+94%',
+    heroMetricLabel: 'ROAS YoY',
+    category: 'DTC / Meta',
+    channels: ['Meta'],
+    industry: 'DTC',
+    summary:
+      'Building a full-funnel Meta strategy for colostrum supplement leader.',
+    challenge:
+      'Lacked cohesive full-funnel Meta strategy to drive awareness, attract visitors, and convert efficiently.',
+    solution:
+      'Comprehensive full-funnel Meta strategy with compelling vertical video. Refreshed social presence.',
+    results: [{ metric: 'ROAS', value: '+94% YoY' }],
+  },
+  {
+    slug: 'snapnhd',
+    client: 'SnapNHD',
+    heroMetric: '-47%',
+    heroMetricLabel: 'Customer Acquisition Cost',
+    category: 'Real Estate / Google',
+    channels: ['Google'],
+    industry: 'Real Estate',
+    summary:
+      'Overhauling Google Ads to cut acquisition costs nearly in half.',
+    challenge:
+      'Growth deceleration from ineffective digital marketing and rising CAC.',
+    solution:
+      'Overhauled Google Ads program. New ad copy, shifted targeting strategies, implemented advanced automated bidding.',
+    results: [{ metric: 'Customer Acquisition Cost', value: '-47%' }],
+  },
+  {
+    slug: 'honeydew',
+    client: 'Honeydew',
+    heroMetric: 'Scaled',
+    heroMetricLabel: 'Growth Without CAC Blow',
+    category: 'Health / Google',
+    channels: ['Google'],
+    industry: 'Health',
+    summary:
+      'Scaling online dermatology growth while maintaining tight CAC goals.',
+    challenge:
+      'Google Search strategy heavily segmented limiting growth. Tight CAC goals with ambitious growth targets.',
+    solution:
+      'Full funnel audit, campaign restructure, aligned geotargeting with provider availability.',
+    results: [{ metric: 'Growth', value: 'Scaled sustainably' }],
+    testimonial: {
+      quote:
+        "The Tiger Tracks team has been a true partner in our company's growth. They're collaborative, nimble, and thoughtful, really acting as an extension of our own team.",
+      name: 'Connor Kreutz',
+      title: 'Head of Growth',
+      company: 'Honeydew',
+    },
+  },
+];

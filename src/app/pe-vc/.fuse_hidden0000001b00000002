@@ -1,0 +1,454 @@
+'use client';
+
+import Link from 'next/link';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { CTASection } from '@/components/CTASection';
+import { useInView } from '@/hooks/useInView';
+
+/* ------------------------------------------------------------------ */
+/*  Section 1 - Hero                                                   */
+/* ------------------------------------------------------------------ */
+
+function HeroSection() {
+  return (
+    <section className="relative min-h-[60vh] flex items-center bg-tt-black overflow-hidden">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full bg-tt-teal/[.06] blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-5%] h-[400px] w-[400px] rounded-full bg-tt-orange/[.04] blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-5xl px-6 py-24">
+        <p className="text-sm font-semibold uppercase tracking-[4px] text-tt-teal">
+          For PE &amp; VC Funds
+        </p>
+
+        <h1 className="mt-6 text-5xl font-extrabold leading-[1.08] tracking-tight text-white md:text-7xl">
+          Your Portfolio Companies Are Leaking Revenue. We Find Where, and Fix&nbsp;It.
+        </h1>
+
+        <p className="mt-6 max-w-3xl text-xl text-tt-gray-400">
+          Tiger Tracks partners with PE and VC funds to accelerate growth across
+          portfolio companies through forensic digital marketing audits,
+          proprietary AI tooling, and a team built at Google.
+        </p>
+
+        <div className="mt-10">
+          <Link
+            href="/get-started"
+            className="inline-block rounded-full bg-tt-orange px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-tt-orange-dark hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+          >
+            Request a Portfolio Audit
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 2 - The Problem                                            */
+/* ------------------------------------------------------------------ */
+
+const painPoints = [
+  {
+    title: 'Overspending on Acquisition',
+    description:
+      'Portfolio companies with unchecked CAC drain runway and compress margins.',
+  },
+  {
+    title: 'No Marketing Visibility',
+    description:
+      'Fund partners lack standardized reporting across portfolio company marketing performance.',
+  },
+  {
+    title: 'EBITDA Blind Spots',
+    description:
+      'CMOs spending without accountability to unit economics and EBITDA impact.',
+  },
+] as const;
+
+function ProblemSection() {
+  const { ref, inView } = useInView({ threshold: 0.2 });
+
+  return (
+    <section className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-tt-black sm:text-4xl">
+            The Hidden Drag on Portfolio Performance
+          </h2>
+        </div>
+
+        {/* Big stat */}
+        <div ref={ref} className="mx-auto mt-16 max-w-md text-center">
+          <p
+            className={`text-8xl font-extrabold text-tt-black transition-all duration-700 sm:text-9xl ${
+              inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
+            20%
+          </p>
+          <p className="mt-3 text-lg text-tt-gray-600">
+            of digital ad budgets are effectively wasted
+          </p>
+        </div>
+
+        {/* Pain point cards */}
+        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
+          {painPoints.map((point) => (
+            <div
+              key={point.title}
+              className="rounded-xl bg-tt-gray-50 p-6"
+            >
+              <h3 className="text-lg font-semibold text-tt-black">
+                {point.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-tt-gray-600">
+                {point.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 - What We Do For Funds                                   */
+/* ------------------------------------------------------------------ */
+
+const offerings = [
+  {
+    title: 'Growth Accelerator Audit',
+    description:
+      'Forensic digital marketing due diligence covering efficiency, competitive positioning, technical infrastructure, growth potential, and risk exposure.',
+    icon: (
+      <svg
+        className="h-10 w-10 text-tt-teal"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: 'Full-Funnel Execution',
+    description:
+      'Media buying, creative, CRO, lifecycle, analytics, all across the entire portfolio. One partner, full stack.',
+    icon: (
+      <svg
+        className="h-10 w-10 text-tt-teal"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: 'Proprietary Tech Stack',
+    description:
+      'Wayfinder AI and Feed Optimization Platform provide fund-level visibility across portfolio companies.',
+    icon: (
+      <svg
+        className="h-10 w-10 text-tt-teal"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5l-2.116 2.116a4.502 4.502 0 01-6.368 0L9.2 14.5m10.6 0l.4.4a2.25 2.25 0 010 3.182l-3.068 3.068a2.25 2.25 0 01-3.182 0l-.4-.4m0 0l-3.068-3.068a2.25 2.25 0 010-3.182l.4-.4"
+        />
+      </svg>
+    ),
+  },
+] as const;
+
+function WhatWeDoSection() {
+  return (
+    <section className="bg-tt-gray-50 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-tt-black sm:text-4xl">
+            Three Ways We Accelerate Portfolio Growth
+          </h2>
+        </div>
+
+        <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
+          {offerings.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-tt-gray-200 bg-white p-8 shadow-sm"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-tt-teal/10">
+                {item.icon}
+              </div>
+              <h3 className="mt-6 text-xl font-bold text-tt-black">
+                {item.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-tt-gray-600">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 4 - Key Metrics                                            */
+/* ------------------------------------------------------------------ */
+
+const keyMetrics = [
+  { value: '90%+', label: 'Fund-referred clients expand scope within 6 months' },
+  { value: '34%', label: 'Avg CAC reduction in first 90 days' },
+  { value: '2x', label: 'Avg ROAS improvement from new client audits' },
+  { value: '100x', label: 'MRR growth since 2021' },
+] as const;
+
+function MetricsSection() {
+  return (
+    <section className="bg-tt-black py-24">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-y-12 gap-x-8 md:grid-cols-4">
+          {keyMetrics.map((m) => (
+            <AnimatedCounter key={m.label} value={m.value} label={m.label} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 5 - Portfolio Company Results                              */
+/* ------------------------------------------------------------------ */
+
+const results = [
+  {
+    client: 'AG1',
+    metrics: ['+51% customers', '-5% CAC', '-31% Brand Search CAC'],
+  },
+  {
+    client: 'Monarch Money',
+    metrics: ['+368% users'],
+  },
+  {
+    client: 'Online Labels',
+    metrics: ['+151% profit', '+42% revenue in 90 days'],
+  },
+  {
+    client: 'Rho Nutrition',
+    metrics: ['+78% revenue during partnership'],
+  },
+] as const;
+
+function CaseStudiesSection() {
+  return (
+    <section className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-tt-black sm:text-4xl">
+            Portfolio Company Results
+          </h2>
+        </div>
+
+        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2">
+          {results.map((r) => (
+            <div key={r.client} className="rounded-xl bg-tt-gray-50 p-6">
+              <p className="text-lg font-bold text-tt-black">{r.client}</p>
+              <div className="mt-4 space-y-2">
+                {r.metrics.map((metric) => (
+                  <p
+                    key={metric}
+                    className="text-2xl font-extrabold text-tt-teal"
+                  >
+                    {metric}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 6 - What Success Looks Like                                */
+/* ------------------------------------------------------------------ */
+
+const timeline = [
+  {
+    period: '90 Days',
+    items: [
+      'Baseline reporting',
+      'First optimizations',
+      'Measurable KPI uplift',
+      'Expansion roadmap',
+    ],
+  },
+  {
+    period: '12 Months',
+    items: [
+      'Compounding cross-channel impact',
+      'Project-to-retainer conversion',
+      'Increased managed ad spend',
+    ],
+  },
+] as const;
+
+function TimelineSection() {
+  return (
+    <section className="bg-tt-gray-50 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-tt-black sm:text-4xl">
+            What Success Looks Like
+          </h2>
+        </div>
+
+        <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
+          {timeline.map((t) => (
+            <div key={t.period} className="rounded-2xl bg-white p-8">
+              <p className="text-3xl font-bold text-tt-teal">{t.period}</p>
+              <ul className="mt-6 space-y-3">
+                {t.items.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-sm text-tt-gray-600"
+                  >
+                    <svg
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-tt-teal"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 7 - Social Proof                                           */
+/* ------------------------------------------------------------------ */
+
+function SocialProofSection() {
+  return (
+    <section className="bg-tt-black py-24 sm:py-32">
+      <div className="mx-auto max-w-4xl px-6 lg:px-8">
+        {/* Badges */}
+        <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-tt-gray-400">
+          <span className="rounded-full border border-tt-gray-700 px-4 py-2 font-semibold text-tt-teal">
+            Inc. 5000 #123
+          </span>
+          <span className="rounded-full border border-tt-gray-700 px-4 py-2">
+            Meta Business Partner
+          </span>
+          <span className="rounded-full border border-tt-gray-700 px-4 py-2">
+            Founded by ex-Google
+          </span>
+        </div>
+
+        <p className="mx-auto mt-6 max-w-lg text-center text-sm text-tt-gray-500">
+          2,954% three-year revenue growth &bull; Paid Search, YouTube, Shopping
+        </p>
+
+        {/* CEO Quote */}
+        <blockquote className="mt-16 border-l-4 border-tt-teal pl-8">
+          <p className="text-xl leading-relaxed text-tt-gray-300 sm:text-2xl">
+            &ldquo;As an organization, we credit our accelerated growth to the
+            innovative approach we take to optimizing customer acquisition
+            programs. This applies to both the brands we work directly with, and
+            to the private equity and venture funds we partner with to grow
+            their key portfolio companies.&rdquo;
+          </p>
+          <footer className="mt-6">
+            <p className="font-semibold text-white">Cliff Simmons</p>
+            <p className="text-sm text-tt-gray-500">CEO &amp; Co-Founder</p>
+          </footer>
+        </blockquote>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
+
+export default function PEVCPage() {
+  return (
+    <main>
+      {/* 1 - Hero */}
+      <HeroSection />
+
+      {/* 2 - The Problem */}
+      <ProblemSection />
+
+      {/* 3 - What We Do For Funds */}
+      <WhatWeDoSection />
+
+      {/* 4 - Key Metrics */}
+      <MetricsSection />
+
+      {/* 5 - Portfolio Company Results */}
+      <CaseStudiesSection />
+
+      {/* 6 - What Success Looks Like */}
+      <TimelineSection />
+
+      {/* 7 - Social Proof */}
+      <SocialProofSection />
+
+      {/* 8 - CTA */}
+      <CTASection
+        headline="Schedule a Portfolio Review"
+        subheadline="See exactly where your portfolio companies are overspending, and how to fix it in 90 days."
+        primaryCTA={{ text: 'Request a Portfolio Audit', href: '/get-started' }}
+        secondaryCTA={{ text: 'View Case Studies', href: '/case-studies' }}
+        dark
+        badges={[
+          'Inc. 5000 #123',
+          'Founded by Ex-Google',
+          '90%+ Client Expansion Rate',
+        ]}
+      />
+    </main>
+  );
+}

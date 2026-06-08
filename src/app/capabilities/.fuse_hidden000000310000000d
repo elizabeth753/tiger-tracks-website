@@ -1,0 +1,849 @@
+'use client';
+
+import Link from 'next/link';
+import { CTASection } from '@/components/CTASection';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { useInView } from '@/hooks/useInView';
+import { useEffect, useState, useRef, useCallback } from 'react';
+
+/* ------------------------------------------------------------------ */
+/*  Data                                                               */
+/* ------------------------------------------------------------------ */
+
+interface Capability {
+  id: string;
+  number: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  extendedDescription: string;
+  services: string[];
+  proof: { headline: string; detail: string };
+  linkLabel: string;
+  linkHref: string;
+  gradient: { from: string; to: string; orb: string };
+  svgPattern: 'circles' | 'grid' | 'waves' | 'dots' | 'mesh' | 'diagonal' | 'hexagons';
+}
+
+const capabilities: Capability[] = [
+  {
+    id: 'media-buying',
+    number: '01',
+    title: 'Media Buying',
+    shortTitle: 'Media',
+    description:
+      'The engine behind customer acquisition at scale. We manage $200M+ in annual ad spend across every major platform, using proprietary AI bidding models that adapt in real time.',
+    extendedDescription:
+      'Most agencies treat media buying as a commodity — set budgets, pick audiences, let the algorithm run. We treat it as applied data science. Our team combines ex-Google paid media experts with proprietary bid optimization models that analyze thousands of signals per auction. The result: consistent, measurable efficiency gains that compound over time.',
+    services: [
+      'Paid Search (Google, Bing, Apple Search Ads)',
+      'Paid Social (Meta, TikTok, Pinterest, Snapchat, Reddit)',
+      'Programmatic & Display (DV360, The Trade Desk)',
+      'Retail Media (Amazon, Walmart, Instacart, Target)',
+      'Connected TV & Streaming Audio',
+      'Affiliate & Influencer Media',
+    ],
+    proof: {
+      headline: 'AG1: +51% monthly acquired customers, -5% CAC YoY',
+      detail:
+        'Scaled Meta spend 3× while maintaining efficiency through creative diversification and audience expansion strategy.',
+    },
+    linkLabel: 'See the AG1 case study',
+    linkHref: '/case-studies/ag1-meta',
+    gradient: { from: '#5BA4A4', to: '#2d7a7a', orb: '#E8793A' },
+    svgPattern: 'grid',
+  },
+  {
+    id: 'creative',
+    number: '02',
+    title: 'Creative',
+    shortTitle: 'Creative',
+    description:
+      'Performance creative that converts — not just content that looks good. We produce 500+ creative assets per month, each designed to be tested, iterated, and scaled.',
+    extendedDescription:
+      'Creative is the single biggest lever in paid media, yet most agencies separate creative from performance. We don\'t. Every concept is born from data — top-performing hooks, winning formats, audience insights — and built to be tested in structured experiments. Our in-house team handles everything from UGC scripts to full-production video.',
+    services: [
+      'Image & Video Ad Creative (static, motion, full-production)',
+      'UGC & Creator Content with Paid Allowlisting',
+      'Creative Testing Programs (structured A/B and multivariate)',
+      'Landing Page Design & Optimization',
+      'Brand-to-Performance Creative Strategy',
+      'AI-Assisted Creative Concepting & Iteration',
+    ],
+    proof: {
+      headline: 'Anastasia Beverly Hills: +22% Meta ROAS',
+      detail:
+        'UGC-first TikTok strategy drove 22% ROAS improvement while reducing creative production costs by 40%.',
+    },
+    linkLabel: 'See the ABH case study',
+    linkHref: '/case-studies/anastasia-beverly-hills',
+    gradient: { from: '#E8793A', to: '#c45a20', orb: '#5BA4A4' },
+    svgPattern: 'circles',
+  },
+  {
+    id: 'website-cro',
+    number: '03',
+    title: 'Website & Conversion Rate Optimization',
+    shortTitle: 'CRO',
+    description:
+      'Your website is either converting or leaking revenue. We build, test, and optimize every step of the conversion funnel — from first click to checkout.',
+    extendedDescription:
+      'A 10% lift in conversion rate has the same P&L impact as a 10% reduction in media cost — but most brands underinvest in CRO. Our team runs continuous experimentation programs, combining quantitative analytics with qualitative user research to find and fix the highest-value friction points.',
+    services: [
+      'Full Site Builds & Redesigns (Shopify, Custom)',
+      'Landing Page A/B & Multivariate Testing',
+      'Conversion Rate Optimization Programs',
+      'Checkout Flow Optimization',
+      'Heatmap & Session Recording Analysis',
+      'Post-Purchase Experience Design',
+    ],
+    proof: {
+      headline: 'Online Labels: +37% AOV, +41% CTR',
+      detail:
+        'Systematic testing program across PDP and checkout flow delivered compounding gains over 6 months.',
+    },
+    linkLabel: 'See the Online Labels case study',
+    linkHref: '/case-studies/online-labels',
+    gradient: { from: '#5BA4A4', to: '#3d8888', orb: '#E8793A' },
+    svgPattern: 'waves',
+  },
+  {
+    id: 'organic-growth',
+    number: '04',
+    title: 'Organic Growth & Discovery',
+    shortTitle: 'Organic',
+    description:
+      'Be found where your customers are looking — including AI-powered search engines. We\'re pioneering Generative Engine Optimization to future-proof your organic visibility.',
+    extendedDescription:
+      'Search is fragmenting. Google, TikTok, Amazon, ChatGPT, Perplexity — your customers discover products in more places than ever. We build organic strategies that work across all of them, with particular depth in GEO (Generative Engine Optimization) — the discipline of optimizing for AI-powered search and recommendation engines.',
+    services: [
+      'Technical & Content SEO',
+      'App Store Optimization (ASO)',
+      'Generative Engine Optimization (GEO/AEO)',
+      'Content Strategy & Production',
+      'Local SEO & Google Business Profile',
+      'AI Search Monitoring & Optimization',
+    ],
+    proof: {
+      headline: 'Pioneering GEO intelligence for AI-era visibility',
+      detail:
+        'Our proprietary GEO monitoring tracks brand mentions across 6 AI platforms, informing content strategy that drives measurable AI referral traffic.',
+    },
+    linkLabel: 'Read our GEO intelligence',
+    linkHref: '/intelligence',
+    gradient: { from: '#2d7a7a', to: '#1a5c5c', orb: '#5BA4A4' },
+    svgPattern: 'dots',
+  },
+  {
+    id: 'lifecycle',
+    number: '05',
+    title: 'Lifecycle Marketing',
+    shortTitle: 'Lifecycle',
+    description:
+      'Acquiring customers is half the job. Keeping them is where the real value compounds. We build lifecycle programs that turn one-time buyers into repeat customers.',
+    extendedDescription:
+      'The brands that win long-term aren\'t the ones with the lowest CAC — they\'re the ones with the highest LTV. Our lifecycle team builds segmented, behavior-triggered programs across email, SMS, and push that increase repeat purchase rate, reduce churn, and maximize customer lifetime value.',
+    services: [
+      'Email & SMS Strategy and Execution',
+      'Behavioral Segmentation & Personalization',
+      'LTV-Focused Retention Programs',
+      'Win-Back & Re-Engagement Campaigns',
+      'Post-Purchase & Loyalty Flows',
+      'Subscription Optimization',
+    ],
+    proof: {
+      headline: '2–3× LTV increases across lifecycle clients',
+      detail:
+        'Data-driven segmentation and trigger-based flows consistently double or triple customer lifetime value within 12 months.',
+    },
+    linkLabel: 'Start the conversation',
+    linkHref: '/get-started',
+    gradient: { from: '#E8793A', to: '#d06628', orb: '#5BA4A4' },
+    svgPattern: 'mesh',
+  },
+  {
+    id: 'analytics',
+    number: '06',
+    title: 'Analytics & Intelligence',
+    shortTitle: 'Analytics',
+    description:
+      "You can't optimize what you can't measure. We build the measurement infrastructure most agencies skip — from attribution modeling to media mix models.",
+    extendedDescription:
+      'In a post-iOS 14 world, measurement is broken for most brands. We fix it. Our analytics practice builds custom attribution models, implements server-side tracking, runs incrementality tests, and deploys media mix models that give you a true picture of what\'s driving growth — not just what the platform dashboards say.',
+    services: [
+      'Analytics Setup & Server-Side Tracking',
+      'Multi-Touch Attribution Modeling',
+      'Media Mix Modeling (MMM)',
+      'Incrementality Testing',
+      'Dashboard & Reporting Infrastructure',
+      'Data Warehouse & Integration Architecture',
+    ],
+    proof: {
+      headline: 'AG1: -31% Brand Search CAC via attribution audit',
+      detail:
+        'Attribution audit revealed $1.2M in misallocated spend. Reallocation drove 31% CAC reduction on brand search within 60 days.',
+    },
+    linkLabel: 'See the AG1 case study',
+    linkHref: '/case-studies/ag1-brand-search',
+    gradient: { from: '#5BA4A4', to: '#4a9494', orb: '#E8793A' },
+    svgPattern: 'diagonal',
+  },
+  {
+    id: 'partnerships',
+    number: '07',
+    title: 'Partnerships & Business Development',
+    shortTitle: 'Partners',
+    description:
+      "We don't just run ads. We build growth ecosystems that connect brands, investors, and platforms into mutually reinforcing relationships.",
+    extendedDescription:
+      'Our PE/VC practice is unique in the agency world. We work directly with fund operating partners to accelerate portfolio company growth, running audit-led sales motions that convert at 90%+ into retained engagements. For brands, this means access to a network of growth-stage peers and proven playbooks.',
+    services: [
+      'Audit-Led Sales Motions for PE/VC Portfolios',
+      'Referral & Partner Ecosystems',
+      'Capability-Led Partner Programs',
+      'Co-Marketing & Joint Ventures',
+      'Platform Beta Programs & Strategic Partnerships',
+      'Investor Relations Marketing Support',
+    ],
+    proof: {
+      headline: '90%+ of fund-referred clients expand scope within 6 months',
+      detail:
+        'Our audit-first approach builds trust. Portfolio companies referred by fund partners consistently expand from single-channel to full-funnel within two quarters.',
+    },
+    linkLabel: 'Learn about our PE/VC practice',
+    linkHref: '/pe-vc',
+    gradient: { from: '#2d7a7a', to: '#1f6565', orb: '#E8793A' },
+    svgPattern: 'hexagons',
+  },
+];
+
+const outcomes = [
+  {
+    title: 'Acquisition Efficiency',
+    stat: '-18%',
+    statLabel: 'avg. CAC reduction',
+    description:
+      'Sustained downward pressure on cost-per-acquisition through continuous optimization and creative iteration.',
+  },
+  {
+    title: 'Incremental Revenue',
+    stat: '4.2×',
+    statLabel: 'avg. ROAS',
+    description:
+      'Attributable revenue and ROAS driven by our media, creative, and conversion optimization.',
+  },
+  {
+    title: 'Conversion Yield',
+    stat: '+29%',
+    statLabel: 'avg. CVR lift',
+    description:
+      'Measurable lifts to conversion rate, AOV, and funnel efficiency through structured testing.',
+  },
+  {
+    title: 'Lifetime Value',
+    stat: '2.3×',
+    statLabel: 'avg. LTV increase',
+    description:
+      'Customer lifetime value increases from segmented lifecycle and retention programs.',
+  },
+  {
+    title: 'Budget Acceleration',
+    stat: '67%',
+    statLabel: 'clients scale spend',
+    description:
+      'Majority of clients increase managed media budget within 6 months as efficiency improves.',
+  },
+  {
+    title: 'Recurring Revenue',
+    stat: '85%',
+    statLabel: 'project-to-retainer',
+    description:
+      'Conversion of audit and project work into long-term retained partnerships.',
+  },
+];
+
+const tiers = [
+  {
+    name: 'Enterprise',
+    spend: '$1M–$5M/mo ad spend',
+    revenue: '$250M–$2B revenue',
+    description: 'Multi-channel, multi-market strategies with dedicated senior team and custom reporting.',
+  },
+  {
+    name: 'Growth-Stage',
+    spend: '$500K–$1M/mo',
+    revenue: '$50M–$250M revenue',
+    description: 'Scaling proven channels while expanding into new acquisition and retention vectors.',
+  },
+  {
+    name: 'Mid-Market',
+    spend: '$100K–$500K/mo',
+    revenue: 'Scaling proven channels',
+    description: 'Optimizing core channels and building the measurement infrastructure for scale.',
+  },
+  {
+    name: 'Emerging',
+    spend: 'Under $100K/mo',
+    revenue: 'Building the playbook',
+    description: 'We design the repeatable growth playbook and prioritize the highest-ROI channels first.',
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  SVG Pattern Components                                             */
+/* ------------------------------------------------------------------ */
+
+function SvgPattern({ pattern, color }: { pattern: string; color: string }) {
+  switch (pattern) {
+    case 'grid':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid-p" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke={color} strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid-p)" />
+        </svg>
+      );
+    case 'circles':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+          {[...Array(5)].map((_, i) => (
+            <circle
+              key={i}
+              cx={`${20 + i * 15}%`}
+              cy={`${30 + (i % 3) * 20}%`}
+              r={30 + i * 12}
+              fill="none"
+              stroke={color}
+              strokeWidth="0.5"
+            />
+          ))}
+        </svg>
+      );
+    case 'waves':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" preserveAspectRatio="none">
+          {[0, 1, 2, 3].map((i) => (
+            <path
+              key={i}
+              d={`M0,${60 + i * 30} Q100,${30 + i * 30} 200,${60 + i * 30} T400,${60 + i * 30}`}
+              fill="none"
+              stroke={color}
+              strokeWidth="0.8"
+            />
+          ))}
+        </svg>
+      );
+    case 'dots':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dots-p" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r="1.5" fill={color} />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots-p)" />
+        </svg>
+      );
+    case 'mesh':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+          {[...Array(8)].map((_, i) => (
+            <line key={`a${i}`} x1={`${i * 15}%`} y1="0%" x2={`${100 - i * 15}%`} y2="100%" stroke={color} strokeWidth="0.4" />
+          ))}
+          {[...Array(8)].map((_, i) => (
+            <line key={`b${i}`} x1={`${100 - i * 15}%`} y1="0%" x2={`${i * 15}%`} y2="100%" stroke={color} strokeWidth="0.4" />
+          ))}
+        </svg>
+      );
+    case 'diagonal':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="diag-p" width="30" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="30" stroke={color} strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#diag-p)" />
+        </svg>
+      );
+    case 'hexagons':
+      return (
+        <svg className="absolute inset-0 w-full h-full opacity-15" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="hex-p" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(0.6)">
+              <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100" fill="none" stroke={color} strokeWidth="0.8" />
+              <path d="M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34" fill="none" stroke={color} strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hex-p)" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sticky Sub-Navigation                                              */
+/* ------------------------------------------------------------------ */
+
+function ServiceSubNav({ activeId }: { activeId: string }) {
+  return (
+    <nav className="sticky top-[72px] z-40 bg-tt-gray-900/90 backdrop-blur-md border-b border-tt-gray-700/50">
+      <div className="mx-auto max-w-6xl px-6 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 py-3 min-w-max">
+          {capabilities.map((cap) => (
+            <a
+              key={cap.id}
+              href={`#${cap.id}`}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+                activeId === cap.id
+                  ? 'bg-tt-teal/20 text-tt-teal'
+                  : 'text-tt-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {cap.shortTitle}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 1 — Hero                                                   */
+/* ------------------------------------------------------------------ */
+
+function HeroSection() {
+  const { ref, inView } = useInView({ threshold: 0.15 });
+
+  return (
+    <section className="relative bg-tt-black min-h-[60vh] flex items-center overflow-hidden">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full bg-tt-teal/[.06] blur-[120px]" />
+        <div className="absolute bottom-[-15%] right-[-5%] h-[400px] w-[400px] rounded-full bg-tt-orange/[.04] blur-[100px]" />
+        <div className="absolute top-[40%] left-[50%] h-[300px] w-[300px] rounded-full bg-tt-teal/[.03] blur-[80px]" />
+      </div>
+
+      <div
+        ref={ref}
+        className={`relative z-10 mx-auto max-w-5xl px-6 py-32 md:py-40 transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <p className="text-tt-teal uppercase tracking-[4px] text-sm font-semibold mb-6">
+          WHAT WE DO
+        </p>
+        <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-[1.08] tracking-tight">
+          Full-Funnel Marketing
+          <br className="hidden md:block" />
+          That Amplifies Itself
+        </h1>
+        <p className="mt-6 text-xl text-tt-gray-400 max-w-3xl leading-relaxed">
+          Seven capabilities, one integrated strategy. Each layer of our growth
+          stack is designed to compound the impact of the others — from first
+          impression to lifetime value.
+        </p>
+
+        {/* Hero Stats */}
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <AnimatedCounter value="$200M+" label="Annual ad spend managed" />
+          <AnimatedCounter value="50+" label="Active brand partners" />
+          <AnimatedCounter value="2,954%" label="3-year growth (Inc. 5000)" />
+          <AnimatedCounter value="#123" label="Inc. 5000 ranking" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 2 — Capability Area                                        */
+/* ------------------------------------------------------------------ */
+
+function CapabilitySection({ capability, index }: { capability: Capability; index: number }) {
+  const { ref, inView } = useInView({ threshold: 0.08 });
+  const isEven = index % 2 === 0;
+
+  return (
+    <section
+      id={capability.id}
+      className="bg-tt-black py-24 px-6 border-t border-tt-gray-800"
+      style={{ scrollMarginTop: '120px' }}
+    >
+      <div
+        ref={ref}
+        className={`mx-auto max-w-6xl transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        {/* Visual header */}
+        <div className="relative h-48 md:h-56 rounded-2xl overflow-hidden mb-12">
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(135deg, ${capability.gradient.from}22, ${capability.gradient.to}11)`,
+            }}
+          />
+          <SvgPattern pattern={capability.svgPattern} color={capability.gradient.from} />
+          {/* Accent orb */}
+          <div
+            className="absolute rounded-full blur-[60px]"
+            style={{
+              width: '200px',
+              height: '200px',
+              background: capability.gradient.orb,
+              opacity: 0.08,
+              right: isEven ? '10%' : 'auto',
+              left: isEven ? 'auto' : '10%',
+              top: '20%',
+            }}
+          />
+          {/* Number overlay */}
+          <div className="absolute inset-0 flex items-center justify-between px-10">
+            <span className="text-[120px] md:text-[160px] font-extrabold leading-none select-none"
+              style={{ color: `${capability.gradient.from}15` }}>
+              {capability.number}
+            </span>
+          </div>
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-tt-black to-transparent" />
+        </div>
+
+        {/* Content grid */}
+        <div className={`md:grid md:grid-cols-2 gap-16 items-start ${isEven ? '' : 'md:direction-rtl'}`}
+          style={!isEven ? { direction: 'rtl' } : undefined}>
+          {/* Left — Title, Description */}
+          <div style={!isEven ? { direction: 'ltr' } : undefined}>
+            <div className="flex items-baseline gap-4 mb-4">
+              <span className="text-tt-teal text-sm font-mono font-semibold tracking-wider">
+                {capability.number}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                {capability.title}
+              </h2>
+            </div>
+            <p className="text-lg text-tt-gray-300 leading-relaxed mb-6">
+              {capability.description}
+            </p>
+            <p className="text-base text-tt-gray-400 leading-relaxed">
+              {capability.extendedDescription}
+            </p>
+          </div>
+
+          {/* Right — Services, Proof, Link */}
+          <div className="mt-10 md:mt-0" style={!isEven ? { direction: 'ltr' } : undefined}>
+            <h3 className="text-xs font-semibold uppercase tracking-[3px] text-tt-teal mb-5">
+              What This Includes
+            </h3>
+            <ul className="space-y-3">
+              {capability.services.map((service) => (
+                <li
+                  key={service}
+                  className="flex items-start gap-3 text-tt-gray-300"
+                >
+                  <span className="mt-1.5 block h-2 w-2 flex-shrink-0 rounded-full bg-tt-teal/60" />
+                  <span className="text-base leading-relaxed">{service}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Expanded Proof point */}
+            <div className="mt-8 rounded-xl border border-tt-gray-700 bg-tt-gray-900/50 p-6">
+              <p className="text-sm font-semibold uppercase tracking-[2px] text-tt-teal mb-3">
+                Proof Point
+              </p>
+              <p className="text-white font-semibold text-lg leading-snug mb-2">
+                {capability.proof.headline}
+              </p>
+              <p className="text-tt-gray-400 text-sm leading-relaxed">
+                {capability.proof.detail}
+              </p>
+            </div>
+
+            {/* Link */}
+            <Link
+              href={capability.linkHref}
+              className="mt-6 inline-flex items-center gap-2 text-tt-teal font-semibold transition-colors hover:text-white group"
+            >
+              {capability.linkLabel}
+              <span className="inline-block transition-transform group-hover:translate-x-1">
+                &rarr;
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 — Outcomes Framework                                     */
+/* ------------------------------------------------------------------ */
+
+function OutcomesSection() {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
+  return (
+    <section className="bg-tt-gray-900 py-24 px-6 border-t border-tt-gray-800">
+      <div
+        ref={ref}
+        className={`mx-auto max-w-6xl transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="text-center mb-16">
+          <p className="text-tt-teal uppercase tracking-[4px] text-sm font-semibold mb-4">
+            Outcomes
+          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            How We Measure Success
+          </h2>
+          <p className="mt-4 text-lg text-tt-gray-400 max-w-2xl mx-auto">
+            Every engagement is measured against outcomes that matter to your P&L — not vanity metrics.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+          {outcomes.map((outcome) => (
+            <div
+              key={outcome.title}
+              className="bg-tt-black border border-tt-gray-700 rounded-xl p-6 transition-all duration-300 hover:border-tt-teal/40 hover:-translate-y-1"
+            >
+              <div className="mb-4">
+                <AnimatedCounter value={outcome.stat} label={outcome.statLabel} className="text-left" />
+              </div>
+              <h3 className="text-white font-semibold text-lg mb-2">
+                {outcome.title}
+              </h3>
+              <p className="text-tt-gray-400 text-sm leading-relaxed">
+                {outcome.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 4 — Client Tiers                                           */
+/* ------------------------------------------------------------------ */
+
+function ClientTiersSection() {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
+  return (
+    <section className="bg-tt-black py-24 px-6 border-t border-tt-gray-800">
+      <div
+        ref={ref}
+        className={`mx-auto max-w-6xl transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            We Work With Brands That
+            <br className="hidden md:block" />
+            Prioritize Measurable Growth
+          </h2>
+          <p className="mt-4 text-lg text-tt-gray-400 max-w-2xl mx-auto">
+            From emerging DTC brands to enterprise portfolios, we tailor our approach to your stage and scale.
+          </p>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
+          {tiers.map((tier, i) => (
+            <div
+              key={tier.name}
+              className="bg-tt-gray-900 border border-tt-gray-700 rounded-2xl p-8 transition-all duration-300 hover:border-tt-teal/40 hover:-translate-y-1"
+            >
+              <h3 className="font-bold text-lg text-white mb-3">
+                {tier.name}
+              </h3>
+              <p className="text-tt-teal font-semibold mb-1">
+                {tier.spend}
+              </p>
+              <p className="text-sm text-tt-gray-400 mb-3">{tier.revenue}</p>
+              <p className="text-sm text-tt-gray-500 leading-relaxed">{tier.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 5 — What Success Looks Like (Timeline)                     */
+/* ------------------------------------------------------------------ */
+
+function SuccessTimelineSection() {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
+  const phases = [
+    {
+      period: '30 Days',
+      title: 'Foundation',
+      items: [
+        'Comprehensive audit & baseline reporting',
+        'Platform access & tracking verification',
+        'Quick-win optimizations identified & launched',
+        'Strategic roadmap presented',
+      ],
+    },
+    {
+      period: '90 Days',
+      title: 'Acceleration',
+      items: [
+        'First wave of optimizations completed',
+        'Measurable uplift in primary KPIs',
+        'Creative testing program in full swing',
+        'Expansion roadmap prioritized',
+      ],
+    },
+    {
+      period: '6 Months',
+      title: 'Compounding',
+      items: [
+        'Cross-channel compounding effects visible',
+        'New channel expansion underway',
+        'Lifecycle programs driving repeat revenue',
+        'Attribution model refined & trusted',
+      ],
+    },
+    {
+      period: '12 Months',
+      title: 'Scale',
+      items: [
+        'Full-funnel integration delivering compound growth',
+        'Managed budget scaled with efficiency gains',
+        'LTV and retention metrics at new highs',
+        'Strategic partnership fully embedded',
+      ],
+    },
+  ];
+
+  return (
+    <section className="bg-tt-gray-900 py-24 px-6 border-t border-tt-gray-800">
+      <div
+        ref={ref}
+        className={`mx-auto max-w-6xl transition-all duration-700 ${
+          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="text-center mb-16">
+          <p className="text-tt-teal uppercase tracking-[4px] text-sm font-semibold mb-4">
+            Timeline
+          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            What Success Looks Like
+          </h2>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-4">
+          {phases.map((phase, i) => (
+            <div key={phase.period} className="relative">
+              {/* Connector line */}
+              {i < phases.length - 1 && (
+                <div className="hidden md:block absolute top-8 left-full w-6 h-px bg-tt-teal/30 z-10" />
+              )}
+              <div className="bg-tt-black border border-tt-gray-700 rounded-2xl p-6 h-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-tt-teal/20 text-tt-teal text-sm font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="text-tt-teal font-bold text-lg">{phase.period}</span>
+                </div>
+                <p className="text-white font-semibold mb-4">{phase.title}</p>
+                <ul className="space-y-2">
+                  {phase.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-tt-gray-400 text-sm"
+                    >
+                      <span className="mt-1.5 block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tt-teal/50" />
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
+
+export default function ServicesPage() {
+  const [activeService, setActiveService] = useState(capabilities[0].id);
+
+  // Track which service section is currently in view
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    capabilities.forEach((cap) => {
+      const el = document.getElementById(cap.id);
+      if (!el) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveService(cap.id);
+          }
+        },
+        { threshold: 0.3, rootMargin: '-120px 0px -40% 0px' }
+      );
+
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  return (
+    <main className="bg-tt-black">
+      {/* Section 1 — Hero */}
+      <HeroSection />
+
+      {/* Sticky Sub-Nav */}
+      <ServiceSubNav activeId={activeService} />
+
+      {/* Section 2 — 7 Capability Areas */}
+      {capabilities.map((cap, i) => (
+        <CapabilitySection key={cap.number} capability={cap} index={i} />
+      ))}
+
+      {/* Section 3 — Outcomes Framework */}
+      <OutcomesSection />
+
+      {/* Section 4 — Client Tiers */}
+      <ClientTiersSection />
+
+      {/* Section 5 — What Success Looks Like */}
+      <SuccessTimelineSection />
+
+      {/* Section 6 — CTA */}
+      <CTASection
+        headline="Let's Build Your Growth Engine"
+        subheadline="Book a free audit and see exactly where your revenue is leaking."
+        primaryCTA={{ text: 'Book Your Free Audit', href: '/get-started' }}
+        secondaryCTA={{ text: 'View Case Studies', href: '/case-studies' }}
+        dark
+      />
+    </main>
+  );
+}

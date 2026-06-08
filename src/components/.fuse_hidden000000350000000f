@@ -1,0 +1,7 @@
+'use client';
+
+import { SmoothScroll } from '@/components/SmoothScroll';
+
+export function ClientBody({ children }: { children: React.ReactNode }) {
+  return <SmoothScroll>{children}</SmoothScroll>;
+}

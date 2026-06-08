@@ -1,0 +1,78 @@
+import Link from 'next/link';
+
+interface CaseStudyCardProps {
+  slug: string;
+  client: string;
+  heroMetric: string;
+  heroMetricLabel: string;
+  category: string;
+  channels: string[];
+  summary: string;
+}
+
+export function CaseStudyCard({
+  slug,
+  client,
+  heroMetric,
+  heroMetricLabel,
+  category,
+  channels,
+  summary,
+}: CaseStudyCardProps) {
+  return (
+    <Link
+      href={`/case-studies/${slug}`}
+      className="group block relative glass-card gradient-border card-shimmer overflow-hidden transition-all duration-500 hover:scale-[1.02]"
+    >
+      <div className="relative p-8 md:p-10">
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/30 to-transparent group-hover:via-tt-teal/60 transition-all duration-500" />
+
+        {/* Client & category */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-sm font-bold uppercase tracking-wider text-tt-teal">
+            {client}
+          </span>
+          <span className="h-px flex-1 bg-gradient-to-r from-tt-teal/20 to-transparent" />
+        </div>
+        <p className="text-xs text-tt-gray-500 -mt-4 mb-6">{category}</p>
+
+        {/* Hero metric with glow */}
+        <div className="mb-6">
+          <p className="text-5xl font-extrabold text-white metric-glow group-hover:text-tt-teal transition-colors duration-500">
+            {heroMetric}
+          </p>
+          <p className="mt-2 text-sm text-tt-gray-400">{heroMetricLabel}</p>
+        </div>
+
+        {/* Channel tags */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {channels.map((channel) => (
+            <span
+              key={channel}
+              className="rounded-full bg-tt-teal/8 border border-tt-teal/15 px-3 py-1 text-xs font-medium text-tt-teal"
+            >
+              {channel}
+            </span>
+          ))}
+        </div>
+
+        {/* Summary */}
+        <p className="text-sm leading-relaxed text-tt-gray-400">
+          {summary}
+        </p>
+
+        {/* Read more with animated arrow */}
+        <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-tt-teal">
+          <span>Read full story</span>
+          <svg
+            className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </div>
+      </div>
+    </Link>
+  );
+}
