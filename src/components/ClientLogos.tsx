@@ -2,7 +2,7 @@
 
 export function AG1Logo() {
   return (
-    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="AG1 logo">
       <text
         x="60"
         y="28"
@@ -21,7 +21,7 @@ export function AG1Logo() {
 
 export function AnastasiaLogo() {
   return (
-    <svg viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Anastasia Beverly Hills logo">
       <text
         x="100"
         y="16"
@@ -53,7 +53,7 @@ export function AnastasiaLogo() {
 
 export function ATTLogo() {
   return (
-    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="AT&amp;T logo">
       <text
         x="60"
         y="29"
@@ -72,7 +72,7 @@ export function ATTLogo() {
 
 export function VerizonLogo() {
   return (
-    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Verizon logo">
       <text
         x="60"
         y="28"
@@ -91,7 +91,7 @@ export function VerizonLogo() {
 
 export function UnderArmourLogo() {
   return (
-    <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Under Armour logo">
       <text
         x="80"
         y="17"
@@ -122,7 +122,7 @@ export function UnderArmourLogo() {
 
 export function SnapchatLogo() {
   return (
-    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Snapchat logo">
       <text
         x="60"
         y="28"
@@ -142,7 +142,7 @@ export function SnapchatLogo() {
 
 export function MonarchMoneyLogo() {
   return (
-    <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Monarch Money logo">
       <text
         x="80"
         y="28"
@@ -161,7 +161,7 @@ export function MonarchMoneyLogo() {
 
 export function RhoNutritionLogo() {
   return (
-    <svg viewBox="0 0 140 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+    <svg viewBox="0 0 140 40" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label="Rho Nutrition logo">
       <text
         x="70"
         y="27"

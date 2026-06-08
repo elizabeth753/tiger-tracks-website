@@ -10,27 +10,6 @@ export interface BlogPost {
   authorPedigree?: string;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Author rotation helpers                                            */
-/* ------------------------------------------------------------------ */
-
-const AUTHORS: { name: string; pedigree: string }[] = [
-  { name: 'Cliff Simmons', pedigree: 'Ex-Google' },
-  { name: 'Elizabeth Ogilvie', pedigree: 'Founder' },
-  { name: 'Ryan Torres', pedigree: 'E-Comm Lead' },
-  { name: 'Priya Mehta', pedigree: 'Data Science' },
-  { name: 'Marcus Chen', pedigree: 'PE/VC Partner' },
-];
-
-/** Deterministic author assignment based on slug hash */
-function assignAuthor(slug: string) {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) {
-    hash = ((hash << 5) - hash + slug.charCodeAt(i)) | 0;
-  }
-  return AUTHORS[Math.abs(hash) % AUTHORS.length];
-}
-
 export const blogPosts: BlogPost[] = [
   // ── Notion posts ──────────────────────────────────────────────
   {
@@ -475,7 +454,7 @@ export const blogPosts: BlogPost[] = [
     readTime: '6 min',
     source: 'wordpress',
   },
-].map((post) => {
-  const a = assignAuthor(post.slug);
-  return { ...post, author: a.name, authorPedigree: a.pedigree } as BlogPost;
-});
+].map((post) => ({
+  ...post,
+  author: 'Tiger Tracks' as const,
+} as BlogPost));

@@ -19,6 +19,15 @@ const SWIMLANE_CATEGORIES = [
   'PE/VC',
 ] as const;
 
+const CATEGORY_IMAGES: Record<string, string> = {
+  'AI & Automation': '/images/u7815321835_cinematic_dark_mode_AI_command_center_interface_f_f8eacdce-eced-46ea-a87b-51337f44b1a1_2.png',
+  'Platform Strategy': '/images/u7815321835_abstract_grid_of_glowing_metric_badge_tiles_on_ne_673dbcfa-8e9d-4b27-b430-e324dcd9b51e_1.png',
+  'Measurement & Attribution': '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_1.png',
+  'Creative & Content': '/images/u7815321835_Close-up_cinemagraph_aspect_ratio_169._For_Creati_c04822ee-487c-4e6f-9e23-609d2f6eea99_2.png',
+  'Agency Strategy': '/images/u7815321835_aerial_overhead_shot_of_empty_circular_boardroom__d28f3fae-b24e-4108-931f-c4c5a9dec951_0.png',
+  'PE/VC': '/images/u7815321835_High-end_3D_render_minimalist_financial_technolog_ec076a26-4eea-4540-8a0a-71a45f4e61d2_1.png',
+};
+
 const DEEP_REPORTS = [
   {
     category: 'PE/VC',
@@ -35,42 +44,22 @@ const DEEP_REPORTS = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Utility: Author avatar (initials)                                  */
-/* ------------------------------------------------------------------ */
-
-function AuthorAvatar({ name }: { name: string }) {
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('');
-  return (
-    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-tt-teal/30 to-tt-teal/10 border border-tt-teal/20">
-      <span className="text-[10px] font-bold text-tt-teal">{initials}</span>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Author metadata row                                                */
+/*  Editorial byline                                                   */
 /* ------------------------------------------------------------------ */
 
 function AuthorMeta({ post, showDate = true }: { post: BlogPost; showDate?: boolean }) {
   return (
-    <div className="flex items-center gap-2.5">
-      {post.author && <AuthorAvatar name={post.author} />}
-      <div className="flex flex-col">
-        {post.author && (
-          <span className="text-xs font-semibold text-white/80">{post.author}</span>
-        )}
-        <div className="flex items-center gap-2 text-[11px] text-tt-gray-500">
-          {post.authorPedigree && (
-            <span className="rounded-full bg-tt-teal/8 border border-tt-teal/15 px-2 py-px text-tt-teal font-medium">
-              {post.authorPedigree}
-            </span>
-          )}
-          {showDate && <span>{post.date}</span>}
-          <span>{post.readTime}</span>
-        </div>
+    <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+          {post.author || 'Tiger Tracks'}
+        </span>
+      </div>
+      <span className="h-3 w-px bg-white/10" />
+      <div className="flex items-center gap-2 text-[11px] text-tt-gray-500">
+        {showDate && <span>{post.date}</span>}
+        {showDate && <span className="h-3 w-px bg-white/10" />}
+        <span>{post.readTime}</span>
       </div>
     </div>
   );
@@ -80,50 +69,39 @@ function AuthorMeta({ post, showDate = true }: { post: BlogPost; showDate?: bool
 /*  Image placeholder                                                  */
 /* ------------------------------------------------------------------ */
 
-function ImagePlaceholder({
+function ArticleImage({
   category,
   aspect = '16/9',
-  large = false,
 }: {
   category: string;
   aspect?: string;
   large?: boolean;
 }) {
+  const src = CATEGORY_IMAGES[category];
   return (
     <div className="relative w-full overflow-hidden" style={{ aspectRatio: aspect }}>
-      <div
-        className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
-        style={{
-          background: `
-            linear-gradient(135deg, rgba(91, 164, 164, 0.12) 0%, rgba(232, 121, 58, 0.06) 50%, rgba(20, 27, 35, 0.9) 100%),
-            linear-gradient(180deg, #141b23 0%, #1a2230 100%)
-          `,
-        }}
-      />
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <div className="rounded-xl bg-white/5 p-3 backdrop-blur-sm border border-white/10">
-          <svg
-            className={`text-tt-gray-500 ${large ? 'h-10 w-10' : 'h-6 w-6'}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-            />
-          </svg>
-        </div>
-        <span
-          className={`font-semibold uppercase tracking-widest text-tt-gray-500 ${
-            large ? 'text-sm' : 'text-xs'
-          }`}
-        >
-          {category}
-        </span>
-      </div>
+      {src ? (
+        <img
+          src={src}
+          alt={category}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+          style={{
+            background: `
+              linear-gradient(135deg, rgba(91, 164, 164, 0.12) 0%, rgba(232, 121, 58, 0.06) 50%, rgba(20, 27, 35, 0.9) 100%),
+              linear-gradient(180deg, #141b23 0%, #1a2230 100%)
+            `,
+          }}
+        />
+      )}
+      {/* Bottom gradient for legibility */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'linear-gradient(180deg, transparent 50%, rgba(10, 17, 25, 0.7) 100%)',
+      }} />
     </div>
   );
 }
@@ -189,7 +167,7 @@ function Swimlane({ title, posts }: { title: string; posts: BlogPost[] }) {
             }}
           >
             <div className="overflow-hidden">
-              <ImagePlaceholder category={post.category} aspect="16/9" />
+              <ArticleImage category={post.category} aspect="16/9" />
             </div>
             <div className="p-5">
               <h4 className="text-sm font-semibold text-white line-clamp-2 transition-colors duration-300 group-hover:text-tt-teal">
@@ -223,7 +201,7 @@ function ArticleCard({ post, delay = 0 }: { post: BlogPost; delay?: number }) {
       }}
     >
       <div className="overflow-hidden">
-        <ImagePlaceholder category={post.category} aspect="16/9" />
+        <ArticleImage category={post.category} aspect="16/9" />
       </div>
       <div className="p-5">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-tt-teal">
@@ -415,7 +393,7 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
             >
               <div className="grid md:grid-cols-2">
                 {/* Left: image */}
-                <ImagePlaceholder category={featured.category} aspect="4/3" large />
+                <ArticleImage category={featured.category} aspect="4/3" />
 
                 {/* Right: content */}
                 <div className="p-8 md:p-10 flex flex-col justify-center">

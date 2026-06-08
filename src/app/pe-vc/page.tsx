@@ -7,6 +7,20 @@ import { CTASection } from '@/components/CTASection';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useInView } from '@/hooks/useInView';
 
+/** Wrapper around framer-motion useInView with a fallback timer */
+function useMotionInViewSafe(
+  ref: React.RefObject<HTMLElement | null>,
+  opts?: Parameters<typeof useMotionInView>[1],
+) {
+  const framerInView = useMotionInView(ref, opts);
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setFallback(true), 1000);
+    return () => clearTimeout(t);
+  }, []);
+  return framerInView || fallback;
+}
+
 /* ================================================================== */
 /*  ANIMATION PRESETS                                                  */
 /* ================================================================== */
@@ -180,7 +194,7 @@ const painPoints = [
 
 function HiddenDragSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-80px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-80px' });
   const { ref: statRef, inView: statInView } = useInView({ threshold: 0.3 });
 
   return (
@@ -295,7 +309,7 @@ const offerings = [
 
 function AccelerateSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -441,7 +455,7 @@ function DonutStat({ percent = 90, label, sublabel }: { percent?: number; label:
 
 function ByTheNumbersSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -515,7 +529,7 @@ const portfolioResults = [
 
 function PortfolioResultsSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -601,7 +615,7 @@ const timelineSteps = [
 
 function TimelineSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -749,7 +763,7 @@ const partnerBenefits = [
 
 function PartnerProgramSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section id="partner-program" className="py-28 px-6" style={{
@@ -822,7 +836,7 @@ const founders = [
 
 function FoundersSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -868,7 +882,7 @@ function FoundersSection() {
 
 function SocialProofSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-40px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-40px' });
 
   return (
     <section className="py-24 px-6" style={{
@@ -950,7 +964,7 @@ const turnaroundPhases = [
 
 function TurnaroundPlanSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{
@@ -1053,7 +1067,7 @@ function TurnaroundPlanSection() {
 
 function EBITDACalculatorSection() {
   const containerRef = useRef(null);
-  const isInView = useMotionInView(containerRef, { once: true, margin: '-60px' });
+  const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
 
   return (
     <section className="py-28 px-6" style={{

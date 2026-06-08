@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { MagneticButton } from '@/components/MagneticButton';
 
 const navLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
-  { label: 'TT AI-Tools', href: '/ai-tools' },
-  { label: 'Wayfinder AI', href: '/wayfinder' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
   { label: 'Intelligence', href: '/intelligence' },
   { label: 'Company', href: '/company' },
@@ -17,7 +17,6 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const ctaRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,24 +27,6 @@ export function Navbar() {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Magnetic-pull CTA
-  const handleCtaMouse = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    const el = ctaRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) * 0.15;
-    const dy = (e.clientY - cy) * 0.25;
-    el.style.transform = `translate(${dx}px, ${dy}px)`;
-  }, []);
-
-  const handleCtaLeave = useCallback(() => {
-    const el = ctaRef.current;
-    if (!el) return;
-    el.style.transform = 'translate(0, 0)';
   }, []);
 
   return (
@@ -68,23 +49,19 @@ export function Navbar() {
       />
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Logo with hover glow */}
+        {/* Logo */}
         <Link
           href="/"
-          className="group relative flex items-center gap-2.5 font-inter text-xl font-bold tracking-tight text-white transition-all duration-300 hover:text-white/70"
+          className="group relative flex items-center"
         >
-          {/* SVG tiger mark */}
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-tt-teal transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(91,164,164,0.5)]">
-            <path
-              d="M4 4l4 6h8l4-6M8 10l-2 10h12l-2-10M10 14h4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="relative z-10 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(91,164,164,0.3)]">TIGER TRACKS</span>
-          <span className="absolute inset-0 -m-2 rounded-lg bg-tt-teal/0 group-hover:bg-tt-teal/5 transition-colors duration-300" />
+          <Image
+            src="/images/TT.LOGO-02.png"
+            alt="Tiger Tracks"
+            width={160}
+            height={100}
+            priority
+            className="h-9 w-auto md:h-11 object-contain transition-all duration-300 brightness-0 invert group-hover:opacity-80 group-hover:drop-shadow-[0_0_12px_rgba(91,164,164,0.4)]"
+          />
         </Link>
 
         {/* Desktop links */}
@@ -101,25 +78,16 @@ export function Navbar() {
           ))}
 
           {/* Magnetic-pull CTA */}
-          <Link
-            ref={ctaRef}
+          <MagneticButton
+            as="a"
             href="/get-started"
-            onMouseMove={handleCtaMouse}
-            onMouseLeave={handleCtaLeave}
-            className="relative overflow-hidden rounded-full bg-gradient-to-r from-tt-orange to-tt-orange-dark px-6 py-2.5 text-sm font-semibold text-white hover:shadow-lg hover:shadow-tt-orange/20 active:translate-y-0"
-            style={{ transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease' }}
+            className="relative overflow-hidden rounded-full bg-gradient-to-r from-tt-orange to-tt-orange-dark px-6 py-2.5 text-sm font-semibold text-white hover:shadow-lg hover:shadow-tt-orange/20 active:translate-y-0 inline-block"
+            attractRadius={60}
+            strength={0.3}
+            textParallax={1.8}
           >
-            <span className="relative z-10">Request a Strategic Diagnostic</span>
-            {/* Shimmer sweep */}
-            <span
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-              style={{
-                transform: 'translateX(-100%)',
-                animation: 'shimmer 3s cubic-bezier(0.16, 1, 0.3, 1) infinite',
-                animationDelay: '1s',
-              }}
-            />
-          </Link>
+            Request a Strategic Diagnostic
+          </MagneticButton>
         </div>
 
         {/* Mobile hamburger */}

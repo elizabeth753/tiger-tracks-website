@@ -262,11 +262,16 @@ function ProgressRing({ percent, size = 80, strokeWidth = 4, color = '#5BA4A4', 
    ================================================================ */
 
 const heroFadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
   visible: (delay: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, delay, ease: 'easeOut' as const },
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.8,
+      delay,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    },
   }),
 };
 
@@ -303,7 +308,7 @@ function HeroSection() {
 
       {/* Heavy dark overlay for legibility */}
       <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-slate-950/70"
+        className="pointer-events-none absolute inset-0 z-[1] bg-black/60"
         aria-hidden="true"
       />
 
@@ -496,7 +501,7 @@ function HeroSection() {
           custom={0.6}
           className="mt-16 mx-auto max-w-3xl"
         >
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { value: '2,954%', label: 'Revenue Growth' },
               { value: '+51%', label: 'Customers YoY (AG1)' },
@@ -504,7 +509,11 @@ function HeroSection() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl backdrop-blur-xl bg-white/5 border-t border-l border-white/10 px-6 py-6 text-center"
+                className="group rounded-2xl backdrop-blur-xl border-t border-l border-white/10 px-6 py-6 text-center transition-all duration-500 hover:-translate-y-0.5"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3)',
+                }}
               >
                 <AnimatedCounter value={stat.value} label={stat.label} className="[&>div:first-child]:text-2xl sm:[&>div:first-child]:text-3xl [&>div:last-of-type]:mt-1.5" />
               </div>
@@ -544,13 +553,14 @@ function LogoBarSection() {
 }
 
 /* ================================================================
-   SECTION 3 ASYMMETRIC BENTO CAPABILITIES
-   Featured 2-col card with live sparkline + smaller tight cards
+   SECTION 3 CAPABILITIES BENTO GRID
+   Uniform 3-col layout, glassmorphism cards, orange glow hover
    ================================================================ */
 
 const capabilities = [
   {
     title: 'Media Buying',
+    href: '/capabilities#media-buying',
     description: 'Paid search, social, programmatic, retail media, and CTV at scale.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -560,9 +570,11 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+147%',
     statLabel: 'Avg ROAS lift',
+    bgImage: '/images/u7815321835_ultra_premium_dark_mode_advertising_performance_d_e8b94a81-21c0-451c-b37e-90035e938aab_0.png',
   },
   {
     title: 'Creative & UGC',
+    href: '/capabilities#creative',
     description: 'Thumb-stopping image, video, UGC, and influencer creative tested and iterated weekly.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -572,9 +584,11 @@ const capabilities = [
     accent: 'orange' as const,
     stat: '3x',
     statLabel: 'Creative win rate',
+    bgImage: '/images/u7815321835_premium_dark_mode_phone_mockup_displaying_UGC_wel_bf09b5ca-d52d-4685-b4e0-b9974df67db0_1.png',
   },
   {
     title: 'Website & CRO',
+    href: '/capabilities#website-cro',
     description: 'Landing pages, site builds, and conversion rate optimization that turns traffic into revenue.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -584,9 +598,11 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+42%',
     statLabel: 'Avg CVR lift',
+    bgImage: '/images/u7815321835_ultra_premium_dark_browser_mockup_showing_AB_test_7cd223ae-133a-4713-b614-37ebcaa5db5a_0.png',
   },
   {
     title: 'Organic Growth',
+    href: '/capabilities#organic-growth',
     description: 'SEO, ASO, and generative engine optimization (GEO) own the search results AI reads.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -596,9 +612,11 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+89%',
     statLabel: 'Organic traffic',
+    bgImage: '/images/u7815321835_premium_dark_mode_network_connection_map_five_out_5860a76b-2606-4adc-b368-272d7e2ddf71_0.png',
   },
   {
     title: 'Lifecycle & Retention',
+    href: '/capabilities#lifecycle',
     description: 'Email, SMS, and LTV programs that make every acquired customer worth more.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -608,9 +626,11 @@ const capabilities = [
     accent: 'orange' as const,
     stat: '+34%',
     statLabel: 'LTV increase',
+    bgImage: '/images/u7815321835_abstract_customer_lifecycle_journey_visualization_c577cc13-eae4-4c6c-915c-d309ca643edd_1.png',
   },
   {
     title: 'Analytics & Intelligence',
+    href: '/capabilities#analytics',
     description: 'Attribution, media mix modeling, incrementality testing, and the data layer that makes every other channel smarter.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
@@ -620,6 +640,7 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '100%',
     statLabel: 'Data visibility',
+    bgImage: '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_0.png',
   },
 ] as const;
 
@@ -663,28 +684,25 @@ function BentoCapabilities() {
         {/* Uniform 3-col grid: all 6 cards identical size */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {capabilities.map((cap, i) => (
-            <div
+            <Link
               key={cap.title}
-              tabIndex={0}
-              className={`reveal stagger-${i + 1} group relative h-full flex flex-col justify-between rounded-2xl p-8 cursor-default transition-all duration-300 hover:-translate-y-1 focus-within:ring-2 focus-within:ring-orange-500 focus-within:outline-none`}
-              style={{
-                background: 'rgba(15, 23, 35, 0.6)',
-                backdropFilter: 'blur(16px) saturate(150%)',
-                WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: 'none',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.border = '1px solid rgba(232, 121, 58, 0.35)';
-                e.currentTarget.style.boxShadow = '0 0 24px rgba(232, 121, 58, 0.08)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              href={cap.href}
+              className={`reveal stagger-${i + 1} group relative h-full flex flex-col justify-between rounded-2xl p-8 no-underline bento-cap-card hover:-translate-y-1 focus:ring-2 focus:ring-orange-500 focus:outline-none overflow-hidden`}
             >
+              {/* Background image */}
+              {cap.bgImage && (
+                <div className="pointer-events-none absolute inset-0 z-0">
+                  <img
+                    src={cap.bgImage}
+                    alt=""
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover opacity-[0.07] transition-all duration-700 group-hover:opacity-[0.15] group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A1119] via-[#0A1119]/80 to-transparent" />
+                </div>
+              )}
               {/* Top content */}
-              <div>
+              <div className="relative z-10">
                 <div
                   className={`mb-6 inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 group-hover:scale-110 ${
                     cap.accent === 'teal' ? 'bg-tt-teal/10 text-tt-teal' : 'bg-tt-orange/10 text-tt-orange'
@@ -702,7 +720,7 @@ function BentoCapabilities() {
 
               {/* Bottom stat: consistent across all cards */}
               {cap.stat && (
-                <div className="mt-6 pt-5 border-t border-white/5 flex items-baseline gap-2">
+                <div className="relative z-10 mt-6 pt-5 border-t border-white/5 flex items-baseline gap-2">
                   <span
                     className="text-2xl font-extrabold tracking-tight text-white"
                     style={{ fontVariantNumeric: 'tabular-nums' }}
@@ -712,7 +730,14 @@ function BentoCapabilities() {
                   <span className="text-xs text-slate-400 uppercase tracking-wider">{cap.statLabel}</span>
                 </div>
               )}
-            </div>
+
+              {/* Arrow indicator */}
+              <span className="absolute top-6 right-6 z-10 text-tt-gray-600 transition-all duration-300 group-hover:text-tt-orange group-hover:translate-x-1">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </span>
+            </Link>
           ))}
         </div>
       </div>
@@ -1128,7 +1153,7 @@ function TechSection() {
           </Link>
 
           {/* Feed Optimization with animated stacked bars */}
-          <Link href="/capabilities" passHref className="reveal stagger-4 group relative glass-card gradient-border p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#229FA1]">
+          <Link href="/capabilities#analytics" className="reveal stagger-4 group relative glass-card gradient-border p-8 md:p-10 block cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-lg hover:shadow-black/30 hover:border-[#229FA1]">
             <div className="flex items-center gap-3 mb-6">
               <span className="block h-3 w-3 rounded-full bg-tt-orange" />
               <span className="text-xs font-semibold text-tt-orange uppercase tracking-wider">Platform</span>

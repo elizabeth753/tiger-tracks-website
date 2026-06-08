@@ -16,12 +16,13 @@ export function LogoBar() {
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-tt-black to-transparent" />
 
         {/* Scrolling row */}
-        <div className="flex animate-logo-scroll items-center">
+        <div className="flex animate-logo-scroll items-center gap-16">
           {/* First set */}
           {clientLogos.map(({ key, Component }) => (
             <div
               key={`a-${key}`}
-              className="mx-8 shrink-0 text-tt-gray-500 transition hover:text-white"
+              className="shrink-0 text-tt-gray-500 transition hover:text-white"
+              role="listitem"
             >
               <Component />
             </div>
@@ -30,7 +31,8 @@ export function LogoBar() {
           {clientLogos.map(({ key, Component }) => (
             <div
               key={`b-${key}`}
-              className="mx-8 shrink-0 text-tt-gray-500 transition hover:text-white"
+              className="shrink-0 text-tt-gray-500 transition hover:text-white"
+              aria-hidden="true"
             >
               <Component />
             </div>

@@ -32,6 +32,24 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ----------------------------------------------------------------
+   Fluid Typography - CSS clamp() for seamless scaling
+   h1: 2.5rem (40px) at 320px -> 7rem (112px) at 1440px
+   h2: 2rem (32px) at 320px -> 4rem (64px) at 1440px
+   ---------------------------------------------------------------- */
+
+h1 {
+  font-size: clamp(2.5rem, 1.07rem + 7.14vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(2rem, 1.14rem + 4.29vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
 body {
   overflow-x: hidden;
   background: radial-gradient(
@@ -43,16 +61,19 @@ body {
   background-attachment: fixed;
 }
 
-/* Global noise grain overlay - premium matte surface */
+/* Global cinematic noise grain overlay - animated film texture */
 body::after {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
+  animation: noise-shift 8s steps(10) infinite;
 }
 
 /* Micro-dot grid on main - structural depth */
@@ -432,6 +453,27 @@ body.tint-bronze { background-color: #110f0d; transition: background-color 0.8s 
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.04) inset,
     0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* Capability bento card - uniform hover with neon orange glow */
+.bento-cap-card {
+  background: rgba(15, 23, 35, 0.6);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 transparent;
+  transition:
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-cap-card:hover {
+  border-color: rgba(232, 121, 58, 0.35);
+  box-shadow:
+    0 0 20px rgba(232, 121, 58, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* Ambient occlusion shadows - studio photography quality */
@@ -917,6 +959,27 @@ body.tint-bronze { background-color: #110f0d; transition: background-color 0.8s 
    RESPONSIVE MOTION REDUCTION
    ================================================================ */
 
+/* ================================================================
+   CUSTOM CURSOR - hide native cursor on desktop when custom is active
+   ================================================================ */
+
+.cursor-custom,
+.cursor-custom * {
+  cursor: none !important;
+}
+
+/* Restore cursor for inputs / textareas where precision matters */
+.cursor-custom input,
+.cursor-custom textarea,
+.cursor-custom select,
+.cursor-custom [contenteditable] {
+  cursor: text !important;
+}
+
+/* ================================================================
+   RESPONSIVE MOTION REDUCTION
+   ================================================================ */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -938,4 +1001,41 @@ body.tint-bronze { background-color: #110f0d; transition: background-color 0.8s 
   .tilt-card {
     transform: none !important;
   }
+
+  /* Restore native cursor when reduced motion is preferred */
+  .cursor-custom,
+  .cursor-custom * {
+    cursor: auto !important;
+  }
+}
+
+/* ================================================================
+   ANIMATED MESH BACKGROUND
+   Slow-pulsing radial gradient for immersive dark sections
+   ================================================================ */
+
+.animated-mesh-bg {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(232, 121, 58, 0.12), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(34, 159, 161, 0.12), transparent 25%);
+  background-color: #0A1119;
+  background-size: 200% 200%;
+  animation: pulse-glow 15s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* ================================================================
+   GLASS PANEL
+   Glassmorphism container for text contrast on mesh backgrounds
+   ================================================================ */
+
+.glass-panel {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

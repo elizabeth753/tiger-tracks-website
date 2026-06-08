@@ -309,16 +309,108 @@ function DashboardMockupSection() {
           }`}
         >
           <div
-            className="wayfinder-ui-mockup mx-auto rounded-2xl"
+            className="wayfinder-ui-mockup mx-auto rounded-2xl overflow-hidden"
             style={{
               backgroundColor: '#1B2126',
               border: '1px solid rgba(34,159,161,0.35)',
               boxShadow:
                 '0 0 60px rgba(34,159,161,0.08), 0 0 120px rgba(34,159,161,0.04)',
-              aspectRatio: '16 / 9',
               maxWidth: '1000px',
             }}
-          />
+          >
+            {/* Window chrome */}
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/5">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
+              </div>
+              <div className="ml-3 flex items-center gap-2">
+                <span className="text-[10px] font-semibold tracking-wider" style={{ color: '#229FA1' }}>WAYFINDER</span>
+                <span className="text-[10px]" style={{ color: '#4A4A5A' }}>|</span>
+                <span className="text-[10px]" style={{ color: '#6B6B7B' }}>Budget Optimization Dashboard</span>
+              </div>
+            </div>
+
+            {/* Dashboard content */}
+            <div className="p-5 md:p-6">
+              <div className="flex gap-5">
+                {/* Sidebar */}
+                <div className="hidden md:block w-32 space-y-2 flex-shrink-0">
+                  {['Overview', 'Attribution', 'MMM', 'GEO', 'Reports'].map((item, i) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-md px-3 py-2 text-[11px]"
+                      style={{
+                        backgroundColor: i === 0 ? 'rgba(34,159,161,0.1)' : 'transparent',
+                        color: i === 0 ? '#229FA1' : '#6B6B7B',
+                      }}
+                    >
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: i === 0 ? '#229FA1' : '#4A4A5A' }}
+                      />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Main area */}
+                <div className="flex-1 space-y-4">
+                  {/* KPI row */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { label: 'ROAS', value: '4.7x', change: '+23%', up: true },
+                      { label: 'BLENDED CAC', value: '$18.20', change: '-31%', up: false },
+                      { label: 'BUDGET UTIL.', value: '94%', change: '+12%', up: true },
+                    ].map((m) => (
+                      <div
+                        key={m.label}
+                        className="rounded-lg p-3"
+                        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
+                      >
+                        <p className="text-[9px] uppercase tracking-wider" style={{ color: '#6B6B7B' }}>{m.label}</p>
+                        <p className="mt-1 text-lg font-bold text-white">{m.value}</p>
+                        <p className="text-[11px] font-semibold" style={{ color: m.up ? '#229FA1' : '#FF6B35' }}>{m.change}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chart area */}
+                  <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-[10px] uppercase tracking-wider" style={{ color: '#6B6B7B' }}>Channel Performance</p>
+                      <p className="text-[10px]" style={{ color: '#229FA1' }}>Live Optimization</p>
+                    </div>
+                    <div className="flex items-end gap-1.5 h-20">
+                      {[35, 50, 42, 62, 48, 70, 55, 78, 65, 82, 72, 88].map((h, i) => (
+                        <div
+                          key={i}
+                          className="flex-1 rounded-t"
+                          style={{ height: `${h}%`, background: `rgba(34,159,161,${0.35 + h / 200})` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* AI Insight */}
+                  <div
+                    className="rounded-lg p-3 flex items-center gap-3"
+                    style={{ background: 'rgba(34,159,161,0.05)', border: '1px solid rgba(34,159,161,0.12)' }}
+                  >
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(34,159,161,0.15)' }}>
+                      <svg className="w-3 h-3" style={{ color: '#229FA1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                      </svg>
+                    </div>
+                    <p className="text-xs" style={{ color: '#9C9CAE' }}>
+                      <span className="font-semibold" style={{ color: '#229FA1' }}>Wayfinder:</span> Reallocate 18% of Meta prospecting to Google NB Search. Predicted +$24K incremental revenue.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -337,7 +429,7 @@ export default function WayfinderPage() {
       <DashboardMockupSection />
       <CTASection
         headline="See What Wayfinder Can Do For Your Brand"
-        subheadline="Book a demo. We will connect your platforms, run the models, and show you exactly where your budget is leaking."
+        subheadline="Run Wayfinder on Your Account / 30-minute live diagnostic"
         primaryCTA={{ text: 'Run Wayfinder on Your Account', href: '/get-started' }}
         secondaryCTA={{ text: 'Talk to an Engineer', href: '/get-started' }}
         dark

@@ -50,6 +50,7 @@ interface Capability {
   linkHref: string;
   gradient: { from: string; to: string; orb: string };
   imagePlaceholder: { label: string; icon: string };
+  image: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -96,6 +97,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-meta',
     gradient: { from: '#5BA4A4', to: '#2d7a7a', orb: '#E8793A' },
     imagePlaceholder: { label: 'Campaign Performance Dashboard', icon: 'chart-bar' },
+    image: '/images/u7815321835_ultra_premium_dark_mode_advertising_performance_d_e8b94a81-21c0-451c-b37e-90035e938aab_0.png',
   },
   {
     id: 'creative',
@@ -125,6 +127,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/anastasia-beverly-hills',
     gradient: { from: '#E8793A', to: '#c45a20', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Creative Testing Matrix', icon: 'sparkles' },
+    image: '/images/u7815321835_premium_dark_mode_phone_mockup_displaying_UGC_wel_bf09b5ca-d52d-4685-b4e0-b9974df67db0_1.png',
   },
   {
     id: 'website-cro',
@@ -154,6 +157,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/online-labels',
     gradient: { from: '#5BA4A4', to: '#3d8888', orb: '#E8793A' },
     imagePlaceholder: { label: 'Funnel Conversion Heatmap', icon: 'cursor-arrow-rays' },
+    image: '/images/u7815321835_ultra_premium_dark_browser_mockup_showing_AB_test_7cd223ae-133a-4713-b614-37ebcaa5db5a_0.png',
   },
   {
     id: 'analytics',
@@ -188,6 +192,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-brand-search',
     gradient: { from: '#5BA4A4', to: '#4a9494', orb: '#E8793A' },
     imagePlaceholder: { label: 'Attribution Model Architecture', icon: 'chart-pie' },
+    image: '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_0.png',
   },
   {
     id: 'organic-growth',
@@ -217,6 +222,7 @@ const capabilities: Capability[] = [
     linkHref: '/intelligence',
     gradient: { from: '#2d7a7a', to: '#1a5c5c', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'AI Search Visibility Map', icon: 'globe-alt' },
+    image: '/images/u7815321835_premium_dark_mode_network_connection_map_five_out_5860a76b-2606-4adc-b368-272d7e2ddf71_0.png',
   },
   {
     id: 'lifecycle',
@@ -246,6 +252,7 @@ const capabilities: Capability[] = [
     linkHref: '/get-started',
     gradient: { from: '#E8793A', to: '#d06628', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Cohort LTV Curves', icon: 'arrow-trending-up' },
+    image: '/images/u7815321835_abstract_customer_lifecycle_journey_visualization_c577cc13-eae4-4c6c-915c-d309ca643edd_1.png',
   },
   {
     id: 'partnerships',
@@ -275,6 +282,7 @@ const capabilities: Capability[] = [
     linkHref: '/pe-vc',
     gradient: { from: '#2d7a7a', to: '#1f6565', orb: '#E8793A' },
     imagePlaceholder: { label: 'Portfolio Growth Network', icon: 'users' },
+    image: '/images/u7815321835_ultra_premium_dark_mode_project_timeline_UI_showi_5bc59994-d85e-49e5-9fbc-8f25e0a1431a_0.png',
   },
 ];
 
@@ -357,51 +365,26 @@ const timelinePhases = [
 /*  Image Placeholder Component                                        */
 /* ------------------------------------------------------------------ */
 
-function ServiceImagePlaceholder({ label, gradient }: { label: string; gradient: { from: string; to: string } }) {
+function ServiceImage({ src, label, gradient }: { src: string; label: string; gradient: { from: string; to: string } }) {
   return (
     <div
-      className="relative w-full rounded-2xl overflow-hidden"
+      className="relative w-full rounded-2xl overflow-hidden group/img"
       style={{ aspectRatio: '16 / 9' }}
     >
+      {/* Real image */}
+      <img
+        src={src}
+        alt={label}
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105"
+      />
+      {/* Subtle gradient overlay for text legibility */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          background: `linear-gradient(135deg, ${gradient.from}18, ${gradient.to}08)`,
+          background: `linear-gradient(180deg, transparent 40%, ${gradient.to}90 100%)`,
         }}
       />
-      {/* Decorative grid pattern */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id={`img-grid-${label}`} width="32" height="32" patternUnits="userSpaceOnUse">
-            <path d="M 32 0 L 0 0 0 32" fill="none" stroke={gradient.from} strokeWidth="0.5" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#img-grid-${label})`} />
-      </svg>
-      {/* Floating accent orb */}
-      <div
-        className="absolute rounded-full blur-[80px] animate-mesh-drift"
-        style={{
-          width: '50%',
-          height: '50%',
-          background: gradient.from,
-          opacity: 0.12,
-          top: '20%',
-          right: '10%',
-        }}
-      />
-      {/* Center label */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: `${gradient.from}20` }}
-        >
-          <svg className="w-6 h-6" style={{ color: gradient.from }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v13.5A1.5 1.5 0 003.75 21z" />
-          </svg>
-        </div>
-        <p className="text-sm font-medium text-slate-500 tracking-wide">{label}</p>
-      </div>
       {/* Bottom border glow */}
       <div
         className="absolute bottom-0 left-[10%] right-[10%] h-px"
@@ -447,7 +430,10 @@ function ServiceSubNav({ activeId }: { activeId: string }) {
 
 function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.15 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.15 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 800); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
 
   return (
     <section className="relative min-h-[70vh] flex items-center overflow-hidden" style={{
@@ -533,7 +519,10 @@ function HeroSection() {
 
 function CapabilitySection({ capability, index }: { capability: Capability; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 1000); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
   const objStyle = objectiveLabels[capability.objective];
 
   return (
@@ -645,9 +634,10 @@ function CapabilitySection({ capability, index }: { capability: Capability; inde
               variants={staggerContainer}
               className="space-y-8"
             >
-              {/* 16:9 Image Placeholder */}
+              {/* 16:9 Service Image */}
               <motion.div variants={scaleIn} transition={transition}>
-                <ServiceImagePlaceholder
+                <ServiceImage
+                  src={capability.image}
                   label={capability.imagePlaceholder.label}
                   gradient={capability.gradient}
                 />
@@ -710,7 +700,10 @@ function CapabilitySection({ capability, index }: { capability: Capability; inde
 
 function OutcomesSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 1000); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
 
   return (
     <section className="py-24 px-6 border-t border-white/[0.04]" style={{
@@ -770,7 +763,10 @@ function OutcomesSection() {
 
 function ClientTiersSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.1 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 1000); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
 
   return (
     <section className="py-24 px-6 border-t border-white/[0.04]" style={{
@@ -841,7 +837,10 @@ function ClientTiersSection() {
 
 function TimelineSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.05 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.05 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 1000); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
 
   return (
     <section className="py-24 px-6 border-t border-white/[0.04]" style={{
@@ -948,7 +947,10 @@ function TimelineSection() {
 
 function SeenCommerceSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useFramerInView(ref, { once: true, amount: 0.15 });
+  const framerInView = useFramerInView(ref, { once: true, amount: 0.15 });
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setFallback(true), 1000); return () => clearTimeout(t); }, []);
+  const isInView = framerInView || fallback;
 
   return (
     <section className="py-24 px-6 border-t border-white/[0.04]" style={{

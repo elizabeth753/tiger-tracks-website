@@ -60,8 +60,12 @@ export function ArticlePageClient({ article }: { article: BlogPost }) {
           </h1>
 
           <div className="mt-6 flex items-center gap-3 text-sm text-tt-gray-500">
+            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">
+              {article.author || 'Tiger Tracks'}
+            </span>
+            <span className="h-3 w-px bg-white/10" />
             <span>{article.date}</span>
-            <span>&bull;</span>
+            <span className="h-3 w-px bg-white/10" />
             <span>{article.readTime} read</span>
           </div>
         </div>
