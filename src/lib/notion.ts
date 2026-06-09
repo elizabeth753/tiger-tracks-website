@@ -147,12 +147,24 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
       return blogPosts;
     }
 
-    // 2. Retrieve each child page in parallel (batched)
-    const posts = await Promise.all(
-      childPageIds.map((id) => childPageToBlogPost(notion, id)),
-    );
+    // 2. Retrieve child pages in serial batches of 3 to avoid rate limits
+    const BATCH_SIZE = 3;
+    const allPosts: (BlogPost | null)[] = [];
 
-    const validPosts = posts.filter((p): p is BlogPost => p !== null);
+    for (let i = 0; i < childPageIds.length; i += BATCH_SIZE) {
+      const batch = childPageIds.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map((id) => childPageToBlogPost(notion, id)),
+      );
+      allPosts.push(...results);
+
+      // Small delay between batches to respect rate limits
+      if (i + BATCH_SIZE < childPageIds.length) {
+        await new Promise((r) => setTimeout(r, 350));
+      }
+    }
+
+    const validPosts = allPosts.filter((p): p is BlogPost => p !== null);
 
     // 3. Sort by date descending
     validPosts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
