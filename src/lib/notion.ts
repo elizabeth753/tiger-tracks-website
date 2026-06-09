@@ -31,8 +31,8 @@ async function withRetry<T>(
 
       if (!isRateLimited || attempt === maxRetries) throw error;
 
-      // Exponential backoff: 2s, 4s, 8s
-      const waitMs = 2000 * Math.pow(2, attempt);
+      // Exponential backoff: 3s, 6s, 12s
+      const waitMs = 3000 * Math.pow(2, attempt);
       console.log(`[notion] Rate limited on ${label}, retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxRetries})`);
       await new Promise((r) => setTimeout(r, waitMs));
     }
@@ -202,9 +202,9 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
       const result = await childPageToBlogPost(notion, childPageIds[i]);
       allPosts.push(result);
 
-      // 500ms delay between each request to stay well under 3 req/sec
+      // 1s delay between each request to stay well under rate limits
       if (i < childPageIds.length - 1) {
-        await new Promise((r) => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 1000));
       }
     }
 
@@ -286,6 +286,7 @@ export interface NotionBlock {
     expression?: string;
     cells?: NotionRichText[][];
     rows?: { cells: NotionRichText[][] }[];
+    color?: string;
   };
 }
 
@@ -338,6 +339,7 @@ export async function fetchPageBlocks(
             checked: blockData.checked as boolean | undefined,
             expression: blockData.expression as string | undefined,
             cells: blockData.cells as NotionRichText[][] | undefined,
+            color: blockData.color as string | undefined,
           },
         };
 

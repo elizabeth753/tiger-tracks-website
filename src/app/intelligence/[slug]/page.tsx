@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { blogPosts } from '@/data/blogPosts';
 import {
-  fetchBlogPosts,
   fetchBlogPostBySlug,
   fetchPageBlocks,
 } from '@/lib/notion';
 import { ArticlePageClient } from '@/components/ArticlePageClient';
 
 export const revalidate = 3600;
+export const dynamicParams = true;
 
 /* ------------------------------------------------------------------ */
 /*  OG Image Fallbacks (keyed by category)                             */
@@ -121,12 +121,9 @@ export async function generateMetadata({
 /* ------------------------------------------------------------------ */
 
 export async function generateStaticParams() {
-  try {
-    const posts = await fetchBlogPosts();
-    return posts.map((post) => ({ slug: post.slug }));
-  } catch {
-    return blogPosts.map((post) => ({ slug: post.slug }));
-  }
+  // Return only static slugs at build time to avoid Notion API rate limits.
+  // All other slugs are fetched on-demand via ISR (dynamicParams = true).
+  return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
 /* ------------------------------------------------------------------ */

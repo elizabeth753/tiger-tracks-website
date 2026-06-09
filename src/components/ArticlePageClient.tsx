@@ -89,8 +89,6 @@ function ShareBar({ title }: { title: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 print:hidden">
-      <span className="text-xs uppercase tracking-widest text-slate-500 mr-1">Share</span>
-
       <button
         onClick={shareLinkedIn}
         className={btnClass}
@@ -139,96 +137,29 @@ function ShareBar({ title }: { title: string }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Static Fallback Body (when no Notion blocks are available)         */
+/*  Content Loading Fallback (when Notion blocks are unavailable)      */
 /* ------------------------------------------------------------------ */
 
-function StaticArticleBody({ article }: { article: BlogPost }) {
+function ContentFallback({ article }: { article: BlogPost }) {
   return (
-    <div className="space-y-6 font-serif text-[#9E9E9E] text-justify leading-[1.95] print:text-black print:leading-[1.7]">
-      {/* Abstract */}
-      <div className="border-l-2 border-[#229FA1] pl-6 py-2 my-8 print:border-black">
-        <p className="text-xs font-mono uppercase tracking-[3px] text-[#229FA1] mb-3 not-italic print:text-black">
-          Abstract
-        </p>
-        <p className="text-sm italic text-slate-300 leading-[1.85] print:text-gray-700">
+    <div className="py-12 text-center">
+      <p className="text-[#F0EFED] text-base font-sans mb-4">
+        This article is loading its content from Notion.
+      </p>
+      {article.excerpt && (
+        <p className="text-[#F0EFED]/60 text-base font-sans italic max-w-lg mx-auto mb-8">
           {article.excerpt}
         </p>
-      </div>
-
-      <hr className="border-t border-white/10 my-8 print:border-gray-300" />
-
-      {/* Key Findings */}
-      <h2 className="mt-10 mb-4 text-xl font-bold text-white font-sans tracking-tight print:text-black">
-        1. Key Findings
-      </h2>
-      <ul className="space-y-3 ml-5 list-disc marker:text-[#229FA1] print:marker:text-black">
-        {[
-          'The competitive landscape is shifting rapidly as new technologies redefine how brands connect with their audiences, requiring marketers to rethink foundational strategies.',
-          'Early adopters who invest in this area are seeing measurable advantages in efficiency, reach, and return on ad spend compared to industry benchmarks.',
-          'The window for competitive advantage is narrowing, and organizations that delay adoption risk falling behind peers who have already operationalized these capabilities.',
-        ].map((text, i) => (
-          <li key={i} className="leading-[1.85]">{text}</li>
-        ))}
-      </ul>
-
-      {/* Market Context */}
-      <h2 className="mt-10 mb-4 text-xl font-bold text-white font-sans tracking-tight print:text-black">
-        2. Market Context
-      </h2>
-      <p>
-        This section explores the broader market dynamics driving the trends
-        analyzed in this report. Understanding the macroeconomic, regulatory, and
-        technological forces at play is critical to interpreting the tactical
-        recommendations that follow.
+      )}
+      <p className="text-sm text-[#F0EFED]/40 font-sans">
+        If this persists, the content may be temporarily unavailable. Please try refreshing in a moment.
       </p>
-
-      {/* Strategic Implications */}
-      <h2 className="mt-10 mb-4 text-xl font-bold text-white font-sans tracking-tight print:text-black">
-        3. Strategic Implications
-      </h2>
-      <p>
-        Based on our analysis, we identify three primary strategic pathways for
-        brands looking to capitalize on these trends. Each pathway is evaluated
-        across feasibility, investment requirements, and expected time-to-impact.
-      </p>
-
-      {/* Tactical Playbook */}
-      <h2 className="mt-10 mb-4 text-xl font-bold text-white font-sans tracking-tight print:text-black">
-        4. Tactical Playbook
-      </h2>
-      <p>
-        Our tactical recommendations are designed for immediate implementation.
-        Each action item includes priority level, resource requirements, and key
-        performance indicators to track progress.
-      </p>
-
-      <hr className="border-t border-white/10 my-8 print:border-gray-300" />
-
-      {/* Methodology */}
-      <h2 className="mt-10 mb-4 text-lg font-bold text-white font-sans tracking-tight print:text-black">
-        5. Methodology
-      </h2>
-      <p className="text-sm">
-        This research combines primary and secondary data sources including
-        proprietary campaign performance data, industry analyst reports, platform
-        API data, and expert interviews.
-      </p>
-
-      {/* References */}
-      <h2 className="mt-10 mb-4 text-lg font-bold text-white font-sans tracking-tight print:text-black">
-        References
-      </h2>
-      <ol className="space-y-2 text-sm list-decimal ml-5">
-        <li>Industry benchmark data and platform performance reports (2025-2026)</li>
-        <li>Tiger Tracks proprietary campaign performance database (n = 500+ campaigns)</li>
-        <li>Expert interviews with senior marketing and technology leaders</li>
-      </ol>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Related Article Card (dark theme)                                  */
+/*  Related Article Card                                               */
 /* ------------------------------------------------------------------ */
 
 function RelatedCard({ post }: { post: BlogPost }) {
@@ -248,7 +179,6 @@ function RelatedCard({ post }: { post: BlogPost }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: '16/9' }}>
         {imgSrc ? (
           <Image
@@ -289,7 +219,6 @@ function RelatedCard({ post }: { post: BlogPost }) {
         </div>
       </div>
 
-      {/* Bottom border animation */}
       <div
         className="absolute bottom-0 left-0 h-px transition-all duration-500"
         style={{
@@ -303,7 +232,21 @@ function RelatedCard({ post }: { post: BlogPost }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Article Page (Main Export) - Academic White Paper Layout            */
+/*  Format date for metadata line                                      */
+/* ------------------------------------------------------------------ */
+
+function formatDate(dateStr?: string): string {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Article Page (Main Export) - Notion-Style Layout                    */
 /* ------------------------------------------------------------------ */
 
 interface ArticlePageClientProps {
@@ -329,14 +272,14 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
       <ReadingProgressBar />
 
       {/* ============================================================ */}
-      {/*  Full Page Background                                         */}
+      {/*  Full Page Background (#191919 = Notion dark mode)            */}
       {/* ============================================================ */}
       <section
         className="relative min-h-screen py-12 md:py-20 px-4 sm:px-6 print:py-0 print:px-0 print:bg-white"
-        style={{ background: '#0A1119' }}
+        style={{ background: '#191919' }}
       >
         {/* Back navigation */}
-        <div className="mx-auto max-w-4xl mb-6 print:hidden">
+        <div className="mx-auto max-w-[720px] mb-6 print:hidden">
           <Link
             href="/intelligence"
             className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-[#229FA1]"
@@ -349,63 +292,56 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
         </div>
 
         {/* ========================================================== */}
-        {/*  The Manuscript Container                                    */}
+        {/*  Content Container (720px, no manuscript border)            */}
         {/* ========================================================== */}
         <motion.article
-          className="mx-auto max-w-4xl bg-[#1B2126] border border-white/10 shadow-2xl rounded-sm p-8 md:p-16 print:bg-white print:border-none print:shadow-none print:rounded-none print:p-[1in] print:max-w-none"
+          className="mx-auto max-w-[720px] print:bg-white print:max-w-none print:p-[1in]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Print/Download Button */}
-          <div className="flex justify-end mb-8 print:hidden">
-            <button
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-2 rounded border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-mono uppercase tracking-widest text-slate-400 transition-all duration-300 hover:border-[#229FA1]/30 hover:text-[#229FA1] hover:bg-[#229FA1]/[0.04]"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-              Download / Print Memorandum
-            </button>
-          </div>
-
           {/* ====================================================== */}
-          {/*  Academic Title Header                                   */}
+          {/*  Cover Image                                            */}
           {/* ====================================================== */}
-          <header className="text-center mb-8">
-            {/* Category badge */}
-            <div className="mb-6">
-              <span className="inline-block font-mono text-[10px] uppercase tracking-[4px] text-[#229FA1] print:text-gray-600">
-                {article.category}
-              </span>
+          {article.coverImage && (
+            <div className="mb-8">
+              <Image
+                src={article.coverImage}
+                alt={article.title}
+                width={720}
+                height={405}
+                className="w-full h-auto"
+                sizes="(max-width: 768px) 100vw, 720px"
+                priority
+                unoptimized={article.coverImage.startsWith('https://prod-files-secure') || article.coverImage.startsWith('https://s3')}
+              />
             </div>
+          )}
 
-            {/* Title */}
+          {/* ====================================================== */}
+          {/*  Title                                                   */}
+          {/* ====================================================== */}
+          <header className="mb-8">
             <h1
-              className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] font-bold text-white leading-[1.15] tracking-tight mx-auto max-w-3xl print:text-black"
+              className="font-sans text-[40px] font-bold text-[#F0EFED] leading-[48px] print:text-black"
               style={{ textWrap: 'balance' } as React.CSSProperties}
             >
               {article.title}
             </h1>
 
-            {/* Metadata line */}
-            <div className="mt-6 font-mono text-[11px] text-[#9E9E9E] uppercase tracking-[2px] leading-relaxed print:text-gray-500">
-              <span>Author: {article.author || 'Tiger Tracks Research Division'}</span>
-              <span className="mx-3 text-white/20 print:text-gray-300">|</span>
-              <span>Published: {article.date || '2026'}</span>
-              <span className="mx-3 text-white/20 print:text-gray-300">|</span>
-              <span>{article.readTime} read</span>
-            </div>
+            {/* Metadata line: italic, 16px */}
+            <p className="mt-4 text-base font-sans italic text-[#F0EFED]/60 print:text-gray-500">
+              Tiger Tracks &middot; Eye of the Tiger &middot; {article.category} &middot; {formatDate(article.date)}
+            </p>
 
             {/* Share bar */}
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4">
               <ShareBar title={article.title} />
             </div>
           </header>
 
-          {/* Manuscript rule */}
-          <hr className="border-t border-white/10 mb-10 print:border-gray-300" />
+          {/* Divider */}
+          <hr className="border-t border-white/[0.08] mb-6 print:border-gray-300" />
 
           {/* ====================================================== */}
           {/*  Article Body                                            */}
@@ -413,38 +349,29 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
           {hasNotionContent ? (
             <NotionBlockRenderer blocks={blocks} />
           ) : (
-            <StaticArticleBody article={article} />
+            <ContentFallback article={article} />
           )}
 
           {/* ====================================================== */}
-          {/*  Footer Rule + Share                                     */}
+          {/*  Footer                                                  */}
           {/* ====================================================== */}
-          <hr className="border-t border-white/10 mt-12 mb-8 print:border-gray-300" />
+          <hr className="border-t border-white/[0.08] mt-10 mb-6 print:border-gray-300" />
 
           <div className="flex items-center justify-between print:hidden">
             <ShareBar title={article.title} />
-            <button
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500 transition hover:text-[#229FA1]"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
-              </svg>
-              Print
-            </button>
           </div>
 
           {/* Print footer */}
           <div className="hidden print:block mt-12 pt-6 border-t border-gray-300 text-center text-xs text-gray-500">
-            <p>Tiger Tracks Research Division &bull; tigertracks.ai &bull; Confidential</p>
+            <p>Tiger Tracks &bull; tigertracks.ai</p>
           </div>
         </motion.article>
       </section>
 
       {/* ============================================================ */}
-      {/*  Related Research (Dark Theme)                                */}
+      {/*  Related Research                                             */}
       {/* ============================================================ */}
-      <section className="py-20 px-6 print:hidden" style={{ background: '#0A1119' }}>
+      <section className="py-20 px-6 print:hidden" style={{ background: '#191919' }}>
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px flex-1 bg-gradient-to-r from-[#229FA1]/30 to-transparent" />
