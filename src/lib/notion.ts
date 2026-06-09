@@ -8,7 +8,36 @@ import { blogPosts, BlogPost } from '@/data/blogPosts';
 function getNotionClient(): Client | null {
   const apiKey = process.env.NOTION_API_KEY;
   if (!apiKey) return null;
-  return new Client({ auth: apiKey });
+  return new Client({ auth: apiKey, timeoutMs: 30_000 });
+}
+
+// ---------------------------------------------------------------------------
+// Retry helper with exponential backoff for Notion rate limits
+// ---------------------------------------------------------------------------
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  label: string,
+  maxRetries = 3,
+): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error: unknown) {
+      const isRateLimited =
+        error instanceof Error &&
+        'code' in error &&
+        (error as { code: string }).code === 'rate_limited';
+
+      if (!isRateLimited || attempt === maxRetries) throw error;
+
+      // Exponential backoff: 2s, 4s, 8s
+      const waitMs = 2000 * Math.pow(2, attempt);
+      console.log(`[notion] Rate limited on ${label}, retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+      await new Promise((r) => setTimeout(r, waitMs));
+    }
+  }
+  throw new Error('Unreachable');
 }
 
 /** The parent page ID that contains child_page blocks (one per article). */
@@ -45,7 +74,10 @@ async function childPageToBlogPost(
   pageId: string,
 ): Promise<BlogPost | null> {
   try {
-    const page = await notion.pages.retrieve({ page_id: pageId });
+    const page = await withRetry(
+      () => notion.pages.retrieve({ page_id: pageId }),
+      `pages.retrieve(${pageId.slice(0, 8)})`,
+    );
     if (!('properties' in page)) return null;
 
     const props = page.properties as Record<string, unknown>;
@@ -138,11 +170,14 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
     let cursor: string | undefined;
 
     do {
-      const response = await notion.blocks.children.list({
-        block_id: parentPageId,
-        start_cursor: cursor,
-        page_size: 100,
-      });
+      const response = await withRetry(
+        () => notion.blocks.children.list({
+          block_id: parentPageId,
+          start_cursor: cursor,
+          page_size: 100,
+        }),
+        'blocks.children.list',
+      );
 
       for (const block of response.results) {
         if ('type' in block && (block as { type: string }).type === 'child_page') {
@@ -160,20 +195,16 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
       return blogPosts;
     }
 
-    // 2. Retrieve child pages in serial batches of 3 to avoid rate limits
-    const BATCH_SIZE = 3;
+    // 2. Retrieve child pages ONE AT A TIME with 500ms gaps to stay under rate limits
     const allPosts: (BlogPost | null)[] = [];
 
-    for (let i = 0; i < childPageIds.length; i += BATCH_SIZE) {
-      const batch = childPageIds.slice(i, i + BATCH_SIZE);
-      const results = await Promise.all(
-        batch.map((id) => childPageToBlogPost(notion, id)),
-      );
-      allPosts.push(...results);
+    for (let i = 0; i < childPageIds.length; i++) {
+      const result = await childPageToBlogPost(notion, childPageIds[i]);
+      allPosts.push(result);
 
-      // Small delay between batches to respect rate limits
-      if (i + BATCH_SIZE < childPageIds.length) {
-        await new Promise((r) => setTimeout(r, 350));
+      // 500ms delay between each request to stay well under 3 req/sec
+      if (i < childPageIds.length - 1) {
+        await new Promise((r) => setTimeout(r, 500));
       }
     }
 
@@ -273,11 +304,14 @@ export async function fetchPageBlocks(
     let cursor: string | undefined;
 
     do {
-      const response = await notion.blocks.children.list({
-        block_id: pageId,
-        start_cursor: cursor,
-        page_size: 100,
-      });
+      const response = await withRetry(
+        () => notion.blocks.children.list({
+          block_id: pageId,
+          start_cursor: cursor,
+          page_size: 100,
+        }),
+        `blocks.children.list(${pageId.slice(0, 8)})`,
+      );
 
       for (const block of response.results) {
         if (!('type' in block)) continue;
