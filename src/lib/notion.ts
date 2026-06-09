@@ -168,10 +168,12 @@ export async function fetchBlogPostBySlug(
   const databaseId = getDatabaseId();
 
   if (!notion || !databaseId) {
+    console.log(`[notion] No credentials, falling back to static for "${slug}"`);
     return blogPosts.find((p) => p.slug === slug);
   }
 
   try {
+    console.log(`[notion] Querying Notion for slug="${slug}", dbId=${databaseId}`);
     const response = await notion.databases.query({
       database_id: databaseId,
       filter: {
@@ -181,12 +183,16 @@ export async function fetchBlogPostBySlug(
       page_size: 1,
     });
 
+    console.log(`[notion] Query returned ${response.results.length} results for slug="${slug}"`);
+
     if (response.results.length > 0) {
       const post = mapPageToBlogPost(response.results[0]);
+      console.log(`[notion] Mapped post: pageId=${post?.pageId}, title="${post?.title}"`);
       if (post) return post;
     }
 
     // Slug not found in Notion - check static data
+    console.log(`[notion] Slug "${slug}" not found in Notion, using static fallback`);
     return blogPosts.find((p) => p.slug === slug);
   } catch (error) {
     console.error(`[notion] Failed to fetch post "${slug}":`, error);
@@ -240,9 +246,13 @@ export async function fetchPageBlocks(
   pageId: string,
 ): Promise<NotionBlock[]> {
   const notion = getNotionClient();
-  if (!notion) return [];
+  if (!notion) {
+    console.log(`[notion] No client for fetchPageBlocks, returning empty`);
+    return [];
+  }
 
   try {
+    console.log(`[notion] Fetching blocks for pageId=${pageId}`);
     const blocks: NotionBlock[] = [];
     let cursor: string | undefined;
 
@@ -306,6 +316,7 @@ export async function fetchPageBlocks(
         : undefined;
     } while (cursor);
 
+    console.log(`[notion] Fetched ${blocks.length} blocks for pageId=${pageId}`);
     return blocks;
   } catch (error) {
     console.error(`[notion] Failed to fetch blocks for ${pageId}:`, error);
