@@ -60,7 +60,7 @@ export default function GetStartedPage() {
   }, []);
 
   return (
-    <main className="min-h-screen text-white font-sans animated-mesh-bg pb-24 selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen text-white font-sans animated-mesh-bg pb-24 selection:bg-orange-500 selection:text-white">
       {/* ============================================================ */}
       {/*  HERO + DIAGNOSTIC FORM                                       */}
       {/* ============================================================ */}
@@ -282,16 +282,34 @@ export default function GetStartedPage() {
           Pick a time that works for you and we&rsquo;ll walk you through
           everything on a quick call.
         </p>
-        <div
-          ref={calendlyRef}
-          className="calendly-inline-widget mx-auto max-w-4xl rounded-xl overflow-hidden"
-          data-url={
-            process.env.NEXT_PUBLIC_CALENDLY_URL ||
-            'https://calendly.com/YOUR_CALENDLY_USER'
-          }
-          style={{ minWidth: '320px', minHeight: '650px' }}
-        />
+        {process.env.NEXT_PUBLIC_CALENDLY_URL ? (
+          <div
+            ref={calendlyRef}
+            className="calendly-inline-widget mx-auto max-w-4xl rounded-xl overflow-hidden"
+            data-url={`${process.env.NEXT_PUBLIC_CALENDLY_URL}?hide_event_type_details=1&hide_gdpr_banner=1&background_color=0a1119&text_color=ffffff&primary_color=d4835a`}
+            style={{ minWidth: '320px', minHeight: '650px' }}
+          />
+        ) : (
+          <div className="mx-auto max-w-2xl text-center py-16 px-8 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <p className="text-lg font-medium text-white mb-3">Ready to talk?</p>
+            <p className="mb-6" style={{ color: '#9E9E9E' }}>
+              Email us at{' '}
+              <a href="mailto:info@tigertracks.ai" className="text-[#D4835A] hover:underline">
+                info@tigertracks.ai
+              </a>{' '}
+              and we&rsquo;ll send you a link to book a time.
+            </p>
+            <a
+              href="mailto:info@tigertracks.ai?subject=Strategic%20Diagnostic%20Request"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full font-semibold text-white transition-all duration-300 hover:brightness-110"
+              style={{ background: 'linear-gradient(135deg, #D4835A, #B86B45)' }}
+            >
+              Email Us
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        )}
       </section>
-    </main>
+    </div>
   );
 }

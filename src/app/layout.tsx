@@ -62,9 +62,15 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased text-white">
         <ClientBody>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-tt-orange focus:text-white focus:rounded-md focus:outline-none"
+          >
+            Skip to content
+          </a>
           <div className="ambient-light" aria-hidden="true" />
           <Navbar />
-          <main className="relative z-[5]">{children}</main>
+          <main id="main-content" className="relative z-[5]">{children}</main>
           <Footer />
         </ClientBody>
       </body>

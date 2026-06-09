@@ -69,6 +69,18 @@ const budgetOptions = [
   { id: 'under-100k', label: 'Under $100k/mo', range: 'Emerging scale' },
   { id: '100k-500k', label: '$100k - $500k/mo', range: 'Growth stage' },
   { id: '500k-plus', label: '$500k+/mo', range: 'Enterprise scale' },
+  { id: 'not-sure', label: 'Not sure yet', range: 'Exploring options' },
+];
+
+const channelOptions = [
+  { id: 'google', label: 'Google Ads' },
+  { id: 'meta', label: 'Meta (FB/IG)' },
+  { id: 'tiktok', label: 'TikTok' },
+  { id: 'amazon', label: 'Amazon / Retail' },
+  { id: 'programmatic', label: 'Programmatic / CTV' },
+  { id: 'seo', label: 'SEO / Organic' },
+  { id: 'email-sms', label: 'Email / SMS' },
+  { id: 'none', label: 'Starting fresh' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -137,6 +149,7 @@ export function DiagnosticForm() {
   const [direction, setDirection] = useState(1);
   const [selectedGoal, setSelectedGoal] = useState('');
   const [selectedBudget, setSelectedBudget] = useState('');
+  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -166,6 +179,14 @@ export function DiagnosticForm() {
     setTimeout(() => goForward(2), 250);
   };
 
+  const toggleChannel = (channelId: string) => {
+    setSelectedChannels((prev) =>
+      prev.includes(channelId)
+        ? prev.filter((c) => c !== channelId)
+        : [...prev, channelId]
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
@@ -179,6 +200,7 @@ export function DiagnosticForm() {
       const result = await submitDiagnostic({
         goal: selectedGoal,
         budget: selectedBudget,
+        channels: selectedChannels.join(', '),
         name: formData.name,
         email: formData.email,
         companyUrl: formData.companyUrl,
@@ -192,7 +214,7 @@ export function DiagnosticForm() {
     });
   };
 
-  const stepLabels = ['Your Goal', 'Your Scale', 'Your Details'];
+  const stepLabels = ['Your Goal', 'Your Scale', 'Your Channels', 'Your Details'];
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -367,8 +389,80 @@ export function DiagnosticForm() {
             </motion.div>
           )}
 
-          {/* ---- Step 3: Details ---- */}
+          {/* ---- Step 3: Channels ---- */}
           {step === 2 && !isSuccess && (
+            <motion.div
+              key="step-channels"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={slideTransition}
+              className="w-full"
+            >
+              <h3 className="text-2xl font-bold text-center mb-2">
+                What channels are you running today?
+              </h3>
+              <p className="text-sm text-center mb-8" style={{ color: '#7B7B8E' }}>
+                Select all that apply
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+                {channelOptions.map((channel) => {
+                  const isSelected = selectedChannels.includes(channel.id);
+                  return (
+                    <button
+                      key={channel.id}
+                      onClick={() => toggleChannel(channel.id)}
+                      className="rounded-xl px-4 py-4 text-center text-sm font-medium transition-all duration-300"
+                      style={{
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        background: isSelected
+                          ? 'rgba(34, 159, 161, 0.1)'
+                          : 'rgba(27, 33, 38, 0.5)',
+                        border: `1px solid ${
+                          isSelected
+                            ? 'rgba(34, 159, 161, 0.4)'
+                            : 'rgba(255, 255, 255, 0.08)'
+                        }`,
+                        color: isSelected ? '#229FA1' : '#d1d1d8',
+                      }}
+                    >
+                      {channel.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-center gap-4 mt-8">
+                <button
+                  onClick={() => goBack(1)}
+                  className="flex items-center gap-1.5 text-xs text-[#7B7B8E] hover:text-white transition-colors"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back
+                </button>
+                <button
+                  onClick={() => goForward(3)}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:brightness-110"
+                  style={{
+                    background: 'linear-gradient(135deg, #E8793A, #D4683A)',
+                    boxShadow: '0 0 16px rgba(232, 121, 58, 0.3)',
+                  }}
+                >
+                  Continue
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ---- Step 4: Details ---- */}
+          {step === 3 && !isSuccess && (
             <motion.div
               key="step-details"
               custom={direction}
@@ -522,7 +616,7 @@ export function DiagnosticForm() {
 
                 <button
                   type="button"
-                  onClick={() => goBack(1)}
+                  onClick={() => goBack(2)}
                   disabled={isPending}
                   className="mx-auto flex items-center gap-1.5 text-xs text-[#7B7B8E] hover:text-white transition-colors disabled:opacity-40"
                 >

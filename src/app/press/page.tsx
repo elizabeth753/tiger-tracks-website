@@ -30,7 +30,7 @@ const pressArticles = [
 
 export default function PressPage() {
   return (
-    <main>
+    <div>
       {/* ── Section 1: Hero ── */}
       <section className="relative py-24 px-6 overflow-hidden" style={{
         background: `
@@ -129,6 +129,6 @@ export default function PressPage() {
         primaryCTA={{ text: 'Contact Us', href: '/get-started' }}
         dark
       />
-    </main>
+    </div>
   );
 }

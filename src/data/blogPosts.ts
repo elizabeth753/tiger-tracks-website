@@ -8,6 +8,10 @@ export interface BlogPost {
   source: 'notion' | 'wordpress';
   author?: string;
   authorPedigree?: string;
+  /** Notion page ID (needed to fetch child blocks) */
+  pageId?: string;
+  /** Cover image URL pulled from Notion page cover */
+  coverImage?: string;
 }
 
 export const blogPosts: BlogPost[] = [

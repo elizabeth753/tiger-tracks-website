@@ -671,7 +671,7 @@ function BentoCapabilities() {
           <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
             Capabilities
           </span>
-          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" aria-label="Full-funnel marketing that compounds.">
             Full-funnel marketing<br />
             <span className="gradient-text">that compounds.</span>
           </h2>
@@ -989,7 +989,7 @@ function CaseStudiesSection() {
           <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-orange uppercase tracking-widest mb-4">
             Proof, Not Promises
           </span>
-          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" aria-label="Results that make CFOs smile.">
             Results that make<br />
             <span className="gradient-text-warm">CFOs smile.</span>
           </h2>
@@ -1088,7 +1088,7 @@ function TechSection() {
           <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
             Proprietary Technology
           </span>
-          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" aria-label="Other agencies use your tools. We built our own.">
             Other agencies use your tools.<br />
             <span className="gradient-text">We built our own.</span>
           </h2>
@@ -1626,7 +1626,7 @@ function FinalCTA() {
       </div>
 
       <div ref={sectionRef} className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <h2 className="reveal stagger-1 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
+        <h2 className="reveal stagger-1 text-4xl font-bold text-white sm:text-5xl lg:text-6xl" aria-label="Your Revenue Is Leaking. We'll Find Where.">
           Your Revenue Is Leaking.<br />
           <span className="gradient-text-warm">We&apos;ll Find Where.</span>
         </h2>
@@ -1723,7 +1723,7 @@ function ScrollTintManager() {
 
 export default function Home() {
   return (
-    <main>
+    <div>
       <ScrollTintManager />
       <HeroSection />
       <DiagonalDivider />
@@ -1744,6 +1744,6 @@ export default function Home() {
       <IntelligenceSection />
       <SectionBoundary />
       <FinalCTA />
-    </main>
+    </div>
   );
 }

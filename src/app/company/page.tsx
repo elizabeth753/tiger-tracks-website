@@ -908,7 +908,7 @@ function PrinciplesSection() {
 
 export default function AboutPage() {
   return (
-    <main>
+    <div>
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-center px-6 overflow-hidden" style={{
         background: `
@@ -997,6 +997,6 @@ export default function AboutPage() {
         dark
         badges={['Inc. 5000 #123', 'Meta Business Partner', '32 Specialists', '$200M+ Ad Spend Managed']}
       />
-    </main>
+    </div>
   );
 }

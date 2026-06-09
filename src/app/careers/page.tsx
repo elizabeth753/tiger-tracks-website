@@ -86,7 +86,7 @@ const openRoles = [
 
 export default function CareersPage() {
   return (
-    <main>
+    <div>
       {/* ── Section 1: Hero ── */}
       <section className="relative min-h-[50vh] flex items-center px-6 overflow-hidden" style={{
         background: `
@@ -257,6 +257,6 @@ export default function CareersPage() {
         primaryCTA={{ text: 'View Open Roles', href: '#open-roles' }}
         dark
       />
-    </main>
+    </div>
   );
 }

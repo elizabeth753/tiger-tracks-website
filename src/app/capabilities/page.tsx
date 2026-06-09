@@ -1117,7 +1117,7 @@ export default function ServicesPage() {
   }, []);
 
   return (
-    <main>
+    <div>
       <HeroSection />
 
       <ServiceSubNav activeId={activeService} />
@@ -1138,6 +1138,6 @@ export default function ServicesPage() {
         secondaryCTA={{ text: 'View Case Studies', href: '/results' }}
         dark
       />
-    </main>
+    </div>
   );
 }

@@ -86,7 +86,7 @@ function WideCard({ post, index }: { post: BlogPost; index: number }) {
       className="md:col-span-7"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true, margin: '100px 0px' }}
       transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] as const }}
     >
       <Link
@@ -181,7 +181,7 @@ function NarrowCard({ post, index }: { post: BlogPost; index: number }) {
       className="md:col-span-5"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true, margin: '100px 0px' }}
       transition={{ duration: 0.6, delay: index * 0.06 + 0.05, ease: [0.16, 1, 0.3, 1] as const }}
     >
       <Link
@@ -493,8 +493,11 @@ function AsymmetricGrid({ posts }: { posts: BlogPost[] }) {
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
+const POSTS_PER_PAGE = 8;
+
 export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
   const { ref: heroRef, inView: heroInView } = useInView({ threshold: 0.1 });
 
   /* Split posts */
@@ -503,9 +506,14 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
 
   /* Filtered view */
   const isFiltered = activeCategory !== 'All';
-  const displayPosts = isFiltered
+  const allFilteredPosts = isFiltered
     ? posts.filter((p) => p.category === activeCategory)
     : remaining;
+
+  /* Reset visible count when category changes */
+  const displayPosts = allFilteredPosts.slice(0, visibleCount);
+  const hasMore = visibleCount < allFilteredPosts.length;
+  const remainingCount = allFilteredPosts.length - visibleCount;
 
   return (
     <>
@@ -561,7 +569,10 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setVisibleCount(POSTS_PER_PAGE);
+                }}
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
                   activeCategory === cat
                     ? 'bg-[#229FA1] text-white'
@@ -592,7 +603,29 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
               No articles in this category yet.
             </p>
           ) : (
-            <AsymmetricGrid posts={displayPosts} />
+            <>
+              <AsymmetricGrid posts={displayPosts} />
+
+              {/* Load More */}
+              {hasMore && (
+                <div className="mt-12 text-center">
+                  <button
+                    onClick={() => setVisibleCount((c) => c + POSTS_PER_PAGE)}
+                    className="inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5"
+                    style={{
+                      color: '#229FA1',
+                      border: '1px solid rgba(34,159,161,0.3)',
+                      background: 'rgba(34,159,161,0.08)',
+                    }}
+                  >
+                    Load More Articles
+                    <span className="text-xs opacity-60">
+                      ({remainingCount} remaining)
+                    </span>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

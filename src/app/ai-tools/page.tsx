@@ -140,7 +140,7 @@ export default function AIToolsPage() {
   const active = tools[activeIndex];
 
   return (
-    <main className="min-h-screen" style={{ background: '#0A1119' }}>
+    <div className="min-h-screen" style={{ background: '#0A1119' }}>
 
       {/* ==============================================================
           HERO - Cinematic Entrance
@@ -500,6 +500,6 @@ export default function AIToolsPage() {
           '30-Day Free Trial',
         ]}
       />
-    </main>
+    </div>
   );
 }

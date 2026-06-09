@@ -238,7 +238,7 @@ export default function CaseStudiesPage() {
   const [activeChallenge, setActiveChallenge] = useState('All Challenges');
 
   return (
-    <main>
+    <div>
       <HeroSection />
       <FilterBar
         activeIndustry={activeIndustry}
@@ -256,6 +256,6 @@ export default function CaseStudiesPage() {
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         dark
       />
-    </main>
+    </div>
   );
 }

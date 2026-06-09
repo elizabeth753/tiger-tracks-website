@@ -156,6 +156,82 @@ function HeroSection() {
 }
 
 /* ================================================================== */
+/*  TRUST BAR — SOC 2, NDA, View-Only                                  */
+/* ================================================================== */
+
+const trustItems = [
+  {
+    label: 'SOC 2 Type II Compliant',
+    icon: (
+      <svg className="h-5 w-5 text-[#D4835A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'NDA Available on Request',
+    icon: (
+      <svg className="h-5 w-5 text-[#D4835A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'View-Only Access Model',
+    sublabel: 'No write access to ad accounts',
+    icon: (
+      <svg className="h-5 w-5 text-[#D4835A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+    ),
+  },
+] as const;
+
+function TrustBar() {
+  const ref = useRef(null);
+  const isInView = useMotionInViewSafe(ref, { once: true, margin: '-40px' });
+
+  return (
+    <section className="relative py-6 px-6" style={{ background: '#070d14' }}>
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={isInView ? 'visible' : 'hidden'}
+        variants={fadeUp}
+        className="mx-auto max-w-4xl"
+      >
+        <div
+          className="flex flex-col items-center justify-center gap-4 rounded-2xl px-6 py-5 sm:flex-row sm:gap-8"
+          style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
+          {trustItems.map((item, i) => (
+            <div key={item.label} className="flex items-center gap-3">
+              {i > 0 && (
+                <div className="hidden h-5 w-px bg-white/10 sm:block sm:-ml-4 sm:mr-0" aria-hidden="true" />
+              )}
+              <div className="flex items-center gap-2.5">
+                {item.icon}
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-slate-300">{item.label}</span>
+                  {'sublabel' in item && item.sublabel && (
+                    <span className="text-[11px] text-slate-500">{item.sublabel}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ================================================================== */
 /*  2. THE HIDDEN DRAG — Bento Grid with glowing leak borders          */
 /* ================================================================== */
 
@@ -183,7 +259,7 @@ const painPoints = [
   {
     title: 'EBITDA Blind Spots',
     description:
-      'CMOs spending without accountability to unit economics. Every quarter of wasted spend during a 3-to-5-year hold period compresses your exit multiple.',
+      'CMOs spending without accountability to unit economics. Unchecked waste drives margin compression that erodes exit multiples over every quarter of a 3-to-5-year hold period.',
     icon: (
       <svg className="h-6 w-6 text-tt-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -274,7 +350,7 @@ const offerings = [
     title: 'Pre-Deal Digital Diligence Audit',
     tagline: 'Know before you close.',
     description:
-      'A forensic marketing audit delivered in 14 days. We evaluate efficiency, competitive positioning, technical infrastructure, growth potential, and risk exposure so you can underwrite marketing with the same rigor you bring to financials.',
+      'A forensic marketing audit delivered in 14 days. We evaluate spend efficiency, attribution accuracy, incrementality testing gaps, competitive positioning, technical infrastructure, and growth potential so you can underwrite marketing with the same rigor you bring to financials.',
     deliverables: [
       'Channel-by-channel spend efficiency scorecard',
       'True CAC and LTV:CAC by acquisition source',
@@ -1217,8 +1293,9 @@ function EBITDACalculatorSection() {
 
 export default function PEVCPage() {
   return (
-    <main>
+    <div>
       <HeroSection />
+      <TrustBar />
       <HiddenDragSection />
       <AccelerateSection />
       <ByTheNumbersSection />
@@ -1241,6 +1318,6 @@ export default function PEVCPage() {
           '90%+ Client Expansion Rate',
         ]}
       />
-    </main>
+    </div>
   );
 }

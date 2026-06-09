@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
         destination: '/results/dovetail',
         permanent: true,
       },
+      {
+        source: '/pe-vc-partners',
+        destination: '/pe-vc',
+        permanent: true,
+      },
     ];
   },
 };

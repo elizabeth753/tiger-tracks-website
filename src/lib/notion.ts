@@ -75,6 +75,14 @@ function getDate(prop: unknown): string {
 // Map a Notion page to the BlogPost interface
 // ---------------------------------------------------------------------------
 
+function getCoverUrl(page: NotionPage): string | undefined {
+  if (!('cover' in page) || !page.cover) return undefined;
+  const cover = page.cover as { type: string; external?: { url: string }; file?: { url: string } };
+  if (cover.type === 'external') return cover.external?.url;
+  if (cover.type === 'file') return cover.file?.url;
+  return undefined;
+}
+
 function mapPageToBlogPost(page: NotionPage): BlogPost | null {
   if (!('properties' in page)) return null;
 
@@ -98,6 +106,8 @@ function mapPageToBlogPost(page: NotionPage): BlogPost | null {
     excerpt: getRichText(props['Excerpt']) || '',
     readTime: getRichText(props['Read Time']) || '5 min',
     source: 'notion',
+    pageId: page.id,
+    coverImage: getCoverUrl(page),
   };
 }
 
@@ -181,5 +191,124 @@ export async function fetchBlogPostBySlug(
   } catch (error) {
     console.error(`[notion] Failed to fetch post "${slug}":`, error);
     return blogPosts.find((p) => p.slug === slug);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Notion Block Types (serializable subset for the client renderer)
+// ---------------------------------------------------------------------------
+
+export interface NotionRichText {
+  plain_text: string;
+  href: string | null;
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underline: boolean;
+    code: boolean;
+    color: string;
+  };
+}
+
+export interface NotionBlock {
+  id: string;
+  type: string;
+  has_children: boolean;
+  children?: NotionBlock[];
+  /* Each block type stores its data under its own key. We keep a loose shape
+     here to avoid importing the full Notion SDK types on the client. */
+  data: {
+    rich_text?: NotionRichText[];
+    language?: string;
+    caption?: NotionRichText[];
+    url?: string;
+    icon?: { type: string; emoji?: string };
+    checked?: boolean;
+    expression?: string;
+    cells?: NotionRichText[][];
+    /* table rows */
+    rows?: { cells: NotionRichText[][] }[];
+  };
+}
+
+/**
+ * Fetch all child blocks for a Notion page (handles pagination).
+ * Returns a serializable array safe to pass from server to client components.
+ */
+export async function fetchPageBlocks(
+  pageId: string,
+): Promise<NotionBlock[]> {
+  const notion = getNotionClient();
+  if (!notion) return [];
+
+  try {
+    const blocks: NotionBlock[] = [];
+    let cursor: string | undefined;
+
+    do {
+      const response = await notion.blocks.children.list({
+        block_id: pageId,
+        start_cursor: cursor,
+        page_size: 100,
+      });
+
+      for (const block of response.results) {
+        if (!('type' in block)) continue;
+        const b = block as Record<string, unknown>;
+        const type = b.type as string;
+        const blockData = (b[type] ?? {}) as Record<string, unknown>;
+
+        const parsed: NotionBlock = {
+          id: b.id as string,
+          type,
+          has_children: b.has_children as boolean,
+          data: {
+            rich_text: blockData.rich_text as NotionRichText[] | undefined,
+            language: blockData.language as string | undefined,
+            caption: blockData.caption as NotionRichText[] | undefined,
+            url: blockData.url as string | undefined,
+            icon: blockData.icon as { type: string; emoji?: string } | undefined,
+            checked: blockData.checked as boolean | undefined,
+            expression: blockData.expression as string | undefined,
+            cells: blockData.cells as NotionRichText[][] | undefined,
+          },
+        };
+
+        /* Handle image blocks (file vs external) */
+        if (type === 'image') {
+          const imgType = blockData.type as string | undefined;
+          if (imgType === 'file') {
+            parsed.data.url = (blockData.file as { url: string })?.url;
+          } else if (imgType === 'external') {
+            parsed.data.url = (blockData.external as { url: string })?.url;
+          }
+        }
+
+        /* Handle video/embed URL blocks similarly */
+        if (type === 'video' || type === 'embed') {
+          const mediaType = blockData.type as string | undefined;
+          if (mediaType === 'external') {
+            parsed.data.url = (blockData.external as { url: string })?.url;
+          }
+        }
+
+        /* Recursively fetch children for toggles, column_lists, etc. */
+        if (parsed.has_children) {
+          parsed.children = await fetchPageBlocks(b.id as string);
+        }
+
+        blocks.push(parsed);
+      }
+
+      cursor = response.has_more
+        ? (response.next_cursor ?? undefined)
+        : undefined;
+    } while (cursor);
+
+    return blocks;
+  } catch (error) {
+    console.error(`[notion] Failed to fetch blocks for ${pageId}:`, error);
+    return [];
   }
 }
