@@ -118,7 +118,7 @@ function BulletedListItem({ block }: { block: NotionBlock }) {
     <li className="font-sans text-[#F0EFED] text-base leading-6 py-[2px] print:text-black print:text-sm">
       <RichText segments={block.data.rich_text ?? []} />
       {block.children && block.children.length > 0 && (
-        <ul className="mt-1 ml-[26px] list-disc">
+        <ul className="mt-1 ml-6 list-disc">
           {block.children.map((child) => (
             <BlockRenderer key={child.id} block={child} />
           ))}
@@ -133,7 +133,7 @@ function NumberedListItem({ block }: { block: NotionBlock }) {
     <li className="font-sans text-[#F0EFED] text-base leading-6 py-[2px] print:text-black print:text-sm">
       <RichText segments={block.data.rich_text ?? []} />
       {block.children && block.children.length > 0 && (
-        <ol className="mt-1 ml-[26px] list-decimal">
+        <ol className="mt-1 ml-6 list-decimal">
           {block.children.map((child) => (
             <BlockRenderer key={child.id} block={child} />
           ))}
@@ -162,8 +162,8 @@ function TodoItem({ block }: { block: NotionBlock }) {
 
 function Quote({ block }: { block: NotionBlock }) {
   return (
-    <blockquote className="my-4 border-l-[3px] border-[#F0EFED] pl-[14px] py-[3px] print:border-gray-300">
-      <p className="font-sans text-[#F0EFED] text-base leading-6 text-left print:text-gray-700 print:text-sm">
+    <blockquote className="my-4 border-l-[3px] border-white/30 pl-4 py-[3px] print:border-gray-300">
+      <p className="font-sans text-[#F0EFED] text-base leading-6 text-left italic print:text-gray-700 print:text-sm">
         <RichText segments={block.data.rich_text ?? []} />
       </p>
     </blockquote>
@@ -299,21 +299,21 @@ function TableBlock({ block }: { block: NotionBlock }) {
   if (!block.children || block.children.length === 0) return null;
 
   return (
-    <div className="my-4 overflow-hidden border border-white/[0.06] print:border-gray-300">
+    <div className="my-4 rounded border border-white/10 print:border-gray-300">
       <div className="overflow-x-auto">
         <table className="w-full text-base font-sans print:text-xs">
           <tbody>
             {block.children.map((row, rowIdx) => (
               <tr
                 key={row.id}
-                className={rowIdx === 0 ? 'bg-[#2F2F2F] print:bg-gray-100' : rowIdx % 2 === 0 ? 'bg-white/[0.02] print:bg-gray-50' : 'print:bg-white'}
+                className={rowIdx === 0 ? 'bg-white/[0.04] print:bg-gray-100' : ''}
               >
                 {(row.data.cells ?? []).map((cell, cellIdx) => {
                   const Tag = rowIdx === 0 ? 'th' : 'td';
                   return (
                     <Tag
                       key={cellIdx}
-                      className={`px-4 py-3 text-left border-b border-white/[0.04] print:border-gray-200 ${
+                      className={`p-3 text-left border-b border-white/10 print:border-gray-200 ${
                         rowIdx === 0
                           ? 'font-semibold text-[#F0EFED] text-sm font-sans print:text-black'
                           : 'text-[#F0EFED] print:text-black'
@@ -458,7 +458,7 @@ export function NotionBlockRenderer({ blocks }: { blocks: NotionBlock[] }) {
       {grouped.map((group, i) => {
         if (group.kind === 'bulleted_list') {
           return (
-            <ul key={i} className="my-1 pl-[26px] list-disc">
+            <ul key={i} className="my-1 pl-6 list-disc">
               {group.blocks.map((block) => (
                 <BlockRenderer key={block.id} block={block} />
               ))}
@@ -467,7 +467,7 @@ export function NotionBlockRenderer({ blocks }: { blocks: NotionBlock[] }) {
         }
         if (group.kind === 'numbered_list') {
           return (
-            <ol key={i} className="my-1 pl-[26px] list-decimal">
+            <ol key={i} className="my-1 pl-6 list-decimal">
               {group.blocks.map((block) => (
                 <BlockRenderer key={block.id} block={block} />
               ))}
