@@ -17,6 +17,14 @@ function getParentPageId(): string | null {
 }
 
 // ---------------------------------------------------------------------------
+// In-memory cache (survives across ISR calls within the same build/worker)
+// ---------------------------------------------------------------------------
+
+let _postsCache: BlogPost[] | null = null;
+let _postsCacheTime = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -112,6 +120,11 @@ async function childPageToBlogPost(
  * Falls back to static data when env vars are absent or on error.
  */
 export async function fetchBlogPosts(): Promise<BlogPost[]> {
+  // Return cached result if fresh (prevents repeated API calls during build)
+  if (_postsCache && Date.now() - _postsCacheTime < CACHE_TTL_MS) {
+    return _postsCache;
+  }
+
   const notion = getNotionClient();
   const parentPageId = getParentPageId();
 
@@ -173,7 +186,10 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
       `[notion] Fetched ${validPosts.length} posts from ${childPageIds.length} child pages`,
     );
 
-    return validPosts.length > 0 ? validPosts : blogPosts;
+    const result = validPosts.length > 0 ? validPosts : blogPosts;
+    _postsCache = result;
+    _postsCacheTime = Date.now();
+    return result;
   } catch (error) {
     console.error('[notion] Failed to fetch blog posts:', error);
     return blogPosts;
