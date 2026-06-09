@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { blogPosts } from '@/data/blogPosts';
-import {
-  fetchBlogPostBySlug,
-  fetchPageBlocks,
-} from '@/lib/notion';
+import { fetchPageBlocks } from '@/lib/notion';
 import { ArticlePageClient } from '@/components/ArticlePageClient';
 
 export const revalidate = 3600;
@@ -32,12 +29,10 @@ const FALLBACK_DESCRIPTION =
 /*  generateMetadata and the page component)                           */
 /* ------------------------------------------------------------------ */
 
-async function resolveArticle(slug: string) {
-  let article = await fetchBlogPostBySlug(slug);
-  if (!article) {
-    article = blogPosts.find((p) => p.slug === slug);
-  }
-  return article ?? null;
+function resolveArticle(slug: string) {
+  // Use static blogPosts data only — no Notion API calls needed for metadata.
+  // The Notion API is only used to fetch the article BODY (blocks) via fetchPageBlocks.
+  return blogPosts.find((p) => p.slug === slug) ?? null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -50,7 +45,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await resolveArticle(slug);
+  const article = resolveArticle(slug);
 
   if (!article) {
     return {
@@ -136,7 +131,7 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await resolveArticle(slug);
+  const article = resolveArticle(slug);
 
   if (!article) {
     notFound();

@@ -1,17 +1,15 @@
 import type { Metadata } from 'next';
-import { fetchBlogPosts } from '@/lib/notion';
+import { blogPosts } from '@/data/blogPosts';
 import { IntelligenceHubClient } from '@/components/IntelligenceHubClient';
-
-export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Intelligence Series',
   description:
-    'Strategic research and tactical playbooks for the performance era. Deep analysis from the ex-Google team at Tiger Tracks.',
+    'Eye of the Tiger Intelligence Series -- AI strategy briefings for business leaders.',
   openGraph: {
     title: 'Intelligence Series | Tiger Tracks',
     description:
-      'Strategic research and tactical playbooks for the performance era. Deep analysis from the ex-Google team at Tiger Tracks.',
+      'Eye of the Tiger Intelligence Series -- AI strategy briefings for business leaders.',
     url: 'https://tigertracks.ai/intelligence',
     type: 'website',
   },
@@ -19,12 +17,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Intelligence Series | Tiger Tracks',
     description:
-      'Strategic research and tactical playbooks for the performance era.',
+      'Eye of the Tiger Intelligence Series -- AI strategy briefings for business leaders.',
   },
 };
 
-export default async function IntelligencePage() {
-  const posts = await fetchBlogPosts();
-
-  return <IntelligenceHubClient posts={posts} />;
+export default function IntelligencePage() {
+  return <IntelligenceHubClient posts={blogPosts} />;
 }
