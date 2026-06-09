@@ -17,13 +17,13 @@ function RichText({ segments }: { segments: NotionRichText[] }) {
 
         if (seg.annotations.code) {
           node = (
-            <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.88em] font-mono text-[#229FA1]">
+            <code className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.88em] font-mono text-[#229FA1] print:bg-gray-100 print:text-gray-800">
               {node}
             </code>
           );
         }
         if (seg.annotations.bold) {
-          node = <strong className="font-semibold text-white">{node}</strong>;
+          node = <strong className="font-semibold text-white print:text-black">{node}</strong>;
         }
         if (seg.annotations.italic) {
           node = <em>{node}</em>;
@@ -40,7 +40,7 @@ function RichText({ segments }: { segments: NotionRichText[] }) {
               href={seg.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#229FA1] underline decoration-[#229FA1]/30 underline-offset-4 transition-colors duration-300 hover:decoration-[#229FA1]"
+              className="text-[#229FA1] underline decoration-[#229FA1]/30 underline-offset-4 transition-colors duration-300 hover:decoration-[#229FA1] print:text-blue-700 print:decoration-blue-700/50"
             >
               {node}
             </a>
@@ -59,17 +59,25 @@ function RichText({ segments }: { segments: NotionRichText[] }) {
 
 function Paragraph({ block }: { block: NotionBlock }) {
   const rt = block.data.rich_text;
-  if (!rt || rt.length === 0) return <div className="h-6" />;
+  if (!rt || rt.length === 0) return <div className="h-6 print:h-4" />;
   return (
-    <p className="text-[#9E9E9E] leading-[1.85] text-base lg:text-lg">
+    <p className="font-serif text-[#9E9E9E] leading-[1.95] text-base lg:text-lg text-justify print:text-black print:text-sm print:leading-[1.7]">
       <RichText segments={rt} />
     </p>
   );
 }
 
+function Heading1({ block }: { block: NotionBlock }) {
+  return (
+    <h2 className="mt-16 mb-6 text-2xl lg:text-3xl font-bold text-white tracking-tight font-sans uppercase print:text-black print:text-xl print:mt-10 print:mb-4">
+      <RichText segments={block.data.rich_text ?? []} />
+    </h2>
+  );
+}
+
 function Heading2({ block }: { block: NotionBlock }) {
   return (
-    <h2 className="mt-14 mb-5 text-2xl lg:text-3xl font-bold text-white tracking-tight">
+    <h2 className="mt-14 mb-5 text-xl lg:text-2xl font-bold text-white tracking-tight font-sans print:text-black print:text-lg print:mt-8 print:mb-3">
       <RichText segments={block.data.rich_text ?? []} />
     </h2>
   );
@@ -77,23 +85,15 @@ function Heading2({ block }: { block: NotionBlock }) {
 
 function Heading3({ block }: { block: NotionBlock }) {
   return (
-    <h3 className="mt-10 mb-4 text-xl lg:text-2xl font-semibold text-white tracking-tight">
+    <h3 className="mt-10 mb-4 text-lg lg:text-xl font-semibold text-white tracking-tight font-sans print:text-black print:text-base print:mt-6 print:mb-2">
       <RichText segments={block.data.rich_text ?? []} />
     </h3>
   );
 }
 
-function Heading1({ block }: { block: NotionBlock }) {
-  return (
-    <h2 className="mt-16 mb-6 text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-      <RichText segments={block.data.rich_text ?? []} />
-    </h2>
-  );
-}
-
 function BulletedListItem({ block }: { block: NotionBlock }) {
   return (
-    <li className="text-[#9E9E9E] leading-[1.85] marker:text-[#229FA1]">
+    <li className="font-serif text-[#9E9E9E] leading-[1.85] marker:text-[#229FA1] print:text-black print:marker:text-black print:text-sm">
       <RichText segments={block.data.rich_text ?? []} />
       {block.children && block.children.length > 0 && (
         <ul className="mt-2 ml-5 list-disc space-y-1.5">
@@ -108,7 +108,7 @@ function BulletedListItem({ block }: { block: NotionBlock }) {
 
 function NumberedListItem({ block }: { block: NotionBlock }) {
   return (
-    <li className="text-[#9E9E9E] leading-[1.85] marker:text-[#229FA1]">
+    <li className="font-serif text-[#9E9E9E] leading-[1.85] marker:text-[#229FA1] print:text-black print:marker:text-black print:text-sm">
       <RichText segments={block.data.rich_text ?? []} />
       {block.children && block.children.length > 0 && (
         <ol className="mt-2 ml-5 list-decimal space-y-1.5">
@@ -123,10 +123,10 @@ function NumberedListItem({ block }: { block: NotionBlock }) {
 
 function TodoItem({ block }: { block: NotionBlock }) {
   return (
-    <li className="flex items-start gap-3 text-[#9E9E9E] leading-[1.85]">
-      <span className={`mt-1.5 h-4 w-4 shrink-0 rounded border ${block.data.checked ? 'bg-[#229FA1] border-[#229FA1]' : 'border-white/20'} flex items-center justify-center`}>
+    <li className="flex items-start gap-3 font-serif text-[#9E9E9E] leading-[1.85] print:text-black print:text-sm">
+      <span className={`mt-1.5 h-4 w-4 shrink-0 rounded border ${block.data.checked ? 'bg-[#229FA1] border-[#229FA1] print:bg-black print:border-black' : 'border-white/20 print:border-gray-400'} flex items-center justify-center`}>
         {block.data.checked && (
-          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+          <svg className="w-2.5 h-2.5 text-white print:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         )}
@@ -138,10 +138,27 @@ function TodoItem({ block }: { block: NotionBlock }) {
   );
 }
 
+/**
+ * Academic Abstract block: used for the FIRST quote or callout in an article.
+ * Renders as a formal abstract with teal left border and italic serif text.
+ */
+function AbstractBlock({ block }: { block: NotionBlock }) {
+  return (
+    <div className="my-10 border-l-4 border-[#229FA1] bg-[#229FA1]/[0.04] p-6 md:p-8 print:border-l-2 print:border-gray-400 print:bg-gray-50 print:p-4">
+      <p className="mb-3 text-xs font-mono uppercase tracking-[0.2em] text-[#229FA1] print:text-gray-600">
+        Abstract
+      </p>
+      <p className="font-serif italic text-slate-300 text-base lg:text-lg leading-[1.95] text-justify print:text-black print:text-sm print:leading-[1.7]">
+        <RichText segments={block.data.rich_text ?? []} />
+      </p>
+    </div>
+  );
+}
+
 function Quote({ block }: { block: NotionBlock }) {
   return (
-    <blockquote className="my-8 border-l-4 border-[#229FA1] bg-[#1B2126]/50 rounded-r-xl p-6 backdrop-blur-sm">
-      <p className="font-serif italic text-slate-300 text-lg leading-relaxed">
+    <blockquote className="my-8 border-l-4 border-[#229FA1]/40 bg-white/[0.02] p-6 print:border-l-2 print:border-gray-300 print:bg-gray-50 print:p-4">
+      <p className="font-serif italic text-slate-300 text-base lg:text-lg leading-[1.85] text-justify print:text-gray-700 print:text-sm">
         <RichText segments={block.data.rich_text ?? []} />
       </p>
     </blockquote>
@@ -151,12 +168,12 @@ function Quote({ block }: { block: NotionBlock }) {
 function Callout({ block }: { block: NotionBlock }) {
   const emoji = block.data.icon?.type === 'emoji' ? block.data.icon.emoji : null;
   return (
-    <div className="my-8 flex gap-4 border-l-4 border-[#229FA1] bg-[#1B2126]/50 rounded-r-xl p-6 backdrop-blur-sm">
-      {emoji && <span className="text-2xl shrink-0 mt-0.5">{emoji}</span>}
-      <div className="font-serif italic text-slate-300 text-lg leading-relaxed">
+    <div className="my-8 flex gap-4 border-l-4 border-[#229FA1]/40 bg-white/[0.02] p-6 print:border-l-2 print:border-gray-300 print:bg-gray-50 print:p-4">
+      {emoji && <span className="text-2xl shrink-0 mt-0.5 print:text-lg">{emoji}</span>}
+      <div className="font-serif italic text-slate-300 text-base lg:text-lg leading-[1.85] text-justify print:text-gray-700 print:text-sm print:not-italic">
         <RichText segments={block.data.rich_text ?? []} />
         {block.children && block.children.length > 0 && (
-          <div className="mt-3 not-italic font-sans text-base">
+          <div className="mt-3 not-italic font-sans text-base print:text-sm">
             {block.children.map((child) => (
               <BlockRenderer key={child.id} block={child} />
             ))}
@@ -171,18 +188,18 @@ function CodeBlock({ block }: { block: NotionBlock }) {
   const lang = block.data.language || '';
   const text = (block.data.rich_text ?? []).map((s) => s.plain_text).join('');
   return (
-    <div className="my-8 rounded-xl overflow-hidden border border-white/[0.06]">
+    <div className="my-8 rounded-sm overflow-hidden border border-white/[0.06] print:border-gray-300 print:rounded-none">
       {/* Language tab */}
-      <div className="flex items-center gap-2 bg-[#1B2126] px-4 py-2 border-b border-white/[0.06]">
-        <div className="flex gap-1.5">
+      <div className="flex items-center gap-2 bg-[#1B2126] px-4 py-2 border-b border-white/[0.06] print:bg-gray-100 print:border-gray-300">
+        <div className="flex gap-1.5 print:hidden">
           <span className="w-3 h-3 rounded-full bg-white/10" />
           <span className="w-3 h-3 rounded-full bg-white/10" />
           <span className="w-3 h-3 rounded-full bg-white/10" />
         </div>
-        <span className="ml-2 text-xs font-mono uppercase tracking-wider text-slate-500">{lang}</span>
+        <span className="ml-2 text-xs font-mono uppercase tracking-wider text-slate-500 print:text-gray-500 print:ml-0">{lang}</span>
       </div>
-      <pre className="bg-[#0D151E] p-6 overflow-x-auto">
-        <code className="text-sm font-mono text-[#9E9E9E] leading-relaxed whitespace-pre">{text}</code>
+      <pre className="bg-[#0D151E] p-6 overflow-x-auto print:bg-gray-50 print:p-4">
+        <code className="text-sm font-mono text-[#9E9E9E] leading-relaxed whitespace-pre print:text-black print:text-xs">{text}</code>
       </pre>
     </div>
   );
@@ -196,8 +213,8 @@ function NotionImage({ block }: { block: NotionBlock }) {
   const hasCaption = caption && caption.length > 0;
 
   return (
-    <figure className="my-10">
-      <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+    <figure className="my-10 print:my-6">
+      <div className="relative overflow-hidden border border-white/10 print:border-gray-300">
         <Image
           src={url}
           alt={hasCaption ? caption.map((s) => s.plain_text).join('') : 'Article image'}
@@ -209,7 +226,7 @@ function NotionImage({ block }: { block: NotionBlock }) {
         />
       </div>
       {hasCaption && (
-        <figcaption className="mt-3 text-center text-sm text-slate-500 italic">
+        <figcaption className="mt-3 text-center text-sm font-serif italic text-slate-500 print:text-gray-500 print:text-xs">
           <RichText segments={caption} />
         </figcaption>
       )}
@@ -219,20 +236,16 @@ function NotionImage({ block }: { block: NotionBlock }) {
 
 function Divider() {
   return (
-    <div className="my-10 flex items-center gap-4">
-      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#229FA1]/20 to-transparent" />
-      <div className="h-1.5 w-1.5 rounded-full bg-[#229FA1]/30" />
-      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#229FA1]/20 to-transparent" />
-    </div>
+    <hr className="my-10 border-t border-white/10 print:border-gray-300 print:my-6" />
   );
 }
 
 function Toggle({ block }: { block: NotionBlock }) {
   return (
-    <details className="my-4 group rounded-xl border border-white/[0.06] bg-[#1B2126]/30">
-      <summary className="cursor-pointer px-5 py-4 text-white font-medium list-none flex items-center gap-3">
+    <details className="my-4 group border border-white/[0.06] bg-white/[0.01] print:border-gray-300">
+      <summary className="cursor-pointer px-5 py-4 text-white font-sans font-medium list-none flex items-center gap-3 print:text-black">
         <svg
-          className="w-4 h-4 text-[#229FA1] transition-transform duration-200 group-open:rotate-90"
+          className="w-4 h-4 text-[#229FA1] transition-transform duration-200 group-open:rotate-90 print:text-black"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -263,7 +276,7 @@ function VideoEmbed({ block }: { block: NotionBlock }) {
   if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
 
   return (
-    <div className="my-10 rounded-xl overflow-hidden border border-white/10 shadow-2xl" style={{ aspectRatio: '16/9' }}>
+    <div className="my-10 overflow-hidden border border-white/10 print:hidden" style={{ aspectRatio: '16/9' }}>
       <iframe
         src={embedUrl}
         className="w-full h-full"
@@ -279,24 +292,24 @@ function TableBlock({ block }: { block: NotionBlock }) {
   if (!block.children || block.children.length === 0) return null;
 
   return (
-    <div className="my-8 rounded-xl overflow-hidden border border-white/[0.06]">
+    <div className="my-8 overflow-hidden border border-white/[0.06] print:border-gray-300">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm font-serif print:text-xs">
           <tbody>
             {block.children.map((row, rowIdx) => (
               <tr
                 key={row.id}
-                className={rowIdx === 0 ? 'bg-[#1B2126]' : rowIdx % 2 === 0 ? 'bg-white/[0.02]' : ''}
+                className={rowIdx === 0 ? 'bg-[#1B2126] print:bg-gray-100' : rowIdx % 2 === 0 ? 'bg-white/[0.02] print:bg-gray-50' : 'print:bg-white'}
               >
                 {(row.data.cells ?? []).map((cell, cellIdx) => {
                   const Tag = rowIdx === 0 ? 'th' : 'td';
                   return (
                     <Tag
                       key={cellIdx}
-                      className={`px-4 py-3 text-left border-b border-white/[0.04] ${
+                      className={`px-4 py-3 text-left border-b border-white/[0.04] print:border-gray-200 ${
                         rowIdx === 0
-                          ? 'font-semibold text-white text-xs uppercase tracking-wider'
-                          : 'text-[#9E9E9E]'
+                          ? 'font-semibold text-white text-xs uppercase tracking-wider font-sans print:text-black'
+                          : 'text-[#9E9E9E] print:text-black'
                       }`}
                     >
                       <RichText segments={cell} />
@@ -316,7 +329,7 @@ function TableBlock({ block }: { block: NotionBlock }) {
 /*  Block Router                                                       */
 /* ------------------------------------------------------------------ */
 
-function BlockRenderer({ block }: { block: NotionBlock }) {
+function BlockRenderer({ block, isFirstQuoteOrCallout }: { block: NotionBlock; isFirstQuoteOrCallout?: boolean }) {
   switch (block.type) {
     case 'paragraph':
       return <Paragraph block={block} />;
@@ -333,9 +346,9 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
     case 'to_do':
       return <TodoItem block={block} />;
     case 'quote':
-      return <Quote block={block} />;
+      return isFirstQuoteOrCallout ? <AbstractBlock block={block} /> : <Quote block={block} />;
     case 'callout':
-      return <Callout block={block} />;
+      return isFirstQuoteOrCallout ? <AbstractBlock block={block} /> : <Callout block={block} />;
     case 'code':
       return <CodeBlock block={block} />;
     case 'image':
@@ -351,7 +364,7 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
       return <TableBlock block={block} />;
     case 'column_list':
       return (
-        <div className="my-8 grid gap-6" style={{ gridTemplateColumns: `repeat(${block.children?.length ?? 2}, 1fr)` }}>
+        <div className="my-8 grid gap-6 print:gap-4" style={{ gridTemplateColumns: `repeat(${block.children?.length ?? 2}, 1fr)` }}>
           {block.children?.map((col) => (
             <div key={col.id} className="space-y-4">
               {col.children?.map((child) => (
@@ -367,9 +380,9 @@ function BlockRenderer({ block }: { block: NotionBlock }) {
           href={block.data.url ?? '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="my-6 flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[#1B2126]/50 px-5 py-4 text-[#229FA1] text-sm hover:border-[#229FA1]/30 transition-colors duration-300"
+          className="my-6 flex items-center gap-3 border border-white/[0.06] bg-white/[0.02] px-5 py-4 text-[#229FA1] text-sm font-mono hover:border-[#229FA1]/30 transition-colors duration-300 print:text-blue-700 print:border-gray-300 print:bg-gray-50"
         >
-          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-4 h-4 shrink-0 print:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
           <span className="truncate">{block.data.url}</span>
@@ -434,6 +447,9 @@ function groupBlocks(blocks: NotionBlock[]): GroupedBlock[] {
 export function NotionBlockRenderer({ blocks }: { blocks: NotionBlock[] }) {
   const grouped = groupBlocks(blocks);
 
+  // Track whether we've rendered the first quote/callout as an abstract
+  let hasRenderedAbstract = false;
+
   return (
     <>
       {grouped.map((group, i) => {
@@ -464,7 +480,22 @@ export function NotionBlockRenderer({ blocks }: { blocks: NotionBlock[] }) {
             </ul>
           );
         }
-        return <BlockRenderer key={group.blocks[0].id} block={group.blocks[0]} />;
+
+        const block = group.blocks[0];
+        const isQuoteOrCallout = block.type === 'quote' || block.type === 'callout';
+        const shouldBeAbstract = isQuoteOrCallout && !hasRenderedAbstract;
+
+        if (shouldBeAbstract) {
+          hasRenderedAbstract = true;
+        }
+
+        return (
+          <BlockRenderer
+            key={block.id}
+            block={block}
+            isFirstQuoteOrCallout={shouldBeAbstract}
+          />
+        );
       })}
     </>
   );
