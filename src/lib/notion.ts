@@ -255,6 +255,105 @@ export async function fetchBlogPostBySlug(
 }
 
 // ---------------------------------------------------------------------------
+// Lightweight page ID lookup (1-2 API calls, no pages.retrieve per child)
+// ---------------------------------------------------------------------------
+
+/** Cache the slug->pageId map so repeated ISR calls don't re-fetch */
+let _slugToPageId: Record<string, string> | null = null;
+let _slugMapTime = 0;
+
+/**
+ * Find the Notion page ID for a given slug by listing child_page blocks
+ * under the parent page. This only calls blocks.children.list (1-2 requests)
+ * instead of pages.retrieve for every child page (~30 requests).
+ *
+ * The child_page block type includes the page title directly, so we can
+ * derive the slug without making additional API calls.
+ */
+export async function findPageIdBySlug(slug: string): Promise<string | null> {
+  // Return from cache if fresh
+  if (_slugToPageId && Date.now() - _slugMapTime < CACHE_TTL_MS) {
+    return _slugToPageId[slug] ?? null;
+  }
+
+  const notion = getNotionClient();
+  const parentPageId = getParentPageId();
+  if (!notion || !parentPageId) return null;
+
+  try {
+    const slugMap: Record<string, string> = {};
+    let cursor: string | undefined;
+
+    do {
+      const response = await withRetry(
+        () => notion.blocks.children.list({
+          block_id: parentPageId,
+          start_cursor: cursor,
+          page_size: 100,
+        }),
+        'blocks.children.list(slugLookup)',
+      );
+
+      for (const block of response.results) {
+        if (!('type' in block)) continue;
+        const b = block as Record<string, unknown>;
+        if (b.type !== 'child_page') continue;
+
+        // child_page blocks have a `child_page` property with `title`
+        const childPageData = b.child_page as { title?: string } | undefined;
+        const title = childPageData?.title;
+        if (!title) continue;
+
+        const childSlug = slugify(title);
+        slugMap[childSlug] = b.id as string;
+      }
+
+      cursor = response.has_more
+        ? (response.next_cursor ?? undefined)
+        : undefined;
+    } while (cursor);
+
+    _slugToPageId = slugMap;
+    _slugMapTime = Date.now();
+
+    console.log(`[notion] Built slug map with ${Object.keys(slugMap).length} entries`);
+    return slugMap[slug] ?? null;
+  } catch (error) {
+    console.error('[notion] Failed to build slug map:', error);
+    return null;
+  }
+}
+
+/**
+ * Fetch just the cover image URL for a Notion page (single API call).
+ */
+export async function fetchPageCover(pageId: string): Promise<string | null> {
+  const notion = getNotionClient();
+  if (!notion) return null;
+
+  try {
+    const page = await withRetry(
+      () => notion.pages.retrieve({ page_id: pageId }),
+      `pages.retrieve.cover(${pageId.slice(0, 8)})`,
+    );
+
+    if ('cover' in page && page.cover) {
+      const cover = page.cover as {
+        type: string;
+        external?: { url: string };
+        file?: { url: string };
+      };
+      if (cover.type === 'external') return cover.external?.url ?? null;
+      if (cover.type === 'file') return cover.file?.url ?? null;
+    }
+    return null;
+  } catch (error) {
+    console.error(`[notion] Failed to fetch cover for ${pageId}:`, error);
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Notion Block Types (serializable subset for the client renderer)
 // ---------------------------------------------------------------------------
 

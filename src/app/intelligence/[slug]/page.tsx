@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { blogPosts } from '@/data/blogPosts';
-import { fetchPageBlocks } from '@/lib/notion';
+import { fetchPageBlocks, findPageIdBySlug, fetchPageCover } from '@/lib/notion';
 import { ArticlePageClient } from '@/components/ArticlePageClient';
 
 export const revalidate = 3600;
@@ -137,9 +137,23 @@ export default async function ArticlePage({
     notFound();
   }
 
-  const blocks = article.pageId
-    ? await fetchPageBlocks(article.pageId)
-    : [];
+  // Look up the Notion page ID: use static pageId if available,
+  // otherwise do a lightweight lookup (1-2 API calls, cached 5min)
+  const pageId = article.pageId ?? await findPageIdBySlug(slug);
 
-  return <ArticlePageClient article={article} blocks={blocks} />;
+  // Fetch blocks and cover image in parallel (both need pageId)
+  const [blocks, coverImage] = pageId
+    ? await Promise.all([
+        fetchPageBlocks(pageId),
+        article.coverImage ? Promise.resolve(article.coverImage) : fetchPageCover(pageId),
+      ])
+    : [[], null];
+
+  const enrichedArticle = {
+    ...article,
+    ...(pageId && { pageId }),
+    ...(coverImage && { coverImage }),
+  };
+
+  return <ArticlePageClient article={enrichedArticle} blocks={blocks} />;
 }
