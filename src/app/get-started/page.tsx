@@ -1,17 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useInView } from '@/hooks/useInView';
+import { DiagnosticForm } from '@/components/DiagnosticForm';
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
-
-const adSpendOptions = [
-  'Under $100k/mo',
-  '$100k - $500k/mo',
-  '$500k - $1M+/mo',
-];
 
 const auditAreas = [
   {
@@ -49,21 +44,10 @@ const auditAreas = [
 /* ------------------------------------------------------------------ */
 
 export default function GetStartedPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    adSpend: '',
-  });
-  const [formStatus, setFormStatus] = useState<
-    'idle' | 'submitting' | 'success' | 'error'
-  >('idle');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
   const { ref: auditRef, inView: auditInView } = useInView({ threshold: 0.1 });
   const { ref: stepsRef, inView: stepsInView } = useInView({ threshold: 0.1 });
 
-  /* ── Calendly embed script ── */
+  /* Calendly embed script */
   const calendlyRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const script = document.createElement('script');
@@ -75,91 +59,37 @@ export default function GetStartedPage() {
     };
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (fieldErrors[e.target.name]) {
-      setFieldErrors((prev) => {
-        const next = { ...prev };
-        delete next[e.target.name];
-        return next;
-      });
-    }
-  };
-
-  const validate = (): boolean => {
-    const errors: Record<string, string> = {};
-    if (!formData.firstName.trim()) errors.firstName = 'Required';
-    if (!formData.email.trim()) {
-      errors.email = 'Required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Invalid email';
-    }
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    setFormStatus('submitting');
-    const formspreeId =
-      process.env.NEXT_PUBLIC_FORMSPREE_ID || 'YOUR_FORM_ID';
-
-    try {
-      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        setFormStatus('success');
-        setFormData({ firstName: '', lastName: '', email: '', adSpend: '' });
-      } else {
-        setFormStatus('error');
-      }
-    } catch {
-      setFormStatus('error');
-    }
-  };
-
   return (
     <main className="min-h-screen text-white font-sans animated-mesh-bg pb-24 selection:bg-orange-500 selection:text-white">
       {/* ============================================================ */}
-      {/*  ABOVE THE FOLD: SPLIT SCREEN                                */}
+      {/*  HERO + DIAGNOSTIC FORM                                       */}
       {/* ============================================================ */}
-      <section className="max-w-7xl mx-auto px-6 pt-32 lg:pt-40 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-        {/* ---- Left Column: Value Prop & Trust ---- */}
-        <div className="space-y-8 pr-0 lg:pr-8">
-          <div>
-            <h1 className="text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.08]">
-              Your Revenue Is Leaking.{' '}
-              <br />
-              <span
-                className="text-transparent bg-clip-text"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(to right, #E8793A, #FF9F6B)',
-                }}
-              >
-                We&rsquo;ll Find Where.
-              </span>
-            </h1>
-            <p
-              className="text-xl leading-relaxed max-w-lg"
-              style={{ color: '#9E9E9E' }}
+      <section className="max-w-7xl mx-auto px-6 pt-32 lg:pt-44">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.08]">
+            Your Revenue Is Leaking.{' '}
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage:
+                  'linear-gradient(to right, #E8793A, #FF9F6B)',
+              }}
             >
-              A 90-day roadmap built around your actual numbers, across paid,
-              organic, creative, and attribution. No commitment. No fluff.
-              Just findings.
-            </p>
-          </div>
+              We&rsquo;ll Find Where.
+            </span>
+          </h1>
+          <p
+            className="text-lg leading-relaxed max-w-2xl mx-auto"
+            style={{ color: '#9E9E9E' }}
+          >
+            Answer three quick questions and our team will build you a 90-day
+            roadmap across paid, organic, creative, and attribution. No
+            commitment. No fluff. Just findings.
+          </p>
 
           {/* Fast Facts */}
           <div
-            className="flex flex-wrap gap-4 text-sm font-medium py-6"
+            className="flex flex-wrap justify-center gap-4 text-sm font-medium mt-8 mb-4 py-5 mx-auto max-w-2xl"
             style={{
               color: '#d1d1d8',
               borderTop: '1px solid rgba(255,255,255,0.06)',
@@ -181,245 +111,10 @@ export default function GetStartedPage() {
               </span>
             ))}
           </div>
-
-          {/* Testimonial */}
-          <div className="glass-panel p-6 rounded-xl mt-8">
-            <p className="italic mb-4" style={{ color: '#d1d1d8' }}>
-              &ldquo;Partnering with Tiger Tracks has been amazing. They work
-              fast, execute flawlessly and apply specialized knowledge with a
-              relentless focus on hitting growth goals.&rdquo;
-            </p>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{
-                  backgroundColor: 'rgba(232, 121, 58, 0.15)',
-                  color: '#E8793A',
-                }}
-              >
-                AG1
-              </div>
-              <div>
-                <p className="font-semibold text-sm text-white">
-                  Jason Marshall
-                </p>
-                <p className="text-xs" style={{ color: '#7B7B8E' }}>
-                  Chief Growth Officer, AG1
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* ---- Right Column: Form Card ---- */}
-        <div className="glass-panel p-8 lg:p-10 rounded-2xl shadow-2xl relative lg:sticky lg:top-32">
-          {formStatus === 'success' ? (
-            <div className="text-center py-8">
-              <div
-                className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(34,159,161,0.15)' }}
-              >
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: '#229FA1' }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <p
-                className="text-2xl font-bold mb-2"
-                style={{ color: '#229FA1' }}
-              >
-                Thank you!
-              </p>
-              <p style={{ color: '#9E9E9E' }}>
-                We&rsquo;ve received your request. A team member will be in
-                touch within 1 business day.
-              </p>
-              <button
-                type="button"
-                onClick={() => setFormStatus('idle')}
-                className="mt-6 text-sm underline transition"
-                style={{ color: '#229FA1' }}
-              >
-                Submit another request
-              </button>
-            </div>
-          ) : (
-            <>
-              <h3 className="text-2xl font-bold mb-6">
-                Request Your Diagnostic
-              </h3>
-
-              {formStatus === 'error' && (
-                <div
-                  className="rounded-lg p-4 text-sm mb-4"
-                  style={{
-                    backgroundColor: 'rgba(239,68,68,0.1)',
-                    border: '1px solid rgba(239,68,68,0.3)',
-                    color: '#fca5a5',
-                  }}
-                >
-                  Something went wrong. Please try again or email us directly.
-                </div>
-              )}
-
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9E9E9E' }}>
-                      First Name <span style={{ color: '#E8793A' }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full rounded-lg p-3 text-white focus:outline-none transition-colors"
-                      style={{
-                        backgroundColor: 'rgba(10,17,25,0.5)',
-                        border: fieldErrors.firstName
-                          ? '1px solid rgba(239,68,68,0.5)'
-                          : '1px solid rgba(255,255,255,0.08)',
-                      }}
-                      onFocus={(e) =>
-                        (e.target.style.borderColor = '#E8793A')
-                      }
-                      onBlur={(e) =>
-                        (e.target.style.borderColor =
-                          'rgba(255,255,255,0.08)')
-                      }
-                      placeholder="Jane"
-                    />
-                    {fieldErrors.firstName && (
-                      <p className="text-xs" style={{ color: '#f87171' }}>
-                        {fieldErrors.firstName}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9E9E9E' }}>
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full rounded-lg p-3 text-white focus:outline-none transition-colors"
-                      style={{
-                        backgroundColor: 'rgba(10,17,25,0.5)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                      }}
-                      onFocus={(e) =>
-                        (e.target.style.borderColor = '#E8793A')
-                      }
-                      onBlur={(e) =>
-                        (e.target.style.borderColor =
-                          'rgba(255,255,255,0.08)')
-                      }
-                      placeholder="Doe"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9E9E9E' }}>
-                    Work Email <span style={{ color: '#E8793A' }}>*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-lg p-3 text-white focus:outline-none transition-colors"
-                    style={{
-                      backgroundColor: 'rgba(10,17,25,0.5)',
-                      border: fieldErrors.email
-                        ? '1px solid rgba(239,68,68,0.5)'
-                        : '1px solid rgba(255,255,255,0.08)',
-                    }}
-                    onFocus={(e) =>
-                      (e.target.style.borderColor = '#E8793A')
-                    }
-                    onBlur={(e) =>
-                      (e.target.style.borderColor =
-                        'rgba(255,255,255,0.08)')
-                    }
-                    placeholder="jane@company.com"
-                  />
-                  {fieldErrors.email && (
-                    <p className="text-xs" style={{ color: '#f87171' }}>
-                      {fieldErrors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9E9E9E' }}>
-                    Monthly Media Spend
-                  </label>
-                  <select
-                    name="adSpend"
-                    value={formData.adSpend}
-                    onChange={handleChange}
-                    className="w-full rounded-lg p-3 text-white focus:outline-none transition-colors appearance-none"
-                    style={{
-                      backgroundColor: 'rgba(10,17,25,0.5)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                    }}
-                  >
-                    <option value="">Select a range</option>
-                    {adSpendOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={formStatus === 'submitting'}
-                  className="w-full font-bold py-4 rounded-lg transition-all mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: '#E8793A', color: '#fff' }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = '#D4662A')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = '#E8793A')
-                  }
-                >
-                  {formStatus === 'submitting'
-                    ? 'Submitting...'
-                    : 'Start The Process'}
-                </button>
-              </form>
-
-              <div className="mt-6 text-center">
-                <span className="text-xs" style={{ color: '#7B7B8E' }}>
-                  Or bypass the form and{' '}
-                </span>
-                <a
-                  href="#calendly"
-                  className="text-xs underline underline-offset-4 transition-colors"
-                  style={{ color: '#E8793A' }}
-                >
-                  schedule directly here
-                </a>
-                .
-              </div>
-            </>
-          )}
-        </div>
+        {/* Multi-step form */}
+        <DiagnosticForm />
       </section>
 
       {/* ============================================================ */}
@@ -537,6 +232,38 @@ export default function GetStartedPage() {
               We present a custom, actionable 90-day growth roadmap on a
               45-min call.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/*  TESTIMONIAL                                                  */}
+      {/* ============================================================ */}
+      <section className="max-w-3xl mx-auto px-6 mt-32">
+        <div className="glass-panel p-8 rounded-xl text-center">
+          <p className="italic text-lg mb-6" style={{ color: '#d1d1d8' }}>
+            &ldquo;Partnering with Tiger Tracks has been amazing. They work
+            fast, execute flawlessly and apply specialized knowledge with a
+            relentless focus on hitting growth goals.&rdquo;
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{
+                backgroundColor: 'rgba(232, 121, 58, 0.15)',
+                color: '#E8793A',
+              }}
+            >
+              AG1
+            </div>
+            <div className="text-left">
+              <p className="font-semibold text-sm text-white">
+                Jason Marshall
+              </p>
+              <p className="text-xs" style={{ color: '#7B7B8E' }}>
+                Chief Growth Officer, AG1
+              </p>
+            </div>
           </div>
         </div>
       </section>
