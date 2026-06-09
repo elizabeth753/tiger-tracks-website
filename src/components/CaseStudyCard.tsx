@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CaseStudyCardProps {
   slug: string;
@@ -12,6 +15,7 @@ interface CaseStudyCardProps {
   summary: string;
   wayfinderTitle: string;
   resultCount: number;
+  heroImage?: string;
   isPlaceholder?: boolean;
 }
 
@@ -27,15 +31,17 @@ export function CaseStudyCard({
   summary,
   wayfinderTitle,
   resultCount,
+  heroImage,
   isPlaceholder,
 }: CaseStudyCardProps) {
   return (
     <Link
       href={`/results/${slug}`}
-      className="group block relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(232,121,58,0.15)]"
+      className="group block relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(91,164,164,0.15)] hover:border-tt-teal/30"
       style={{
-        background: 'rgba(20, 27, 35, 0.7)',
+        background: 'rgba(255, 255, 255, 0.05)',
         backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
         border: '1px solid rgba(255, 255, 255, 0.06)',
       }}
     >
@@ -46,32 +52,56 @@ export function CaseStudyCard({
         </div>
       )}
 
-      {/* Top section with metric */}
-      <div className="relative p-6 pb-4">
-        {/* Industry + Challenge badges */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="rounded-full bg-tt-teal/10 border border-tt-teal/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-teal">
+      {/* Hero image area (top 50%) */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden bg-gradient-to-br from-tt-teal/10 to-tt-orange/5">
+        {heroImage ? (
+          <Image
+            src={heroImage}
+            alt={`${client} case study`}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          /* Fallback gradient with client initials */
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0A1119] via-[#1B2126] to-[#0A1119]" />
+            <div className="absolute inset-0 dot-grid-subtle opacity-30" />
+            <span className="relative z-10 text-4xl font-extrabold text-tt-teal/20 tracking-widest">
+              {client}
+            </span>
+          </div>
+        )}
+        {/* Gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,17,25,0.9)] via-[rgba(10,17,25,0.3)] to-transparent" />
+
+        {/* Overlay badges on image */}
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+          <span className="rounded-full bg-tt-teal/20 backdrop-blur-sm border border-tt-teal/30 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-teal">
             {industry}
           </span>
-          <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-gray-400">
+          <span className="rounded-full bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-gray-300">
             {challengeType}
           </span>
         </div>
 
+        {/* Hero metric overlaid at bottom of image */}
+        <div className="absolute bottom-4 left-4 right-4 z-10">
+          <p className="text-5xl font-extrabold tabular-nums tracking-tight text-white group-hover:text-tt-teal transition-colors duration-500 leading-none drop-shadow-lg">
+            {heroMetric}
+          </p>
+          <p className="mt-1.5 text-sm text-tt-gray-300 drop-shadow-md">{heroMetricLabel}</p>
+        </div>
+      </div>
+
+      {/* Content section (bottom 50%) */}
+      <div className="relative p-6 pt-4">
         {/* Client name */}
         <div className="flex items-center gap-3 mb-3">
           <span className="text-sm font-bold uppercase tracking-wider text-tt-teal">
             {client}
           </span>
           <span className="h-px flex-1 bg-gradient-to-r from-tt-teal/20 to-transparent" />
-        </div>
-
-        {/* Hero metric */}
-        <div className="mb-3">
-          <p className="text-5xl font-extrabold text-white group-hover:text-tt-teal transition-colors duration-500 leading-none">
-            {heroMetric}
-          </p>
-          <p className="mt-2 text-sm text-tt-gray-400">{heroMetricLabel}</p>
         </div>
 
         {/* Summary */}

@@ -22,6 +22,7 @@ export interface CaseStudy {
   timeline: { before: TimelineDataPoint[]; after: TimelineDataPoint[] };
   testimonial?: { quote: string; name: string; title: string; company: string };
   logoPlaceholder: string;
+  heroImage?: string;
   isPlaceholder?: boolean;
 }
 
@@ -606,6 +607,104 @@ export const caseStudies: CaseStudy[] = [
       company: 'Honeydew',
     },
     logoPlaceholder: 'HD',
+  },
+  {
+    slug: 'capezio',
+    client: 'Capezio',
+    heroMetric: '+54%',
+    heroMetricLabel: 'ROAS (EU Market)',
+    category: 'E-Commerce / Google',
+    channels: ['Google'],
+    industry: 'E-Commerce',
+    challengeType: 'Improving ROAS',
+    summary:
+      'Scaling international markets without cannibalizing U.S. performance through geo-segmented Performance Max optimization.',
+    problem:
+      'Capezio needed to scale into EU, UK, and Australian markets but risked diluting their strong U.S. performance. Existing campaign structures were not segmented by geography, making it impossible to optimize for regional nuances in search behavior, audience intent, and competitive dynamics.',
+    solution:
+      'We ran a full-funnel audit that identified keyword restrictions limiting international reach, then launched revamped Performance Max campaigns with refreshed audience data segmented by geo-market. A revamped Search strategy drove down-funnel movement while isolating each market for independent optimization.',
+    impact:
+      'EU ROAS grew 54%, UK ROAS improved 10%, and Australian ROAS increased 54%. U.S. performance remained stable throughout the international expansion, proving the geo-segmentation thesis.',
+    results: [
+      { metric: 'EU ROAS', value: '+54%', metricType: 'roas' },
+      { metric: 'UK ROAS', value: '+10%', metricType: 'roas' },
+      { metric: 'AUS ROAS', value: '+54%', metricType: 'roas' },
+    ],
+    wayfinderTactic: {
+      title: 'Geo-Segmented Performance Max Optimization',
+      description: 'Wayfinder AI analyzed performance signals by geographic market, enabling independent bid strategies and audience targeting for each region without cross-contamination.',
+    },
+    attribution: 'Google Ads conversion tracking segmented by market region. ROAS calculated at the geo-campaign level with backend revenue reconciliation.',
+    timeline: {
+      before: [
+        { label: 'Month 1', value: 1.8 },
+        { label: 'Month 2', value: 1.7 },
+        { label: 'Month 3', value: 1.9 },
+        { label: 'Month 4', value: 1.8 },
+        { label: 'Month 5', value: 1.7 },
+        { label: 'Month 6', value: 1.8 },
+      ],
+      after: [
+        { label: 'Month 7', value: 2.1 },
+        { label: 'Month 8', value: 2.4 },
+        { label: 'Month 9', value: 2.6 },
+        { label: 'Month 10', value: 2.7 },
+        { label: 'Month 11', value: 2.8 },
+        { label: 'Month 12', value: 2.8 },
+      ],
+    },
+    logoPlaceholder: 'CZ',
+    heroImage: '/images/u7815321835_Close-up_cinematic_portrait_of_professional_satin_82fcb77f-e229-455a-b0dc-373b9ba5da18_3.png',
+  },
+  {
+    slug: 'dovetail',
+    client: 'Dovetail Furniture',
+    heroMetric: '+103%',
+    heroMetricLabel: 'Increase in Leads',
+    category: 'E-Commerce / Google',
+    channels: ['Google'],
+    industry: 'E-Commerce',
+    challengeType: 'Lowering CAC',
+    summary:
+      'Lowering CAC 46% while more than doubling lead volume through bid signal correction and campaign structure optimization.',
+    problem:
+      'Dovetail Furniture was sending misleading algorithm signals through their existing campaign structure, inflating customer acquisition costs while lead volume stagnated. Bid strategies were optimizing toward the wrong conversion actions, and the campaign structure was too fragmented to generate meaningful learning signals.',
+    solution:
+      'We ran a full-funnel audit and corrected the misleading algorithm signals that were driving inefficiency. Campaign structure was consolidated to improve bid strategy learning, and conversion action optimizations were refined to align with actual business outcomes rather than proxy metrics.',
+    impact:
+      'Leads increased 103% while CAC dropped 46%. The corrected signal architecture gave Google\'s algorithms accurate data to optimize against, compounding improvements over time.',
+    results: [
+      { metric: 'Leads', value: '+103%', metricType: 'leads' },
+      { metric: 'CAC Reduction', value: '-46%', metricType: 'cac' },
+    ],
+    wayfinderTactic: {
+      title: 'Bid Signal Correction & Structure Optimization',
+      description: 'Wayfinder AI identified misleading conversion signals and structural fragmentation, then corrected the data pipeline to give bidding algorithms accurate optimization targets.',
+    },
+    attribution: 'Google Ads conversion tracking with CRM lead data integration. CAC calculated on qualified leads, not just form submissions.',
+    timeline: {
+      before: [
+        { label: 'Month 1', value: 100 },
+        { label: 'Month 2', value: 96 },
+        { label: 'Month 3', value: 102 },
+        { label: 'Month 4', value: 98 },
+      ],
+      after: [
+        { label: 'Month 5', value: 128 },
+        { label: 'Month 6', value: 158 },
+        { label: 'Month 7', value: 186 },
+        { label: 'Month 8', value: 203 },
+      ],
+    },
+    testimonial: {
+      quote:
+        'Working with Tiger Tracks has been exceptional from the start! Their team took the time to deeply understand Dovetail Furniture\'s business model, and the results speak for themselves.',
+      name: 'Marco Mazzoni',
+      title: 'Director of Technology and Digital Marketing',
+      company: 'Dovetail Furniture',
+    },
+    logoPlaceholder: 'DT',
+    heroImage: '/images/u7815321835_Architectural_minimalist_product_visualization_fe_98c468f7-2a68-4904-aba1-853fc23864b3_2.png',
   },
   // --- PLACEHOLDER CASE STUDIES: Missing Industries ---
   {

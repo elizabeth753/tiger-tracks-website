@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, MouseEvent } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { BlogPost } from '@/data/blogPosts';
 import { CTASection } from '@/components/CTASection';
 import { useInView } from '@/hooks/useInView';
@@ -10,21 +12,12 @@ import { useInView } from '@/hooks/useInView';
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const SWIMLANE_CATEGORIES = [
-  'AI & Automation',
-  'Platform Strategy',
-  'Measurement & Attribution',
-  'Creative & Content',
-  'Agency Strategy',
-  'PE/VC',
-] as const;
-
 const CATEGORY_IMAGES: Record<string, string> = {
-  'AI & Automation': '/images/u7815321835_cinematic_dark_mode_AI_command_center_interface_f_f8eacdce-eced-46ea-a87b-51337f44b1a1_2.png',
-  'Platform Strategy': '/images/u7815321835_abstract_grid_of_glowing_metric_badge_tiles_on_ne_673dbcfa-8e9d-4b27-b430-e324dcd9b51e_1.png',
-  'Measurement & Attribution': '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_1.png',
-  'Creative & Content': '/images/u7815321835_Close-up_cinemagraph_aspect_ratio_169._For_Creati_c04822ee-487c-4e6f-9e23-609d2f6eea99_2.png',
-  'Agency Strategy': '/images/u7815321835_aerial_overhead_shot_of_empty_circular_boardroom__d28f3fae-b24e-4108-931f-c4c5a9dec951_0.png',
+  'AI & Automation': '/images/u7815321835_Act_as_an_elite_3D_UIUX_conceptual_artist_special_74b5fb3c-ed00-4c91-a0e7-860928ebe252_2.png',
+  'Platform Strategy': '/images/u7815321835_Prompt_for_Article_2_SEOOrganic_Discovery_Abstrac_d2cca25d-600d-402d-8f6c-5e757eda639d_2.png',
+  'Measurement & Attribution': '/images/u7815321835_Prompt_for_Article_4_Conversion_Rate_Optimization_72cfca36-1e4b-413a-921f-1f59ea26c504_3.png',
+  'Creative & Content': '/images/u7815321835_Prompt_for_Article_3_CreativeUGC_Performance_High_b5888fe1-9bcf-448f-a37f-299e6bf00bb3_2.png',
+  'Agency Strategy': '/images/u7815321835_System_Persona_Act_as_an_elite_creative_art_direc_8ad21d42-af5c-4802-a878-67b0de780348_1.png',
   'PE/VC': '/images/u7815321835_High-end_3D_render_minimalist_financial_technolog_ec076a26-4eea-4540-8a0a-71a45f4e61d2_1.png',
 };
 
@@ -43,179 +36,334 @@ const DEEP_REPORTS = [
   },
 ];
 
+const CATEGORIES = [
+  'All',
+  'AI & Automation',
+  'Platform Strategy',
+  'Measurement & Attribution',
+  'Creative & Content',
+  'PE/VC',
+  'Agency Strategy',
+];
+
 /* ------------------------------------------------------------------ */
-/*  Editorial byline                                                   */
+/*  Mono Byline                                                        */
 /* ------------------------------------------------------------------ */
 
-function AuthorMeta({ post, showDate = true }: { post: BlogPost; showDate?: boolean }) {
+function MonoByline({ post }: { post: BlogPost }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
-          {post.author || 'Tiger Tracks'}
-        </span>
-      </div>
-      <span className="h-3 w-px bg-white/10" />
-      <div className="flex items-center gap-2 text-[11px] text-tt-gray-500">
-        {showDate && <span>{post.date}</span>}
-        {showDate && <span className="h-3 w-px bg-white/10" />}
-        <span>{post.readTime}</span>
-      </div>
+    <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-mono text-[#9E9E9E]">
+      <span>{post.date}</span>
+      <span className="text-[#229FA1]">&bull;</span>
+      <span>{post.readTime}</span>
+      <span className="text-[#229FA1]">&bull;</span>
+      <span>Tiger Tracks</span>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Image placeholder                                                  */
+/*  Wide Card (col-span-7) - with Image + Parallax                     */
 /* ------------------------------------------------------------------ */
 
-function ArticleImage({
-  category,
-  aspect = '16/9',
-}: {
-  category: string;
-  aspect?: string;
-  large?: boolean;
-}) {
-  const src = CATEGORY_IMAGES[category];
+function WideCard({ post, index }: { post: BlogPost; index: number }) {
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setMousePos({ x, y });
+  }, []);
+
+  const imgSrc = CATEGORY_IMAGES[post.category];
+
   return (
-    <div className="relative w-full overflow-hidden" style={{ aspectRatio: aspect }}>
-      {src ? (
-        <img
-          src={src}
-          alt={category}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-      ) : (
+    <motion.div
+      className="md:col-span-7"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] as const }}
+    >
+      <Link
+        ref={cardRef}
+        href={`/intelligence/${post.slug}`}
+        className="group relative block rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 h-full"
+        style={{
+          background: '#1B2126',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setMousePos({ x: 0, y: 0 });
+        }}
+      >
+        {/* Image with parallax depth */}
+        <div className="relative overflow-hidden" style={{ aspectRatio: '16/9' }}>
+          {imgSrc ? (
+            <Image
+              src={imgSrc}
+              alt={post.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 58vw"
+              style={{
+                transform: isHovered
+                  ? `scale(1.05) translate(${mousePos.x * -8}px, ${mousePos.y * -8}px)`
+                  : 'scale(1)',
+                transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+            />
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(34,159,161,0.10) 0%, rgba(10,17,25,0.95) 100%)',
+              }}
+            />
+          )}
+          {/* Bottom fade */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'linear-gradient(180deg, transparent 50%, rgba(27,33,38,0.95) 100%)' }}
+          />
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <span className="inline-block rounded-full bg-[#229FA1]/10 border border-[#229FA1]/20 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#229FA1]">
+            {post.category}
+          </span>
+
+          <h3 className="mt-3 text-xl font-bold text-white transition-colors duration-300 group-hover:text-[#229FA1] line-clamp-2 leading-snug">
+            {post.title}
+          </h3>
+
+          <p className="mt-2 text-sm text-[#9C9CAE] line-clamp-2 leading-relaxed">
+            {post.excerpt}
+          </p>
+
+          <div className="mt-4">
+            <MonoByline post={post} />
+          </div>
+        </div>
+
+        {/* Animated teal bottom border */}
         <div
-          className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
+          className="absolute bottom-0 left-0 h-px transition-all duration-500"
           style={{
-            background: `
-              linear-gradient(135deg, rgba(91, 164, 164, 0.12) 0%, rgba(232, 121, 58, 0.06) 50%, rgba(20, 27, 35, 0.9) 100%),
-              linear-gradient(180deg, #141b23 0%, #1a2230 100%)
-            `,
+            width: isHovered ? '100%' : '0%',
+            background: 'linear-gradient(90deg, transparent, #229FA1, transparent)',
+            boxShadow: isHovered ? '0 0 8px rgba(34,159,161,0.4)' : 'none',
           }}
         />
-      )}
-      {/* Bottom gradient for legibility */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'linear-gradient(180deg, transparent 50%, rgba(10, 17, 25, 0.7) 100%)',
-      }} />
-    </div>
+      </Link>
+    </motion.div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Horizontal Swimlane                                                */
+/*  Narrow Card (col-span-5) - Typographic only, no image             */
 /* ------------------------------------------------------------------ */
 
-function Swimlane({ title, posts }: { title: string; posts: BlogPost[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (dir: 'left' | 'right') => {
-    if (!scrollRef.current) return;
-    const amount = scrollRef.current.clientWidth * 0.7;
-    scrollRef.current.scrollBy({
-      left: dir === 'left' ? -amount : amount,
-      behavior: 'smooth',
-    });
-  };
-
-  if (posts.length === 0) return null;
+function NarrowCard({ post, index }: { post: BlogPost; index: number }) {
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg font-bold text-white">{title}</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={() => scroll('left')}
-            className="rounded-full bg-white/5 p-2 text-tt-gray-400 hover:bg-white/10 hover:text-white transition"
-            aria-label="Scroll left"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            className="rounded-full bg-white/5 p-2 text-tt-gray-400 hover:bg-white/10 hover:text-white transition"
-            aria-label="Scroll right"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide"
-        style={{ scrollSnapType: 'x mandatory' }}
-      >
-        {posts.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/intelligence/${post.slug}`}
-            className="group flex-none w-[300px] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(91,164,164,0.06)]"
-            style={{
-              background: '#1B2126',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              scrollSnapAlign: 'start',
-            }}
-          >
-            <div className="overflow-hidden">
-              <ArticleImage category={post.category} aspect="16/9" />
-            </div>
-            <div className="p-5">
-              <h4 className="text-sm font-semibold text-white line-clamp-2 transition-colors duration-300 group-hover:text-tt-teal">
-                {post.title}
-              </h4>
-              <p className="mt-2 text-xs text-tt-gray-400 line-clamp-2">{post.excerpt}</p>
-              <div className="mt-3">
-                <AuthorMeta post={post} />
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Standard article card (for 3-col grid)                             */
-/* ------------------------------------------------------------------ */
-
-function ArticleCard({ post, delay = 0 }: { post: BlogPost; delay?: number }) {
-  return (
-    <Link
-      href={`/intelligence/${post.slug}`}
-      className="group block rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(91,164,164,0.06)]"
-      style={{
-        background: '#1B2126',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        transitionDelay: `${delay}ms`,
-      }}
+    <motion.div
+      className="md:col-span-5"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay: index * 0.06 + 0.05, ease: [0.16, 1, 0.3, 1] as const }}
     >
-      <div className="overflow-hidden">
-        <ArticleImage category={post.category} aspect="16/9" />
-      </div>
-      <div className="p-5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-tt-teal">
-          {post.category}
-        </span>
-        <h3 className="mt-2 text-base font-semibold text-white transition-colors duration-300 group-hover:text-tt-teal line-clamp-2">
-          {post.title}
-        </h3>
-        <p className="mt-2 text-sm text-tt-gray-400 line-clamp-2">{post.excerpt}</p>
-        <div className="mt-4">
-          <AuthorMeta post={post} />
+      <Link
+        href={`/intelligence/${post.slug}`}
+        className="group relative flex flex-col justify-between rounded-2xl p-7 h-full transition-all duration-500 hover:-translate-y-1"
+        style={{
+          background: '#1B2126',
+          border: isHovered ? '1px solid rgba(34,159,161,0.35)' : '1px solid rgba(255,255,255,0.06)',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Subtle hover glow */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-500"
+          style={{
+            opacity: isHovered ? 1 : 0,
+            background: 'radial-gradient(ellipse at 30% 20%, rgba(34,159,161,0.04) 0%, transparent 60%)',
+          }}
+        />
+
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-5">
+            <span className="inline-block rounded-full bg-[#229FA1]/10 border border-[#229FA1]/20 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#229FA1]">
+              {post.category}
+            </span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#9E9E9E]">
+              {post.readTime}
+            </span>
+          </div>
+
+          <h3 className="text-lg font-bold text-white transition-colors duration-300 group-hover:text-[#229FA1] line-clamp-3 leading-snug">
+            {post.title}
+          </h3>
+
+          <p className="mt-3 text-sm text-[#9C9CAE] line-clamp-3 leading-relaxed">
+            {post.excerpt}
+          </p>
         </div>
-      </div>
-    </Link>
+
+        <div className="relative z-10 mt-5 pt-4 border-t border-white/[0.04]">
+          <MonoByline post={post} />
+        </div>
+
+        {/* Animated teal bottom border */}
+        <div
+          className="absolute bottom-0 left-0 h-px transition-all duration-500"
+          style={{
+            width: isHovered ? '100%' : '0%',
+            background: 'linear-gradient(90deg, transparent, #229FA1, transparent)',
+            boxShadow: isHovered ? '0 0 8px rgba(34,159,161,0.4)' : 'none',
+          }}
+        />
+      </Link>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Spotlight Article (col-span-12, full-width 50/50 split)            */
+/* ------------------------------------------------------------------ */
+
+function SpotlightArticle({ post }: { post: BlogPost }) {
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setMousePos({ x, y });
+  }, []);
+
+  const imgSrc = CATEGORY_IMAGES[post.category];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+    >
+      <Link
+        ref={cardRef}
+        href={`/intelligence/${post.slug}`}
+        className="group relative block rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(34,159,161,0.08)]"
+        style={{
+          background: '#1B2126',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setMousePos({ x: 0, y: 0 });
+        }}
+      >
+        <div className="grid md:grid-cols-2">
+          {/* Left: Text */}
+          <div className="p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="inline-block rounded-full bg-[#229FA1]/10 border border-[#229FA1]/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#229FA1]">
+                {post.category}
+              </span>
+              <span className="inline-block rounded-full bg-[#FF6B35]/10 border border-[#FF6B35]/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#FF6B35]">
+                Featured
+              </span>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white group-hover:text-[#229FA1] transition-colors duration-300 leading-tight">
+              {post.title}
+            </h2>
+
+            <p className="mt-5 text-base text-[#9C9CAE] leading-relaxed line-clamp-3">
+              {post.excerpt}
+            </p>
+
+            <div className="mt-6">
+              <MonoByline post={post} />
+            </div>
+
+            <div className="mt-8">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#229FA1] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#1e8b8d] group-hover:shadow-lg group-hover:shadow-[#229FA1]/20">
+                Read the Report
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          {/* Right: 16:9 Cinematic Image with parallax */}
+          <div className="relative overflow-hidden order-1 md:order-2" style={{ aspectRatio: '16/9' }}>
+            {imgSrc ? (
+              <Image
+                src={imgSrc}
+                alt={post.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+                style={{
+                  transform: isHovered
+                    ? `scale(1.06) translate(${mousePos.x * -10}px, ${mousePos.y * -10}px)`
+                    : 'scale(1)',
+                  transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              />
+            ) : (
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(34,159,161,0.15) 0%, rgba(10,17,25,0.9) 100%)',
+                }}
+              />
+            )}
+            {/* Cinematic vignette: left edge bleed + bottom fade */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(270deg, transparent 60%, rgba(27,33,38,1) 100%), linear-gradient(180deg, transparent 60%, rgba(27,33,38,0.5) 100%)',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Animated teal bottom border */}
+        <div
+          className="absolute bottom-0 left-0 h-px transition-all duration-500"
+          style={{
+            width: isHovered ? '100%' : '0%',
+            background: 'linear-gradient(90deg, transparent, #229FA1, transparent)',
+            boxShadow: isHovered ? '0 0 12px rgba(34,159,161,0.5)' : 'none',
+          }}
+        />
+      </Link>
+    </motion.div>
   );
 }
 
@@ -225,83 +373,65 @@ function ArticleCard({ post, delay = 0 }: { post: BlogPost; delay?: number }) {
 
 function DeepReportsBanner() {
   return (
-    <section
-      className="py-16 px-6"
-      style={{
-        background: `
-          linear-gradient(135deg, #0d1520 0%, #111b27 50%, #0d1520 100%)
-        `,
-      }}
-    >
+    <section className="py-16 px-6" style={{ background: '#0A1119' }}>
       <div className="mx-auto max-w-6xl">
         <div
-          className="rounded-2xl overflow-hidden"
+          className="rounded-2xl overflow-hidden p-10 md:p-14"
           style={{
             background: 'linear-gradient(135deg, #0f1923 0%, #162030 100%)',
-            border: '1px solid rgba(91, 164, 164, 0.15)',
+            border: '1px solid rgba(91,164,164,0.15)',
           }}
         >
-          <div className="p-10 md:p-14">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-px flex-1 bg-gradient-to-r from-tt-teal/40 to-transparent" />
-              <span className="text-xs font-bold uppercase tracking-[4px] text-tt-teal">
-                Deep Reports
-              </span>
-              <div className="h-px flex-1 bg-gradient-to-l from-tt-teal/40 to-transparent" />
-            </div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-[#229FA1]/40 to-transparent" />
+            <span className="text-xs font-bold uppercase tracking-[4px] text-[#229FA1]">Deep Reports</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-[#229FA1]/40 to-transparent" />
+          </div>
 
-            <p className="text-center text-tt-gray-400 mb-10 max-w-xl mx-auto">
-              In-depth research that goes beyond the blog. Download our premium
-              reports and get the full strategic picture.
-            </p>
+          <p className="text-center text-[#9C9CAE] mb-10 max-w-xl mx-auto">
+            In-depth research that goes beyond the blog. Download our premium
+            reports and get the full strategic picture.
+          </p>
 
-            <div className="grid gap-8 md:grid-cols-2">
-              {DEEP_REPORTS.map((report) => (
-                <Link
-                  key={report.slug}
-                  href={`/intelligence/${report.slug}`}
-                  className="group rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.06)',
-                  }}
-                >
-                  <span className="inline-block rounded-full bg-tt-teal/10 border border-tt-teal/20 px-3 py-1 text-xs font-semibold text-tt-teal">
-                    {report.category}
+          <div className="grid gap-8 md:grid-cols-2">
+            {DEEP_REPORTS.map((report) => (
+              <Link
+                key={report.slug}
+                href={`/intelligence/${report.slug}`}
+                className="group rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <span className="inline-block rounded-full bg-[#229FA1]/10 border border-[#229FA1]/20 px-3 py-1 text-xs font-semibold text-[#229FA1]">
+                  {report.category}
+                </span>
+                <h3 className="mt-3 text-lg font-bold text-white group-hover:text-[#229FA1] transition-colors">
+                  {report.title}
+                </h3>
+                <p className="mt-2 text-sm text-[#9C9CAE]">{report.desc}</p>
+                <div className="mt-5">
+                  <span className="text-sm font-semibold text-[#FF6B35] flex items-center gap-2">
+                    Download Report
+                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </span>
-                  <h3 className="mt-3 text-lg font-bold text-white group-hover:text-tt-teal transition-colors">
-                    {report.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-tt-gray-400">{report.desc}</p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <span className="text-sm font-semibold text-tt-orange flex items-center gap-2">
-                      Download Report
-                      <svg
-                        className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-            {/* Email capture */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email for early access"
-                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-tt-gray-500 focus:outline-none focus:border-tt-teal/40 transition"
-              />
-              <button className="shrink-0 rounded-lg bg-tt-teal px-6 py-3 text-sm font-semibold text-white hover:bg-tt-teal-dark transition">
-                Get Reports
-              </button>
-            </div>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email for early access"
+              className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:border-[#229FA1]/40 transition"
+            />
+            <button className="shrink-0 rounded-lg bg-[#229FA1] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1e8b8d] transition">
+              Get Reports
+            </button>
           </div>
         </div>
       </div>
@@ -310,57 +440,86 @@ function DeepReportsBanner() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Main component                                                     */
+/*  Asymmetric Grid Renderer                                           */
+/*  Row pattern: [7, 5], [5, 7], [7, 5], [5, 7]...                    */
+/*  col-span-7 = WideCard (image + parallax)                           */
+/*  col-span-5 = NarrowCard (typographic only)                         */
+/* ------------------------------------------------------------------ */
+
+function AsymmetricGrid({ posts }: { posts: BlogPost[] }) {
+  /* Pair posts into rows of 2 */
+  const rows: BlogPost[][] = [];
+  for (let i = 0; i < posts.length; i += 2) {
+    rows.push(posts.slice(i, i + 2));
+  }
+
+  return (
+    <div className="space-y-6">
+      {rows.map((row, rowIdx) => {
+        /* Alternate: even rows = [7, 5], odd rows = [5, 7] */
+        const wideFirst = rowIdx % 2 === 0;
+        const globalIdx = rowIdx * 2;
+
+        /* Single remaining article gets full wide treatment */
+        if (row.length === 1) {
+          return (
+            <div key={row[0].slug} className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <WideCard post={row[0]} index={globalIdx} />
+            </div>
+          );
+        }
+
+        return (
+          <div key={row[0].slug} className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            {wideFirst ? (
+              <>
+                <WideCard post={row[0]} index={globalIdx} />
+                <NarrowCard post={row[1]} index={globalIdx + 1} />
+              </>
+            ) : (
+              <>
+                <NarrowCard post={row[0]} index={globalIdx} />
+                <WideCard post={row[1]} index={globalIdx + 1} />
+              </>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 
 export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
   const [activeCategory, setActiveCategory] = useState('All');
   const { ref: heroRef, inView: heroInView } = useInView({ threshold: 0.1 });
-  const { ref: gridRef, inView: gridInView } = useInView({ threshold: 0.05 });
 
-  /* Split posts into zones */
-  const featured = posts[0]; // "Beyond the Chatbox"
-  const latestSix = posts.slice(1, 7);
-  const swimlanePosts = posts.slice(7);
+  /* Split posts */
+  const featured = posts[0];
+  const remaining = posts.slice(1);
 
-  /* Group remaining posts by category for swimlanes */
-  const postsByCategory: Record<string, BlogPost[]> = {};
-  for (const cat of SWIMLANE_CATEGORIES) {
-    postsByCategory[cat] = swimlanePosts.filter((p) => p.category === cat);
-  }
-
-  /* Filtered view (when a category filter is active) */
+  /* Filtered view */
   const isFiltered = activeCategory !== 'All';
-  const filteredPosts = isFiltered
+  const displayPosts = isFiltered
     ? posts.filter((p) => p.category === activeCategory)
-    : [];
-
-  const categories = [
-    'All',
-    'AI & Automation',
-    'Platform Strategy',
-    'Measurement & Attribution',
-    'Creative & Content',
-    'PE/VC',
-    'Agency Strategy',
-  ];
+    : remaining;
 
   return (
     <>
-      {/* ── Section 1: Header + Hero ─────────────────────────────── */}
+      {/* ── Hero + Spotlight ──────────────────────────────────────── */}
       <section
         ref={heroRef}
         className="relative overflow-hidden"
         style={{ background: '#0A1119' }}
       >
-        {/* Background accent */}
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden="true"
           style={{
-            background: `
-              radial-gradient(ellipse 50% 50% at 50% 30%, rgba(91, 164, 164, 0.05) 0%, transparent 60%)
-            `,
+            background: 'radial-gradient(ellipse 50% 50% at 50% 30%, rgba(34,159,161,0.05) 0%, transparent 60%)',
           }}
         />
 
@@ -369,91 +528,44 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
             heroInView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
-          <p className="text-sm font-semibold uppercase tracking-[4px] text-tt-teal">
+          <p className="text-[10px] font-semibold uppercase tracking-[5px] font-mono text-[#229FA1]">
             Intelligence Series
           </p>
           <h1 className="mt-4 text-4xl font-extrabold text-white md:text-5xl lg:text-6xl max-w-4xl leading-tight">
             Eye of the Tiger: Intelligence Series
           </h1>
-          <p className="mt-4 text-lg text-tt-gray-400 max-w-2xl">
+          <p className="mt-4 text-lg text-[#9C9CAE] max-w-2xl">
             Strategic research and tactical playbooks for the performance era.
           </p>
         </div>
 
-        {/* Hero featured article: 50/50 split */}
-        {featured && (
+        {/* Spotlight: col-span-12, full-width 50/50 split */}
+        {featured && !isFiltered && (
           <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-8">
-            <Link
-              href={`/intelligence/${featured.slug}`}
-              className="group block rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(91,164,164,0.08)]"
-              style={{
-                background: '#1B2126',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-              }}
-            >
-              <div className="grid md:grid-cols-2">
-                {/* Left: image */}
-                <ArticleImage category={featured.category} aspect="4/3" />
-
-                {/* Right: content */}
-                <div className="p-8 md:p-10 flex flex-col justify-center">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="inline-block rounded-full bg-tt-teal/10 border border-tt-teal/20 px-3 py-1 text-xs font-semibold text-tt-teal">
-                      {featured.category}
-                    </span>
-                    <span className="inline-block rounded-full bg-tt-orange/10 border border-tt-orange/20 px-3 py-1 text-xs font-semibold text-tt-orange">
-                      Featured
-                    </span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white group-hover:text-tt-teal transition-colors duration-300">
-                    {featured.title}
-                  </h2>
-                  <p className="mt-4 text-tt-gray-400 leading-relaxed line-clamp-3">
-                    {featured.excerpt}
-                  </p>
-                  <div className="mt-5">
-                    <AuthorMeta post={featured} />
-                  </div>
-                  <div className="mt-6">
-                    <span className="inline-flex items-center gap-2 rounded-lg bg-tt-teal px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-tt-teal-dark">
-                      Read the Report
-                      <svg
-                        className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+            <SpotlightArticle post={featured} />
           </div>
         )}
       </section>
 
-      {/* ── Section 2: Category Filters (sticky) ─────────────────── */}
+      {/* ── Category Filters (sticky) ─────────────────────────────── */}
       <div
         className="sticky top-16 z-30 border-b border-white/5"
         style={{
-          background: 'rgba(10, 17, 25, 0.85)',
+          background: 'rgba(10,17,25,0.85)',
           backdropFilter: 'blur(16px) saturate(150%)',
           WebkitBackdropFilter: 'blur(16px) saturate(150%)',
         }}
       >
         <div className="mx-auto max-w-6xl py-4 px-6 overflow-x-auto">
           <div className="flex gap-2">
-            {categories.map((cat) => (
+            {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${
                   activeCategory === cat
-                    ? 'bg-tt-teal text-white'
-                    : 'bg-white/5 text-tt-gray-400 hover:bg-white/10 hover:text-white'
+                    ? 'bg-[#229FA1] text-white'
+                    : 'bg-white/5 text-[#9C9CAE] hover:bg-white/10 hover:text-white'
                 }`}
               >
                 {cat}
@@ -463,80 +575,38 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
         </div>
       </div>
 
-      {/* ── When a category is filtered: simple grid ─────────────── */}
-      {isFiltered ? (
-        <section
-          className="py-16 px-6"
-          style={{ background: '#0A1119' }}
-        >
-          <div className="mx-auto max-w-6xl">
-            <h2 className="text-xl font-bold text-white mb-8">{activeCategory}</h2>
-            {filteredPosts.length === 0 ? (
-              <p className="py-16 text-center text-tt-gray-500">
-                No articles in this category yet.
-              </p>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredPosts.map((post, i) => (
-                  <ArticleCard key={post.slug} post={post} delay={i * 50} />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      ) : (
-        <>
-          {/* ── Section 3: Latest Intelligence (3-col grid) ──────── */}
-          <section
-            ref={gridRef}
-            className="py-16 px-6"
-            style={{
-              background: `
-                radial-gradient(ellipse 80% 40% at 50% 0%, rgba(91, 164, 164, 0.03) 0%, transparent 50%),
-                #0A1119
-              `,
-            }}
-          >
-            <div className="mx-auto max-w-6xl">
-              <h2 className="text-xl font-bold text-white mb-8">Latest Intelligence</h2>
-              <div
-                className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 transition-all duration-500 ${
-                  gridInView ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
-                }`}
-              >
-                {latestSix.map((post, i) => (
-                  <ArticleCard key={post.slug} post={post} delay={i * 50} />
-                ))}
-              </div>
-            </div>
-          </section>
+      {/* ── Asymmetric Editorial Grid ─────────────────────────────── */}
+      <section
+        className="py-16 px-6"
+        style={{
+          background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(34,159,161,0.03) 0%, transparent 50%), #0A1119',
+        }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-xl font-bold text-white mb-8">
+            {isFiltered ? activeCategory : 'Latest Intelligence'}
+          </h2>
 
-          {/* ── Section 4: Deep Reports Interruption ─────────────── */}
-          <DeepReportsBanner />
+          {displayPosts.length === 0 ? (
+            <p className="py-16 text-center text-[#6b7280]">
+              No articles in this category yet.
+            </p>
+          ) : (
+            <AsymmetricGrid posts={displayPosts} />
+          )}
+        </div>
+      </section>
 
-          {/* ── Section 5: Category Swimlanes ────────────────────── */}
-          <section className="py-16 px-6" style={{ background: '#0A1119' }}>
-            <div className="mx-auto max-w-6xl">
-              {SWIMLANE_CATEGORIES.map((cat) => (
-                <Swimlane
-                  key={cat}
-                  title={cat}
-                  posts={postsByCategory[cat]}
-                />
-              ))}
-            </div>
-          </section>
-        </>
-      )}
+      {/* ── Deep Reports ──────────────────────────────────────────── */}
+      {!isFiltered && <DeepReportsBanner />}
 
-      {/* ── Section 6: CTA ───────────────────────────────────────── */}
+      {/* ── CTA ───────────────────────────────────────────────────── */}
       <CTASection
         headline="Stay Ahead of the Curve"
         subheadline="Subscribe to Tiger Tracks Intelligence for strategic research delivered to your inbox."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         dark
       />
-
     </>
   );
 }

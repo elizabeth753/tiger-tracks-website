@@ -191,6 +191,7 @@ function CaseStudyGrid({
                   summary={cs.summary}
                   wayfinderTitle={cs.wayfinderTactic.title}
                   resultCount={cs.results.length}
+                  heroImage={cs.heroImage}
                   isPlaceholder={cs.isPlaceholder}
                 />
               </div>

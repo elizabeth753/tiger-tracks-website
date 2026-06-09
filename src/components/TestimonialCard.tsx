@@ -1,8 +1,11 @@
+import Image from 'next/image';
+
 interface TestimonialCardProps {
   quote: string;
   name: string;
   title: string;
   company: string;
+  headshot?: string;
   featured?: boolean;
 }
 
@@ -20,41 +23,91 @@ function QuoteMark({ className = '' }: { className?: string }) {
   );
 }
 
+function Avatar({ headshot, name }: { headshot?: string; name: string }) {
+  const initials = name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2);
+
+  if (headshot) {
+    return (
+      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full">
+        <Image
+          src={headshot}
+          alt={name}
+          fill
+          className="aspect-square rounded-full object-cover"
+          sizes="48px"
+        />
+      </div>
+    );
+  }
+
+  // Fallback: TT logo avatar
+  return (
+    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-tt-teal/20 to-tt-teal/5 border border-tt-teal/20">
+      <Image
+        src="/TT.LOGO-02.png"
+        alt="Tiger Tracks"
+        fill
+        className="aspect-square rounded-full object-contain p-1.5"
+        sizes="48px"
+      />
+    </div>
+  );
+}
+
 export function TestimonialCard({
   quote,
   name,
   title,
   company,
+  headshot,
   featured = false,
 }: TestimonialCardProps) {
   if (featured) {
     return (
       <div className="rounded-2xl bg-tt-black p-10 md:p-14">
         <QuoteMark className="mb-6 text-tt-teal" />
-        <blockquote className="text-2xl font-medium leading-relaxed text-white">
+        <blockquote className="font-serif italic text-2xl font-medium leading-relaxed text-white">
           &ldquo;{quote}&rdquo;
         </blockquote>
-        <div className="mt-8">
-          <p className="font-semibold text-white">{name}</p>
-          <p className="text-sm text-tt-gray-400">
-            {title}, {company}
-          </p>
+        <div className="mt-8 flex items-center gap-4">
+          <Avatar headshot={headshot} name={name} />
+          <div>
+            <p className="font-semibold text-white">{name}</p>
+            <p className="text-sm text-tt-gray-400">
+              {title}, {company}
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl bg-tt-gray-100 p-8">
+    <div
+      className="rounded-2xl p-8"
+      style={{
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+      }}
+    >
       <QuoteMark className="mb-4 text-tt-teal/40" />
-      <blockquote className="text-lg leading-relaxed text-tt-gray-700">
+      <blockquote className="font-serif italic text-lg leading-relaxed text-tt-gray-300">
         &ldquo;{quote}&rdquo;
       </blockquote>
-      <div className="mt-6">
-        <p className="font-semibold text-tt-gray-900">{name}</p>
-        <p className="text-sm text-tt-gray-500">
-          {title}, {company}
-        </p>
+      <div className="mt-6 flex items-center gap-4">
+        <Avatar headshot={headshot} name={name} />
+        <div>
+          <p className="font-semibold text-white">{name}</p>
+          <p className="text-sm text-tt-gray-400">
+            {title}, {company}
+          </p>
+        </div>
       </div>
     </div>
   );

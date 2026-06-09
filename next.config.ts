@@ -7,6 +7,40 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: false,
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog',
+        destination: '/intelligence',
+        permanent: true,
+      },
+      {
+        source: '/contact',
+        destination: '/get-started',
+        permanent: true,
+      },
+      {
+        source: '/case-studies',
+        destination: '/results',
+        permanent: true,
+      },
+      {
+        source: '/insights/case-studies',
+        destination: '/results',
+        permanent: true,
+      },
+      {
+        source: '/insights/case-study/capezio',
+        destination: '/results/capezio',
+        permanent: true,
+      },
+      {
+        source: '/insights/case-study/dovetail',
+        destination: '/results/dovetail',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

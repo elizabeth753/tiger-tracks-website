@@ -3,6 +3,7 @@ export interface Testimonial {
   name: string;
   title: string;
   company: string;
+  headshot?: string;
 }
 
 export const testimonials: Testimonial[] = [
@@ -54,5 +55,12 @@ export const testimonials: Testimonial[] = [
     name: 'Rick Coffee',
     title: 'Head of Marketing',
     company: 'Leonard Truck Outfitters',
+  },
+  {
+    quote:
+      "Working with Tiger Tracks has been exceptional from the start! Their team took the time to deeply understand Dovetail Furniture's business model, and the results speak for themselves.",
+    name: 'Marco Mazzoni',
+    title: 'Director of Technology and Digital Marketing',
+    company: 'Dovetail Furniture',
   },
 ];
