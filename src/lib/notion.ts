@@ -124,6 +124,25 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
   const notion = getNotionClient();
   const databaseId = getDatabaseId();
 
+  /* --- TEMP: find the real database ID inside the page --- */
+  if (notion && databaseId) {
+    try {
+      const children = await notion.blocks.children.list({ block_id: databaseId, page_size: 100 });
+      for (const block of children.results) {
+        if ('type' in block) {
+          const b = block as { id: string; type: string };
+          console.log(`[notion-debug] Child block: type=${b.type}, id=${b.id}`);
+          if (b.type === 'child_database') {
+            console.log(`[notion-debug] >>> FOUND DATABASE ID: ${b.id} <<<`);
+          }
+        }
+      }
+    } catch (e) {
+      console.log(`[notion-debug] Could not list page children:`, e);
+    }
+  }
+  /* --- END TEMP --- */
+
   if (!notion || !databaseId) {
     // No Notion credentials - use static data
     return blogPosts;
