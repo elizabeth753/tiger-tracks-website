@@ -8,6 +8,7 @@ import { MagneticButton } from '@/components/MagneticButton';
 const navLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
+  { label: 'AI Tools', href: '/ai-tools' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
   { label: 'Intelligence', href: '/intelligence' },
   { label: 'Company', href: '/company' },
