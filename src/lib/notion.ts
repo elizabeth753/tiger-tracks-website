@@ -11,104 +11,96 @@ function getNotionClient(): Client | null {
   return new Client({ auth: apiKey });
 }
 
-function getDatabaseId(): string | null {
+/** The parent page ID that contains child_page blocks (one per article). */
+function getParentPageId(): string | null {
   return process.env.NOTION_DATABASE_ID ?? null;
 }
 
 // ---------------------------------------------------------------------------
-// Helpers to extract typed property values from Notion page properties
+// Helpers
 // ---------------------------------------------------------------------------
 
-type NotionPage = Awaited<
-  ReturnType<Client['databases']['query']>
->['results'][number];
+function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
 
-function getRichText(prop: unknown): string {
-  if (
-    prop &&
-    typeof prop === 'object' &&
-    'rich_text' in (prop as Record<string, unknown>)
-  ) {
-    const rt = (prop as { rich_text: { plain_text: string }[] }).rich_text;
-    return rt.map((t) => t.plain_text).join('');
+/**
+ * Retrieve a Notion page and extract a BlogPost from it.
+ * Works with child pages (no database properties) by deriving
+ * slug from title and using sensible defaults.
+ */
+async function childPageToBlogPost(
+  notion: Client,
+  pageId: string,
+): Promise<BlogPost | null> {
+  try {
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    if (!('properties' in page)) return null;
+
+    const props = page.properties as Record<string, unknown>;
+
+    // Extract title from the "title" type property
+    let title = '';
+    for (const val of Object.values(props)) {
+      if (
+        val &&
+        typeof val === 'object' &&
+        'type' in (val as Record<string, unknown>) &&
+        (val as { type: string }).type === 'title'
+      ) {
+        const t = (val as { title: { plain_text: string }[] }).title;
+        title = t.map((s) => s.plain_text).join('');
+        break;
+      }
+    }
+
+    if (!title) return null;
+
+    const slug = slugify(title);
+
+    // Try to match against static data for enriched metadata (category, excerpt, etc.)
+    const staticMatch = blogPosts.find(
+      (p) => p.slug === slug || slugify(p.title) === slug,
+    );
+
+    // Extract cover image
+    let coverImage: string | undefined;
+    if ('cover' in page && page.cover) {
+      const cover = page.cover as {
+        type: string;
+        external?: { url: string };
+        file?: { url: string };
+      };
+      if (cover.type === 'external') coverImage = cover.external?.url;
+      if (cover.type === 'file') coverImage = cover.file?.url;
+    }
+
+    // Extract created date
+    let date = '';
+    if ('created_time' in page) {
+      date = (page.created_time as string).slice(0, 10); // YYYY-MM-DD
+    }
+
+    return {
+      slug: staticMatch?.slug ?? slug,
+      title,
+      category: staticMatch?.category ?? 'Uncategorized',
+      date: staticMatch?.date ?? date,
+      excerpt: staticMatch?.excerpt ?? '',
+      readTime: staticMatch?.readTime ?? '5 min',
+      source: 'notion',
+      pageId,
+      coverImage,
+      author: staticMatch?.author,
+      authorPedigree: staticMatch?.authorPedigree,
+    };
+  } catch (error) {
+    console.error(`[notion] Failed to retrieve child page ${pageId}:`, error);
+    return null;
   }
-  return '';
-}
-
-function getTitle(prop: unknown): string {
-  if (
-    prop &&
-    typeof prop === 'object' &&
-    'title' in (prop as Record<string, unknown>)
-  ) {
-    const t = (prop as { title: { plain_text: string }[] }).title;
-    return t.map((s) => s.plain_text).join('');
-  }
-  return '';
-}
-
-function getSelect(prop: unknown): string {
-  if (
-    prop &&
-    typeof prop === 'object' &&
-    'select' in (prop as Record<string, unknown>)
-  ) {
-    const sel = (prop as { select: { name: string } | null }).select;
-    return sel?.name ?? '';
-  }
-  return '';
-}
-
-function getDate(prop: unknown): string {
-  if (
-    prop &&
-    typeof prop === 'object' &&
-    'date' in (prop as Record<string, unknown>)
-  ) {
-    const d = (prop as { date: { start: string } | null }).date;
-    return d?.start ?? '';
-  }
-  return '';
-}
-
-// ---------------------------------------------------------------------------
-// Map a Notion page to the BlogPost interface
-// ---------------------------------------------------------------------------
-
-function getCoverUrl(page: NotionPage): string | undefined {
-  if (!('cover' in page) || !page.cover) return undefined;
-  const cover = page.cover as { type: string; external?: { url: string }; file?: { url: string } };
-  if (cover.type === 'external') return cover.external?.url;
-  if (cover.type === 'file') return cover.file?.url;
-  return undefined;
-}
-
-function mapPageToBlogPost(page: NotionPage): BlogPost | null {
-  if (!('properties' in page)) return null;
-
-  const props = page.properties as Record<string, unknown>;
-
-  const title = getTitle(props['Title'] ?? props['Name']);
-  const slug =
-    getRichText(props['Slug']) ||
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
-  if (!title || !slug) return null;
-
-  return {
-    slug,
-    title,
-    category: getSelect(props['Category']) || 'Uncategorized',
-    date: getDate(props['Date']) || '',
-    excerpt: getRichText(props['Excerpt']) || '',
-    readTime: getRichText(props['Read Time']) || '5 min',
-    source: 'notion',
-    pageId: page.id,
-    coverImage: getCoverUrl(page),
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -116,60 +108,60 @@ function mapPageToBlogPost(page: NotionPage): BlogPost | null {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch all blog posts from Notion, falling back to static data on failure.
- * Designed to work with ISR (revalidate = 3600) when deployed on Vercel, and
- * with static export (returns static data when env vars are absent).
+ * Fetch all blog posts by listing child_page blocks inside the parent page.
+ * Falls back to static data when env vars are absent or on error.
  */
 export async function fetchBlogPosts(): Promise<BlogPost[]> {
   const notion = getNotionClient();
-  const databaseId = getDatabaseId();
+  const parentPageId = getParentPageId();
 
-  /* --- TEMP: find the real database ID inside the page --- */
-  if (notion && databaseId) {
-    try {
-      const children = await notion.blocks.children.list({ block_id: databaseId, page_size: 100 });
-      for (const block of children.results) {
-        if ('type' in block) {
-          const b = block as { id: string; type: string };
-          console.log(`[notion-debug] Child block: type=${b.type}, id=${b.id}`);
-          if (b.type === 'child_database') {
-            console.log(`[notion-debug] >>> FOUND DATABASE ID: ${b.id} <<<`);
-          }
-        }
-      }
-    } catch (e) {
-      console.log(`[notion-debug] Could not list page children:`, e);
-    }
-  }
-  /* --- END TEMP --- */
-
-  if (!notion || !databaseId) {
-    // No Notion credentials - use static data
+  if (!notion || !parentPageId) {
     return blogPosts;
   }
 
   try {
-    const allPosts: BlogPost[] = [];
+    // 1. List all children of the parent page, collect child_page IDs
+    const childPageIds: string[] = [];
     let cursor: string | undefined;
 
     do {
-      const response = await notion.databases.query({
-        database_id: databaseId,
+      const response = await notion.blocks.children.list({
+        block_id: parentPageId,
         start_cursor: cursor,
         page_size: 100,
-        sorts: [{ property: 'Date', direction: 'descending' }],
       });
 
-      for (const page of response.results) {
-        const post = mapPageToBlogPost(page);
-        if (post) allPosts.push(post);
+      for (const block of response.results) {
+        if ('type' in block && (block as { type: string }).type === 'child_page') {
+          childPageIds.push((block as { id: string }).id);
+        }
       }
 
-      cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
+      cursor = response.has_more
+        ? (response.next_cursor ?? undefined)
+        : undefined;
     } while (cursor);
 
-    // Return Notion data if we got any; otherwise fall back to static
-    return allPosts.length > 0 ? allPosts : blogPosts;
+    if (childPageIds.length === 0) {
+      console.log('[notion] No child pages found, using static data');
+      return blogPosts;
+    }
+
+    // 2. Retrieve each child page in parallel (batched)
+    const posts = await Promise.all(
+      childPageIds.map((id) => childPageToBlogPost(notion, id)),
+    );
+
+    const validPosts = posts.filter((p): p is BlogPost => p !== null);
+
+    // 3. Sort by date descending
+    validPosts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    console.log(
+      `[notion] Fetched ${validPosts.length} posts from ${childPageIds.length} child pages`,
+    );
+
+    return validPosts.length > 0 ? validPosts : blogPosts;
   } catch (error) {
     console.error('[notion] Failed to fetch blog posts:', error);
     return blogPosts;
@@ -178,40 +170,24 @@ export async function fetchBlogPosts(): Promise<BlogPost[]> {
 
 /**
  * Fetch a single blog post by slug.
- * Tries Notion first, then falls back to static data.
+ * Uses the full post list (cached by ISR) then matches by slug.
  */
 export async function fetchBlogPostBySlug(
   slug: string,
 ): Promise<BlogPost | undefined> {
   const notion = getNotionClient();
-  const databaseId = getDatabaseId();
+  const parentPageId = getParentPageId();
 
-  if (!notion || !databaseId) {
-    console.log(`[notion] No credentials, falling back to static for "${slug}"`);
+  if (!notion || !parentPageId) {
     return blogPosts.find((p) => p.slug === slug);
   }
 
   try {
-    console.log(`[notion] Querying Notion for slug="${slug}", dbId=${databaseId}`);
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: {
-        property: 'Slug',
-        rich_text: { equals: slug },
-      },
-      page_size: 1,
-    });
+    const allPosts = await fetchBlogPosts();
+    const match = allPosts.find((p) => p.slug === slug);
+    if (match) return match;
 
-    console.log(`[notion] Query returned ${response.results.length} results for slug="${slug}"`);
-
-    if (response.results.length > 0) {
-      const post = mapPageToBlogPost(response.results[0]);
-      console.log(`[notion] Mapped post: pageId=${post?.pageId}, title="${post?.title}"`);
-      if (post) return post;
-    }
-
-    // Slug not found in Notion - check static data
-    console.log(`[notion] Slug "${slug}" not found in Notion, using static fallback`);
+    // Slug not found in Notion child pages, try static
     return blogPosts.find((p) => p.slug === slug);
   } catch (error) {
     console.error(`[notion] Failed to fetch post "${slug}":`, error);
@@ -241,8 +217,6 @@ export interface NotionBlock {
   type: string;
   has_children: boolean;
   children?: NotionBlock[];
-  /* Each block type stores its data under its own key. We keep a loose shape
-     here to avoid importing the full Notion SDK types on the client. */
   data: {
     rich_text?: NotionRichText[];
     language?: string;
@@ -252,7 +226,6 @@ export interface NotionBlock {
     checked?: boolean;
     expression?: string;
     cells?: NotionRichText[][];
-    /* table rows */
     rows?: { cells: NotionRichText[][] }[];
   };
 }
@@ -265,13 +238,9 @@ export async function fetchPageBlocks(
   pageId: string,
 ): Promise<NotionBlock[]> {
   const notion = getNotionClient();
-  if (!notion) {
-    console.log(`[notion] No client for fetchPageBlocks, returning empty`);
-    return [];
-  }
+  if (!notion) return [];
 
   try {
-    console.log(`[notion] Fetching blocks for pageId=${pageId}`);
     const blocks: NotionBlock[] = [];
     let cursor: string | undefined;
 
@@ -286,6 +255,10 @@ export async function fetchPageBlocks(
         if (!('type' in block)) continue;
         const b = block as Record<string, unknown>;
         const type = b.type as string;
+
+        // Skip child_page and child_database blocks inside article content
+        if (type === 'child_page' || type === 'child_database') continue;
+
         const blockData = (b[type] ?? {}) as Record<string, unknown>;
 
         const parsed: NotionBlock = {
@@ -297,7 +270,9 @@ export async function fetchPageBlocks(
             language: blockData.language as string | undefined,
             caption: blockData.caption as NotionRichText[] | undefined,
             url: blockData.url as string | undefined,
-            icon: blockData.icon as { type: string; emoji?: string } | undefined,
+            icon: blockData.icon as
+              | { type: string; emoji?: string }
+              | undefined,
             checked: blockData.checked as boolean | undefined,
             expression: blockData.expression as string | undefined,
             cells: blockData.cells as NotionRichText[][] | undefined,
@@ -335,7 +310,6 @@ export async function fetchPageBlocks(
         : undefined;
     } while (cursor);
 
-    console.log(`[notion] Fetched ${blocks.length} blocks for pageId=${pageId}`);
     return blocks;
   } catch (error) {
     console.error(`[notion] Failed to fetch blocks for ${pageId}:`, error);
