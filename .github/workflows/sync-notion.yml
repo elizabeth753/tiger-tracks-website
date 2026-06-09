@@ -1,0 +1,46 @@
+name: Sync Notion Blog Posts
+
+on:
+  # Run every Monday at 6:00 AM UTC
+  schedule:
+    - cron: '0 6 * * 1'
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Notion sync
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        run: npm run sync-posts
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet src/data/blogPosts.ts && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/blogPosts.ts
+          git commit -m "chore: sync blog posts from Notion [automated]"
+          git push origin master
