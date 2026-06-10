@@ -537,10 +537,10 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
           }`}
         >
           <p className="text-[10px] font-semibold uppercase tracking-[5px] font-mono text-[#229FA1]">
-            Intelligence Series
+            Thought Leadership & Intelligence
           </p>
           <h1 className="mt-4 text-4xl font-extrabold text-white md:text-5xl lg:text-6xl max-w-4xl leading-tight">
-            Eye of the Tiger: Intelligence Series
+            Eye of the Tiger: Thought Leadership & Intelligence
           </h1>
           <p className="mt-4 text-lg text-[#9C9CAE] max-w-2xl">
             Strategic research and tactical playbooks for the performance era.
@@ -595,7 +595,7 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
       >
         <div className="mx-auto max-w-6xl">
           <h2 className="text-xl font-bold text-white mb-8">
-            {isFiltered ? activeCategory : 'Latest Intelligence'}
+            {isFiltered ? activeCategory : 'Latest Thought Leadership & Intelligence'}
           </h2>
 
           {displayPosts.length === 0 ? (
@@ -636,7 +636,7 @@ export function IntelligenceHubClient({ posts }: { posts: BlogPost[] }) {
       {/* ── CTA ───────────────────────────────────────────────────── */}
       <CTASection
         headline="Stay Ahead of the Curve"
-        subheadline="Subscribe to Tiger Tracks Intelligence for strategic research delivered to your inbox."
+        subheadline="Subscribe to Tiger Tracks Thought Leadership & Intelligence for strategic research delivered to your inbox."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         dark
       />

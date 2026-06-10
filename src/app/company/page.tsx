@@ -257,7 +257,7 @@ function GrowthSection() {
           {[
             { value: '2,954%', label: 'Three-year revenue growth' },
             { value: '#123', label: 'Inc. 5000 Fastest-Growing' },
-            { value: '32', label: 'Performance Specialists' },
+            { value: '40', label: 'Performance Specialists' },
             { value: '$100M+', label: 'Ad Spend Managed' },
           ].map((stat) => (
             <div
@@ -937,7 +937,7 @@ export default function AboutPage() {
           <p className="mt-8 text-xl text-tt-gray-400 max-w-3xl leading-relaxed">
             Tiger Tracks was founded in 2021 by ex-Google leaders who spent years
             managing some of the world&rsquo;s largest advertising budgets. Today,
-            we&rsquo;re Inc. 5000 #123 with 2,954% revenue growth, 32 specialists,
+            we&rsquo;re Inc. 5000 #123 with 2,954% revenue growth, 40 specialists,
             and a proprietary AI platform trusted by brands like AG1, Anastasia
             Beverly Hills, and Monarch Money.
           </p>
@@ -995,7 +995,7 @@ export default function AboutPage() {
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         secondaryCTA={{ text: 'View Case Studies', href: '/results' }}
         dark
-        badges={['Inc. 5000 #123', 'Meta Business Partner', '32 Specialists', '$200M+ Ad Spend Managed']}
+        badges={['Inc. 5000 #123', 'Meta Business Partner', '40 Specialists', '$200M+ Ad Spend Managed']}
       />
     </div>
   );

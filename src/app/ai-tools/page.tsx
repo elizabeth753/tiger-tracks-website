@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { CTASection } from '@/components/CTASection';
 
 /* ------------------------------------------------------------------ */
@@ -125,20 +124,11 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
-const panelVariants = {
-  enter: { opacity: 0, scale: 0.96, y: 16 },
-  center: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
-  exit: { opacity: 0, scale: 0.96, y: -12, transition: { duration: 0.3, ease: 'easeIn' as const } },
-};
-
 /* ------------------------------------------------------------------ */
 /*  Page                                                                */
 /* ------------------------------------------------------------------ */
 
 export default function AIToolsPage() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const active = tools[activeIndex];
-
   return (
     <div className="min-h-screen" style={{ background: '#0A1119' }}>
 
@@ -215,7 +205,7 @@ export default function AIToolsPage() {
       </section>
 
       {/* ==============================================================
-          COMMAND CENTER - Interactive Tabbed Interface
+          COMMAND CENTER - All Tools Grid
           ============================================================== */}
       <section className="relative py-24 sm:py-32 overflow-hidden">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -237,156 +227,91 @@ export default function AIToolsPage() {
             </h2>
           </motion.div>
 
-          {/* 12-col grid: selector | display */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Tools Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            {tools.map((tool, i) => (
+              <motion.div
+                key={tool.title}
+                variants={fadeUp}
+                className="group relative rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0D151E] transition-all duration-500 hover:-translate-y-2 hover:border-white/[0.12] hover:shadow-[0_0_40px_rgba(34,159,161,0.08)]"
+              >
+                {/* Image */}
+                <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+                  <Image
+                    src={tool.image}
+                    alt={tool.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(180deg, transparent 30%, #0D151E 100%)',
+                    }}
+                  />
+                  {/* Tool number badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold backdrop-blur-sm"
+                      style={{
+                        background: `${tool.iconColor}20`,
+                        color: tool.iconColor,
+                        border: `1px solid ${tool.iconColor}30`,
+                      }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Left Column - Tool Selector (col-span-5) */}
-            <div className="lg:col-span-5 flex flex-col gap-1">
-              {tools.map((tool, i) => {
-                const isActive = i === activeIndex;
-                return (
-                  <button
-                    key={tool.title}
-                    onClick={() => setActiveIndex(i)}
-                    className={`group relative text-left w-full rounded-xl px-5 py-4 transition-all duration-300 ${
-                      isActive
-                        ? 'bg-white/[0.05] border-l-4 border-[#229FA1] backdrop-blur-sm'
-                        : 'bg-transparent border-l-4 border-transparent hover:bg-white/[0.02] hover:border-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-all duration-300 ${
-                          isActive ? 'scale-110' : 'opacity-50 group-hover:opacity-70'
-                        }`}
+                {/* Content */}
+                <div className="px-6 pb-6 -mt-8 relative z-10">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                      style={{
+                        background: `${tool.iconColor}15`,
+                        border: `1px solid ${tool.iconColor}25`,
+                      }}
+                    >
+                      <span style={{ color: tool.iconColor }}>{tool.icon}</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-white leading-tight">
+                      {tool.title}
+                    </h3>
+                  </div>
+
+                  <p className="text-sm leading-relaxed text-slate-400 mb-4 line-clamp-3">
+                    {tool.description}
+                  </p>
+
+                  {/* Stat pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {tool.stats.map((stat) => (
+                      <span
+                        key={stat}
+                        className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
                         style={{
-                          background: isActive ? `${tool.iconColor}18` : 'rgba(255,255,255,0.03)',
-                          border: isActive ? `1px solid ${tool.iconColor}35` : '1px solid transparent',
+                          background: `${tool.iconColor}10`,
+                          color: tool.iconColor,
+                          border: `1px solid ${tool.iconColor}20`,
                         }}
                       >
-                        <span style={{ color: isActive ? tool.iconColor : '#64748b' }}>{tool.icon}</span>
-                      </div>
-
-                      <div className="min-w-0">
-                        <h3
-                          className={`text-sm font-semibold truncate transition-colors duration-300 ${
-                            isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'
-                          }`}
-                        >
-                          {tool.title}
-                        </h3>
-                        <p
-                          className={`text-xs truncate transition-colors duration-300 mt-0.5 ${
-                            isActive ? 'text-slate-400' : 'text-slate-600 group-hover:text-slate-500'
-                          }`}
-                        >
-                          {tool.subtitle}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Active indicator line */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-8 rounded-full bg-[#229FA1]"
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Right Column - Display Window (col-span-7) */}
-            <div className="lg:col-span-7">
-              <div
-                className="relative rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0D151E]"
-                style={{ minHeight: 540 }}
-              >
-                {/* Subtle inner glow */}
-                <div
-                  className="pointer-events-none absolute inset-0 z-0"
-                  style={{
-                    background: `radial-gradient(ellipse at 30% 20%, ${active.iconColor}08 0%, transparent 50%)`,
-                  }}
-                />
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeIndex}
-                    variants={panelVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="relative z-10 flex flex-col h-full"
-                  >
-                    {/* Image */}
-                    <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
-                      <Image
-                        src={active.image}
-                        alt={active.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 58vw"
-                      />
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background: 'linear-gradient(180deg, transparent 40%, #0D151E 100%)',
-                        }}
-                      />
-                    </div>
-
-                    {/* Content overlay */}
-                    <div className="px-8 pb-8 -mt-16 relative z-10">
-                      {/* Tool number badge */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <span
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold"
-                          style={{
-                            background: `${active.iconColor}20`,
-                            color: active.iconColor,
-                            border: `1px solid ${active.iconColor}30`,
-                          }}
-                        >
-                          {String(activeIndex + 1).padStart(2, '0')}
-                        </span>
-                        <span className="text-xs font-semibold uppercase tracking-[3px] text-slate-500">
-                          Tiger Tracks AI
-                        </span>
-                      </div>
-
-                      <h3 className="text-2xl font-bold text-white mb-2">
-                        {active.title}
-                      </h3>
-
-                      <p className="text-sm leading-relaxed text-slate-400 mb-6 max-w-xl">
-                        {active.description}
-                      </p>
-
-                      {/* Stat pills */}
-                      <div className="flex flex-wrap gap-2">
-                        {active.stats.map((stat) => (
-                          <span
-                            key={stat}
-                            className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-                            style={{
-                              background: `${active.iconColor}10`,
-                              color: active.iconColor,
-                              border: `1px solid ${active.iconColor}20`,
-                            }}
-                          >
-                            {stat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
+                        {stat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 

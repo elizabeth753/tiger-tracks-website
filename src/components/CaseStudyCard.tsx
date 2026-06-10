@@ -77,9 +77,6 @@ export function CaseStudyCard({
 
         {/* Overlay badges on image */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
-          <span className="rounded-full bg-tt-teal/20 backdrop-blur-sm border border-tt-teal/30 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-teal">
-            {industry}
-          </span>
           <span className="rounded-full bg-white/10 backdrop-blur-sm border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-tt-gray-300">
             {challengeType}
           </span>

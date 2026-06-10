@@ -9,13 +9,6 @@ export interface Testimonial {
 export const testimonials: Testimonial[] = [
   {
     quote:
-      'Partnering with Tiger Tracks has been amazing. They work fast, execute flawlessly and apply specialized knowledge of ad platforms with a relentless focus on hitting growth goals.',
-    name: 'Jason Marshall',
-    title: 'Chief Growth Officer',
-    company: 'AG1',
-  },
-  {
-    quote:
       'The Tiger Tracks team boosted the profitability of our non-branded search campaigns by 151% in the first few months, and set new overall ad revenue records shortly after.',
     name: 'Steven Leung',
     title: 'Director of Marketing',

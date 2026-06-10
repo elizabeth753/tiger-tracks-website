@@ -905,11 +905,6 @@ function PartnerProgramSection() {
 /*  8. MEET THE FOUNDERS                                               */
 /* ================================================================== */
 
-const founders = [
-  { name: 'Cliff Simmons', title: 'CEO & Co-Founder', initials: 'CS' },
-  { name: 'Henry Kittle', title: 'Co-Founder', initials: 'HK' },
-];
-
 function FoundersSection() {
   const containerRef = useRef(null);
   const isInView = useMotionInViewSafe(containerRef, { once: true, margin: '-60px' });
@@ -923,28 +918,12 @@ function FoundersSection() {
     }}>
       <div ref={containerRef} className="mx-auto max-w-2xl">
         <motion.div initial="hidden" animate={isInView ? 'visible' : 'hidden'} variants={stagger.container}>
-          <motion.div variants={stagger.item} className="text-center mb-14">
+          <motion.div variants={stagger.item} className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[5px] text-tt-teal/70 mb-4">Leadership</p>
             <h2 className="text-3xl font-bold text-white sm:text-4xl">Built at Google. Proven Across 500+ Campaigns.</h2>
-          </motion.div>
-
-          <motion.div variants={stagger.item} className="flex items-center justify-center gap-12 md:gap-16">
-            {founders.map((f) => (
-              <div key={f.name} className="flex flex-col items-center text-center group">
-                {/* Portrait ring */}
-                <div
-                  className="aspect-square w-32 md:w-36 rounded-full flex items-center justify-center transition-all duration-500 group-hover:shadow-[0_0_32px_rgba(232,121,58,0.15)]"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(91, 164, 164, 0.12) 0%, rgba(20, 27, 35, 0.8) 100%)',
-                    border: '2px solid rgba(232, 121, 58, 0.25)',
-                  }}
-                >
-                  <span className="text-2xl font-bold text-tt-teal/50">{f.initials}</span>
-                </div>
-                <p className="mt-5 text-base font-semibold text-white">{f.name}</p>
-                <p className="mt-1 text-sm text-slate-500">{f.title}</p>
-              </div>
-            ))}
+            <p className="mt-6 text-base text-slate-400 leading-relaxed max-w-xl mx-auto">
+              Our leadership team brings deep platform expertise from Google, Meta, and the world&apos;s fastest-growing performance marketing organizations.
+            </p>
           </motion.div>
         </motion.div>
       </div>

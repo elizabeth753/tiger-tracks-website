@@ -17,7 +17,7 @@ const companyLinks = [
 const solutionLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
-  { label: 'Intelligence', href: '/intelligence' },
+  { label: 'Thought Leadership & Intelligence', href: '/intelligence' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
 ];
 

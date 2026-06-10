@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagneticButton } from '@/components/MagneticButton';
 
@@ -105,7 +106,7 @@ const navLinks = [
   { label: 'Results', href: '/results' },
   { label: 'AI Tools', href: '/ai-tools' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
-  { label: 'Intelligence', href: '/intelligence' },
+  { label: 'Thought Leadership & Intelligence', href: '/intelligence' },
   { label: 'Company', href: '/company' },
 ];
 
@@ -234,6 +235,7 @@ function MobileAccordion({
 /* ------------------------------------------------------------------ */
 
 export function Navbar() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -359,6 +361,7 @@ export function Navbar() {
         <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => {
             const hasMega = link.label in megaMenus;
+            const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
             return (
               <div
                 key={link.href}
@@ -368,7 +371,11 @@ export function Navbar() {
               >
                 <Link
                   href={link.href}
-                  className="relative text-sm text-tt-gray-400 transition-colors duration-300 hover:text-white group flex items-center gap-1"
+                  className={`relative text-sm transition-colors duration-300 hover:text-white group flex items-center gap-1 pb-1 border-b-2 ${
+                    isActive
+                      ? 'border-[#229FA1] text-white'
+                      : 'border-transparent text-tt-gray-400'
+                  }`}
                 >
                   {link.label}
                   {hasMega && (
@@ -388,7 +395,6 @@ export function Navbar() {
                       />
                     </svg>
                   )}
-                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-to-r from-tt-teal to-tt-teal/50 transition-all duration-300 group-hover:w-full" />
                 </Link>
               </div>
             );
@@ -608,12 +614,17 @@ export function Navbar() {
                   }
 
                   /* Standard links */
+                  const isMobileActive = pathname === link.href || pathname.startsWith(link.href + '/');
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={closeMobile}
-                      className="text-lg text-tt-gray-300 transition-all duration-300 hover:text-white hover:translate-x-2 py-3 border-b border-white/5"
+                      className={`text-lg transition-all duration-300 hover:text-white hover:translate-x-2 py-3 border-b ${
+                        isMobileActive
+                          ? 'text-white border-b-2 border-[#229FA1]'
+                          : 'text-tt-gray-300 border-white/5'
+                      }`}
                       style={{
                         transitionDelay: mobileOpen
                           ? `${i * 50}ms`
