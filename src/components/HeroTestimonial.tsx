@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export function HeroTestimonial() {
   return (
@@ -19,13 +20,17 @@ export function HeroTestimonial() {
       >
         {/* AG1 Brand Badge */}
         <div
-          className="shrink-0 w-20 h-20 rounded-full flex items-center justify-center border border-white/20"
+          className="relative shrink-0 w-20 h-20 rounded-full overflow-hidden border border-white/20"
           style={{
-            backgroundColor: '#0F4132',
-            boxShadow: '0 0 30px rgba(15, 65, 50, 0.4)',
+            boxShadow: '0 0 30px rgba(20, 40, 35, 0.5)',
           }}
         >
-          <span className="text-white text-xl font-bold tracking-wider">AG1</span>
+          <Image
+            src="/images/AG1_(company)_logo.png"
+            alt="AG1 Logo"
+            fill
+            className="object-contain scale-110"
+          />
         </div>
 
         {/* Quote + Attribution */}
