@@ -64,37 +64,6 @@ const megaMenus: Record<string, MegaMenuConfig> = {
       image: '/images/nav-feature.png',
     },
   },
-  'AI Tools': {
-    items: [
-      {
-        label: 'Wayfinder Platform',
-        href: '/ai-tools#wayfinder',
-        description: 'Unified AI command center for media buying',
-      },
-      {
-        label: 'Budget Allocator',
-        href: '/ai-tools#budget',
-        description: 'ML-driven spend optimization across channels',
-      },
-      {
-        label: 'Creative Analyzer',
-        href: '/ai-tools#creative',
-        description: 'Computer vision scoring for ad creative',
-      },
-      {
-        label: 'Anomaly Detection',
-        href: '/ai-tools#anomaly',
-        description: 'Real-time alerts on spend and performance shifts',
-      },
-    ],
-    feature: {
-      title: 'See AI Tools in Action',
-      description:
-        'Watch how Tiger Tracks AI surfaces insights human analysts miss.',
-      href: '/ai-tools',
-      image: '/images/nav-feature.png',
-    },
-  },
 };
 
 /* ------------------------------------------------------------------ */
