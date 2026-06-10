@@ -86,26 +86,7 @@ function FilterBar({
       backdropFilter: 'blur(16px) saturate(150%)',
       WebkitBackdropFilter: 'blur(16px) saturate(150%)',
     }}>
-      <div className="mx-auto max-w-6xl px-6 py-4 space-y-3">
-        {/* Industry row */}
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-tt-gray-500 font-semibold mb-2">Industry</p>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mb-1">
-            {industryFilters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => onIndustryChange(filter)}
-                className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition cursor-pointer ${
-                  activeIndustry === filter
-                    ? 'bg-tt-teal text-white'
-                    : 'bg-white/5 text-tt-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="mx-auto max-w-6xl px-6 py-4">
         {/* Challenge row */}
         <div>
           <p className="text-[10px] uppercase tracking-wider text-tt-gray-500 font-semibold mb-2">Challenge</p>
@@ -162,7 +143,6 @@ function CaseStudyGrid({
         {/* Result count */}
         <p className="text-sm text-tt-gray-500 mb-8">
           Showing {filtered.length} case stud{filtered.length === 1 ? 'y' : 'ies'}
-          {activeIndustry !== 'All Industries' && ` in ${activeIndustry}`}
           {activeChallenge !== 'All Challenges' && ` for ${activeChallenge}`}
         </p>
 
