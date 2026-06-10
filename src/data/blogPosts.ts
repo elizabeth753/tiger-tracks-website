@@ -420,7 +420,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      ‘Executive Summary: OpenAI\’s GPT-5.4 raises the bar with a 1 million token context window and enhanced native coding capabilities. Google\’s Gemini 2.5 Pro and Anthropic\’s Claude 4.5 battle for dominance across real-world benchmarks. The future of ...’,
+      'Executive Summary: OpenAI\'s GPT-5.4 raises the bar with a 1 million token context window and enhanced native coding capabilities. Google\'s Gemini 2.5 Pro and Anthropic\'s Claude 4.5 battle for dominance across real-world benchmarks. The future of ...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-816d-978b-fad86b852688',
