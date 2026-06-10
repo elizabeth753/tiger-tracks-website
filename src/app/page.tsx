@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { LogoBar } from '@/components/LogoBar';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ParticleField } from '@/components/ParticleField';
+import { HeroTestimonial } from '@/components/HeroTestimonial';
 
 /* ================================================================
    HOOKS
@@ -492,6 +493,9 @@ function HeroSection() {
             View Results
           </Link>
         </motion.div>
+
+        {/* Hero Trust Anchor: AG1 Testimonial */}
+        <HeroTestimonial />
 
         {/* Glassmorphism stat cards with 0.6s delay */}
         <motion.div
