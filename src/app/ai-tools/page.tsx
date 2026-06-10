@@ -15,7 +15,7 @@ const tools = [
     subtitle: 'Key to performance on Meta Ads, TikTok',
     description:
       'AI-powered creative scoring and optimization for video and image assets across paid social. Our models identify which hooks, thumbnails, and visual elements drive conversions, then generate optimized variants automatically.',
-    image: '/images/u7815321835_System_Persona_Act_as_an_elite_3D_UIUX_conceptual_a5dd05eb-c484-4adc-9c52-3527f94df735_1.png',
+    image: '/images/wayfinder-ai-dashboard.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
@@ -29,7 +29,7 @@ const tools = [
     subtitle: 'Know exactly where your dollars work hardest',
     description:
       'Predictive attribution and media mix modeling that ingests spend, conversion, and revenue data across every channel. Get an independent, incrementality-tested view of what actually drives revenue.',
-    image: '/images/u7815321835_Act_as_an_elite_3D_UIUX_conceptual_artist_special_76fb5e52-247d-4def-ae7e-8351b40a9da8_2.png',
+    image: '/images/precision-targeting-ui.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
@@ -43,7 +43,7 @@ const tools = [
     subtitle: 'Maximize customer lifetime value',
     description:
       'Predicts churn probability per customer segment, optimizes email/SMS send cadence, and maximizes lifetime value through intelligent retention programs that keep your best customers engaged longer.',
-    image: '/images/u7815321835_Asset_3_LTV_Extension_UI._A_sleek_dark-mode_inter_87a21d51-880f-4fc3-9bc3-240857c48f35_0.png',
+    image: '/images/ltv-extension-ui.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
@@ -57,7 +57,7 @@ const tools = [
     subtitle: 'Materially increase conversion rates',
     description:
       'ML-powered testing identifies conversion bottlenecks and generates optimized variants. Average lift: 18-32% CVR improvement in 90 days across landing pages and full-site funnels.',
-    image: '/images/u7815321835_Asset_4_Website_Optimization__CRO_UI._A_dark-mode_eaed8369-2775-4ca4-8a23-8f16cac74642_2.png',
+    image: '/images/cro-optimization-ui.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
@@ -71,7 +71,7 @@ const tools = [
     subtitle: 'Show up in AI-generated answers',
     description:
       'Generative Engine Optimization and Answer Engine Optimization ensure your brand appears in AI-generated answers from ChatGPT, Claude, Gemini, and Perplexity through structured data optimization and content authority building.',
-    image: '/images/u7815321835_Asset_5_GEO__AEO_UI._A_command-line_or_developer-_6a60436b-f2cf-4132-b1e1-405df38f9815_1.png',
+    image: '/images/geo-aeo-command-ui.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
@@ -85,7 +85,7 @@ const tools = [
     subtitle: 'Compound organic growth month over month',
     description:
       'Keyword gap analysis, content scoring, and technical SEO automation. Our AI identifies the highest-impact content opportunities and generates optimized assets that build organic authority over time.',
-    image: '/images/u7815321835_Asset_6_SEO__Content_UI._A_dark-mode_dashboard_fe_abc54993-90f4-41b9-b1a7-e6aa87859fea_1.png',
+    image: '/images/seo-content-dashboard.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -99,7 +99,7 @@ const tools = [
     subtitle: 'Full-funnel automation across every major platform',
     description:
       'Automated bid and budget pacing across Meta, Google, TikTok, and programmatic DSPs. Reacts to performance shifts in minutes, enforces pacing rules, and handles cross-platform budget rebalancing automatically.',
-    image: '/images/u7815321835_Asset_7_Full-Funnel_Automation_UI._A_high-end_tra_adffdfab-ecb5-4242-a455-6472b91e14ed_1.png',
+    image: '/images/full-funnel-automation-ui.png',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -355,7 +355,7 @@ export default function AIToolsPage() {
             {/* 16:9 Brain visual */}
             <div className="relative rounded-2xl overflow-hidden border border-white/[0.06]" style={{ aspectRatio: '16 / 9' }}>
               <Image
-                src="/images/u7815321835_Asset_8_Wayfinder_AI_Central_Ecosystem._An_abstra_82f4470c-e2ab-41f1-89ba-e26a9a5b50f5_1.png"
+                src="/images/wayfinder-ecosystem.png"
                 alt="Wayfinder AI neural network visualization"
                 fill
                 className="object-cover"

@@ -147,6 +147,18 @@ body.tint-bronze { background-color: #110f0d; transition: background-color 0.8s 
   color: #fff;
 }
 
+/* Global focus-visible ring for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #5BA4A4;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Hide scrollbar utility */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

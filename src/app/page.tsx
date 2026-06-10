@@ -405,7 +405,7 @@ function HeroSection() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
           </span>
-          <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing, #123</span>
+          <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing, #123 | TIGER TRACKS</span>
         </motion.div>
 
         {/* Main headline: TIGER (teal gradient) TRACKS (white) with text shadow */}
@@ -574,7 +574,7 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+147%',
     statLabel: 'Avg ROAS lift',
-    bgImage: '/images/u7815321835_ultra_premium_dark_mode_advertising_performance_d_e8b94a81-21c0-451c-b37e-90035e938aab_0.png',
+    bgImage: '/images/media-buying-dashboard.png',
   },
   {
     title: 'Creative & UGC',
@@ -588,7 +588,7 @@ const capabilities = [
     accent: 'orange' as const,
     stat: '3x',
     statLabel: 'Creative win rate',
-    bgImage: '/images/u7815321835_premium_dark_mode_phone_mockup_displaying_UGC_wel_bf09b5ca-d52d-4685-b4e0-b9974df67db0_1.png',
+    bgImage: '/images/creative-ugc-phone-mockup.png',
   },
   {
     title: 'Website & CRO',
@@ -602,7 +602,7 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+42%',
     statLabel: 'Avg CVR lift',
-    bgImage: '/images/u7815321835_ultra_premium_dark_browser_mockup_showing_AB_test_7cd223ae-133a-4713-b614-37ebcaa5db5a_0.png',
+    bgImage: '/images/ab-testing-browser-mockup.png',
   },
   {
     title: 'Organic Growth',
@@ -616,7 +616,7 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '+89%',
     statLabel: 'Organic traffic',
-    bgImage: '/images/u7815321835_premium_dark_mode_network_connection_map_five_out_5860a76b-2606-4adc-b368-272d7e2ddf71_0.png',
+    bgImage: '/images/network-connection-map.png',
   },
   {
     title: 'Lifecycle & Retention',
@@ -630,7 +630,7 @@ const capabilities = [
     accent: 'orange' as const,
     stat: '+34%',
     statLabel: 'LTV increase',
-    bgImage: '/images/u7815321835_abstract_customer_lifecycle_journey_visualization_c577cc13-eae4-4c6c-915c-d309ca643edd_1.png',
+    bgImage: '/images/lifecycle-journey-visualization.png',
   },
   {
     title: 'Analytics & Intelligence',
@@ -644,7 +644,7 @@ const capabilities = [
     accent: 'teal' as const,
     stat: '100%',
     statLabel: 'Data visibility',
-    bgImage: '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_0.png',
+    bgImage: '/images/scatter-plot-data-viz.png',
   },
 ] as const;
 
