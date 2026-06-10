@@ -5,47 +5,68 @@ import type { NextConfig } from 'next';
 // features on Vercel (API routes, ISR, middleware, image optimization, etc.).
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: false,
-  },
-  async redirects() {
-    return [
-      {
-        source: '/blog',
-        destination: '/intelligence',
-        permanent: true,
-      },
-      {
-        source: '/contact',
-        destination: '/get-started',
-        permanent: true,
-      },
-      {
-        source: '/case-studies',
-        destination: '/results',
-        permanent: true,
-      },
-      {
-        source: '/insights/case-studies',
-        destination: '/results',
-        permanent: true,
-      },
-      {
-        source: '/insights/case-study/capezio',
-        destination: '/results/capezio',
-        permanent: true,
-      },
-      {
-        source: '/insights/case-study/dovetail',
-        destination: '/results/dovetail',
-        permanent: true,
-      },
-      {
-        source: '/pe-vc-partners',
-        destination: '/pe-vc',
-        permanent: true,
-      },
-    ];
-  },
-};
+      unoptimized: false,
+        },
+          async redirects() {
+              return [
+                    {
+                            source: '/blog',
+                                    destination: '/intelligence',
+                                            permanent: true,
+                                                  },
+                                                        {
+                                                                source: '/contact',
+                                                                        destination: '/get-started',
+                                                                                permanent: true,
+                                                                                      },
+                                                                                            {
+                                                                                                    source: '/case-studies',
+                                                                                                            destination: '/results',
+                                                                                                                    permanent: true,
+                                                                                                                          },
+                                                                                                                                {
+                                                                                                                                        source: '/insights/case-studies',
+                                                                                                                                                destination: '/results',
+                                                                                                                                                        permanent: true,
+                                                                                                                                                              },
+                                                                                                                                                                    {
+                                                                                                                                                                            source: '/insights/case-study/capezio',
+                                                                                                                                                                                    destination: '/results/capezio',
+                                                                                                                                                                                            permanent: true,
+                                                                                                                                                                                                  },
+                                                                                                                                                                                                        {
+                                                                                                                                                                                                                source: '/insights/case-study/dovetail',
+                                                                                                                                                                                                                        destination: '/results/dovetail',
+                                                                                                                                                                                                                                permanent: true,
+                                                                                                                                                                                                                                      },
+                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                    source: '/pe-vc-partners',
+                                                                                                                                                                                                                                                            destination: '/pe-vc',
+                                                                                                                                                                                                                                                                    permanent: true,
+                                                                                                                                                                                                                                                                          },
+                                                                                                                                                                                                                                                                                // Legacy WordPress redirects — route old WP paths to the parked legacy site
+                                                                                                                                                                                                                                                                                      {
+                                                                                                                                                                                                                                                                                              source: '/wp-admin/:path*',
+                                                                                                                                                                                                                                                                                                      destination: 'https://legacy.tigertracks.ai/wp-admin/:path*',
+                                                                                                                                                                                                                                                                                                              permanent: false,
+                                                                                                                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                                                                                                                          {
+                                                                                                                                                                                                                                                                                                                                  source: '/wp-login.php',
+                                                                                                                                                                                                                                                                                                                                          destination: 'https://legacy.tigertracks.ai/wp-login.php',
+                                                                                                                                                                                                                                                                                                                                                  permanent: false,
+                                                                                                                                                                                                                                                                                                                                                        },
+                                                                                                                                                                                                                                                                                                                                                              {
+                                                                                                                                                                                                                                                                                                                                                                      source: '/wp-content/:path*',
+                                                                                                                                                                                                                                                                                                                                                                              destination: 'https://legacy.tigertracks.ai/wp-content/:path*',
+                                                                                                                                                                                                                                                                                                                                                                                      permanent: false,
+                                                                                                                                                                                                                                                                                                                                                                                            },
+                                                                                                                                                                                                                                                                                                                                                                                                  {
+                                                                                                                                                                                                                                                                                                                                                                                                          source: '/xmlrpc.php',
+                                                                                                                                                                                                                                                                                                                                                                                                                  destination: 'https://legacy.tigertracks.ai/xmlrpc.php',
+                                                                                                                                                                                                                                                                                                                                                                                                                          permanent: false,
+                                                                                                                                                                                                                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                                                                                                                                                                                                                    ];
+                                                                                                                                                                                                                                                                                                                                                                                                                                      },
+                                                                                                                                                                                                                                                                                                                                                                                                                                      };
 
-export default nextConfig;
+                                                                                                                                                                                                                                                                                                                                                                                                                                      export default nextConfig;
