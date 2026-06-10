@@ -20,7 +20,7 @@ export function HeroTestimonial() {
       >
         {/* AG1 Brand Badge */}
         <div
-          className="relative shrink-0 w-20 h-20 rounded-full overflow-hidden border border-white/20"
+          className="relative shrink-0 w-24 h-16 rounded-xl overflow-hidden border border-white/20 bg-[#0F4132] p-2"
           style={{
             boxShadow: '0 0 30px rgba(20, 40, 35, 0.5)',
           }}
@@ -29,7 +29,7 @@ export function HeroTestimonial() {
             src="/images/AG1_(company)_logo.png"
             alt="AG1 Logo"
             fill
-            className="object-contain scale-110"
+            className="object-contain p-2"
           />
         </div>
 
