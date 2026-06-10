@@ -348,8 +348,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-03',
     excerpt:
-      'Executive Summary
-Most marketers are leaving significant performance on the table because they are writing prompts the same way they write emails. Claude, Anthropic\'s AI assistant, can act as a dedicated prompt engineer, designing, testing, and re...',
+      'Executive Summary: Most marketers are leaving significant performance on the table because they are writing prompts the same way they write emails. Claude, Anthropic\'s AI assistant, can act as a dedicated prompt engineer, designing, testing, and re...',
     readTime: '7 min',
     source: 'notion',
     pageId: '33781f05-1e83-811f-8250-eaa46db61fde',
