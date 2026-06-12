@@ -97,7 +97,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-meta',
     gradient: { from: '#5BA4A4', to: '#2d7a7a', orb: '#E8793A' },
     imagePlaceholder: { label: 'Campaign Performance Dashboard', icon: 'chart-bar' },
-    image: '/images/media-buying-dashboard.png',
+    image: '/images/u7815321835_ultra_premium_dark_mode_advertising_performance_d_e8b94a81-21c0-451c-b37e-90035e938aab_0.png',
   },
   {
     id: 'creative',
@@ -127,7 +127,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/anastasia-beverly-hills',
     gradient: { from: '#E8793A', to: '#c45a20', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Creative Testing Matrix', icon: 'sparkles' },
-    image: '/images/creative-ugc-phone-mockup.png',
+    image: '/images/u7815321835_premium_dark_mode_phone_mockup_displaying_UGC_wel_bf09b5ca-d52d-4685-b4e0-b9974df67db0_1.png',
   },
   {
     id: 'website-cro',
@@ -157,7 +157,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/online-labels',
     gradient: { from: '#5BA4A4', to: '#3d8888', orb: '#E8793A' },
     imagePlaceholder: { label: 'Funnel Conversion Heatmap', icon: 'cursor-arrow-rays' },
-    image: '/images/ab-testing-browser-mockup.png',
+    image: '/images/u7815321835_ultra_premium_dark_browser_mockup_showing_AB_test_7cd223ae-133a-4713-b614-37ebcaa5db5a_0.png',
   },
   {
     id: 'analytics',
@@ -192,7 +192,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-brand-search',
     gradient: { from: '#5BA4A4', to: '#4a9494', orb: '#E8793A' },
     imagePlaceholder: { label: 'Attribution Model Architecture', icon: 'chart-pie' },
-    image: '/images/scatter-plot-data-viz.png',
+    image: '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_0.png',
   },
   {
     id: 'organic-growth',
@@ -222,7 +222,7 @@ const capabilities: Capability[] = [
     linkHref: '/intelligence',
     gradient: { from: '#2d7a7a', to: '#1a5c5c', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'AI Search Visibility Map', icon: 'globe-alt' },
-    image: '/images/network-connection-map.png',
+    image: '/images/u7815321835_premium_dark_mode_network_connection_map_five_out_5860a76b-2606-4adc-b368-272d7e2ddf71_0.png',
   },
   {
     id: 'lifecycle',
@@ -252,7 +252,7 @@ const capabilities: Capability[] = [
     linkHref: '/get-started',
     gradient: { from: '#E8793A', to: '#d06628', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Cohort LTV Curves', icon: 'arrow-trending-up' },
-    image: '/images/lifecycle-journey-visualization.png',
+    image: '/images/u7815321835_abstract_customer_lifecycle_journey_visualization_c577cc13-eae4-4c6c-915c-d309ca643edd_1.png',
   },
   {
     id: 'partnerships',
@@ -282,7 +282,7 @@ const capabilities: Capability[] = [
     linkHref: '/pe-vc',
     gradient: { from: '#2d7a7a', to: '#1f6565', orb: '#E8793A' },
     imagePlaceholder: { label: 'Portfolio Growth Network', icon: 'users' },
-    image: '/images/project-timeline-ui.png',
+    image: '/images/u7815321835_ultra_premium_dark_mode_project_timeline_UI_showi_5bc59994-d85e-49e5-9fbc-8f25e0a1431a_0.png',
   },
 ];
 

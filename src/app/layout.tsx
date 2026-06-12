@@ -1,15 +1,8 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ClientBody } from '@/components/ClientBody';
-
-// Tracking components — extracted from legacy tigertracks.ai
-import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/tracking/GoogleTagManager';
-import { HubSpotTracking } from '@/components/tracking/HubSpotTracking';
-import { MetaPixel } from '@/components/tracking/MetaPixel';
-import { HubSpotMeetingEvents } from '@/components/tracking/HubSpotMeetingEvents';
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | Tiger Tracks',
   },
   description:
-    'Inc. 5000 #123 agency with 2,954% growth. Tiger Tracks delivers full-funnel performance marketing powered by proprietary AI for brands spending $100K-$5M/month. Book your free audit.',
+    'Inc. 5000 #123 agency with 2,954% growth. Tiger Tracks delivers full-funnel performance marketing powered by proprietary AI for brands spending $100K–$5M/month. Book your free audit.',
   keywords: [
     'performance marketing agency',
     'ex-Google marketing',
@@ -46,9 +39,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  verification: {
-    google: 'NJCbWRQQDLmkvCYAkbjIxTJ-UuClVYayvFqoz67Xns4',
-  },
 };
 
 export default function RootLayout({
@@ -69,43 +59,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
-        <GoogleTagManagerHead />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'Tiger Tracks',
-              url: 'https://tigertracks.ai',
-              logo: 'https://tigertracks.ai/images/TT.LOGO-02.png',
-              description: 'Inc. 5000 #123 performance marketing agency built by ex-Google leaders.',
-              foundingDate: '2019',
-              sameAs: [
-                'https://www.linkedin.com/company/tiger-tracks-ai',
-              ],
-              contactPoint: {
-                '@type': 'ContactPoint',
-                email: 'hello@tigertracks.ai',
-                contactType: 'sales',
-              },
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: 'Tiger Tracks',
-              url: 'https://tigertracks.ai',
-            }),
-          }}
-        />
       </head>
       <body className="font-sans antialiased text-white">
-        <GoogleTagManagerBody />
         <ClientBody>
           <a
             href="#main-content"
@@ -118,9 +73,6 @@ export default function RootLayout({
           <main id="main-content" className="relative z-[5]">{children}</main>
           <Footer />
         </ClientBody>
-        <HubSpotTracking />
-        <MetaPixel />
-        <HubSpotMeetingEvents />
       </body>
     </html>
   );

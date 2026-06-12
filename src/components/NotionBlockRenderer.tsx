@@ -215,6 +215,23 @@ function CodeBlock({ block }: { block: NotionBlock }) {
   );
 }
 
+/**
+ * Hosts whitelisted in next.config.ts remotePatterns (safe to optimize).
+ * Any other external host bypasses the optimizer so the image still renders.
+ */
+const OPTIMIZABLE_HOSTS = ['files.manuscdn.com', 'www.notion.so'];
+
+export function shouldSkipOptimizer(url: string): boolean {
+  if (!url.startsWith('http')) return false; // local images: always optimize
+  // Signed S3 URLs expire — skip optimizer cache
+  if (url.startsWith('https://prod-files-secure') || url.startsWith('https://s3')) return true;
+  try {
+    return !OPTIMIZABLE_HOSTS.includes(new URL(url).hostname);
+  } catch {
+    return true;
+  }
+}
+
 function NotionImage({ block }: { block: NotionBlock }) {
   const url = block.data.url;
   if (!url) return null;
@@ -232,11 +249,11 @@ function NotionImage({ block }: { block: NotionBlock }) {
           height={675}
           className="w-full h-auto object-cover"
           sizes="(max-width: 768px) 100vw, 720px"
-          unoptimized={url.startsWith('https://prod-files-secure') || url.startsWith('https://s3')}
+          unoptimized={shouldSkipOptimizer(url)}
         />
       </div>
       {hasCaption && (
-        <figcaption className="mt-2 text-base font-sans italic text-[#F0EFED] print:text-gray-500 print:text-xs">
+        <figcaption className="mt-2 text-[13px] leading-snug font-sans text-[#F0EFED]/50 print:text-gray-500 print:text-xs">
           <RichText segments={caption} />
         </figcaption>
       )}

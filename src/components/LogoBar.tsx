@@ -16,7 +16,7 @@ export function LogoBar() {
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-tt-black to-transparent" />
 
         {/* Scrolling row */}
-        <div className="flex animate-logo-scroll items-center gap-16" role="list" aria-label="Client logos">
+        <div className="flex animate-logo-scroll items-center gap-16">
           {/* First set */}
           {clientLogos.map(({ key, Component }) => (
             <div

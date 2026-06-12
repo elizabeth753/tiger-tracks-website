@@ -61,14 +61,14 @@ export function CTASection({
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href={primaryCTA.href}
-            className="btn-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tt-orange"
+            className="rounded-full bg-tt-orange px-8 py-4 text-lg font-semibold text-white transition hover:bg-tt-orange-dark"
           >
             {primaryCTA.text}
           </Link>
           {secondaryCTA && (
             <Link
               href={secondaryCTA.href}
-              className="btn-ghost focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tt-teal"
+              className="rounded-full border border-tt-teal px-8 py-4 text-lg font-semibold text-tt-teal transition hover:bg-tt-teal hover:text-tt-black"
             >
               {secondaryCTA.text}
             </Link>

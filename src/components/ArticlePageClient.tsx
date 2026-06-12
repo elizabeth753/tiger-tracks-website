@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { BlogPost, blogPosts } from '@/data/blogPosts';
 import { CTASection } from '@/components/CTASection';
-import { NotionBlockRenderer } from '@/components/NotionBlockRenderer';
+import { NotionBlockRenderer, shouldSkipOptimizer } from '@/components/NotionBlockRenderer';
 import type { NotionBlock } from '@/lib/notion';
 
 /* ------------------------------------------------------------------ */
@@ -313,7 +313,7 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
                 className="w-full h-auto"
                 sizes="(max-width: 768px) 100vw, 720px"
                 priority
-                unoptimized={article.coverImage.startsWith('https://prod-files-secure') || article.coverImage.startsWith('https://s3')}
+                unoptimized={shouldSkipOptimizer(article.coverImage)}
               />
             </div>
           )}
