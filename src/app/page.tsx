@@ -45,38 +45,55 @@ function useReveal(threshold = 0.15) {
 /** Velocity-damped mouse parallax tracks cursor velocity for natural deceleration */
 function useMouseParallax(intensity = 0.02) {
   const ref = useRef<HTMLDivElement>(null);
-  const velocity = useRef({ x: 0, y: 0 });
-  const target = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
-  const raf = useRef<number>(0);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Skip entirely on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
-    const handleMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      target.current = { x: nx * intensity * 100, y: ny * intensity * 100 };
-    };
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
+    let raf = 0;
+    let running = false;
 
     const tick = () => {
       const damping = 0.08; // low = more fluid, high = snappy
-      current.current.x += (target.current.x - current.current.x) * damping;
-      current.current.y += (target.current.y - current.current.y) * damping;
+      current.x += (target.x - current.x) * damping;
+      current.y += (target.y - current.y) * damping;
 
-      el.style.setProperty('--mx', `${current.current.x}px`);
-      el.style.setProperty('--my', `${current.current.y}px`);
-      raf.current = requestAnimationFrame(tick);
+      el.style.setProperty('--mx', `${current.x.toFixed(2)}px`);
+      el.style.setProperty('--my', `${current.y.toFixed(2)}px`);
+
+      // Idle-stop: kill the rAF loop once we've settled so the page
+      // isn't doing style recalcs every frame forever.
+      if (
+        Math.abs(target.x - current.x) < 0.05 &&
+        Math.abs(target.y - current.y) < 0.05
+      ) {
+        running = false;
+        return;
+      }
+      raf = requestAnimationFrame(tick);
     };
 
-    el.addEventListener('mousemove', handleMove);
-    raf.current = requestAnimationFrame(tick);
+    const handleMove = (e: MouseEvent) => {
+      // Viewport-based: avoids getBoundingClientRect (forced layout) per event
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      target.x = nx * intensity * 100;
+      target.y = ny * intensity * 100;
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    el.addEventListener('mousemove', handleMove, { passive: true });
 
     return () => {
       el.removeEventListener('mousemove', handleMove);
-      cancelAnimationFrame(raf.current);
+      cancelAnimationFrame(raf);
     };
   }, [intensity]);
 
@@ -114,17 +131,33 @@ function useCursorGlow() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
+    let raf = 0;
+    let pending = false;
+    let px = 0;
+    let py = 0;
+
+    // rAF-throttled: high-polling mice fire mousemove far above 60Hz,
+    // and each CSS var change repaints the glow gradient layer.
     const handleMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      el.style.setProperty('--glow-x', `${x}px`);
-      el.style.setProperty('--glow-y', `${y}px`);
+      px = e.clientX;
+      py = e.clientY;
+      if (pending) return;
+      pending = true;
+      raf = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        el.style.setProperty('--glow-x', `${px - rect.left}px`);
+        el.style.setProperty('--glow-y', `${py - rect.top}px`);
+        pending = false;
+      });
     };
 
-    el.addEventListener('mousemove', handleMove);
-    return () => el.removeEventListener('mousemove', handleMove);
+    el.addEventListener('mousemove', handleMove, { passive: true });
+    return () => {
+      el.removeEventListener('mousemove', handleMove);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   return ref;
@@ -349,7 +382,7 @@ function HeroSection() {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true"
         style={{
           transform: 'translate(calc(var(--mx, 0px) * 2), calc(var(--my, 0px) * 2))',
-          transition: 'transform 0.1s linear',
+          willChange: 'transform',
         }}
       >
         <div
@@ -370,7 +403,7 @@ function HeroSection() {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true"
         style={{
           transform: 'translate(calc(var(--mx, 0px) * 0.8), calc(var(--my, 0px) * 0.8))',
-          transition: 'transform 0.1s linear',
+          willChange: 'transform',
         }}
       >
         <div
@@ -391,7 +424,7 @@ function HeroSection() {
         className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-16 lg:pt-32"
         style={{
           transform: 'translate(calc(var(--mx, 0px) * 0.3), calc(var(--my, 0px) * 0.3))',
-          transition: 'transform 0.15s linear',
+          willChange: 'transform',
         }}
       >
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">

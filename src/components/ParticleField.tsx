@@ -43,24 +43,27 @@ export function ParticleField({
     const rgb = hexToRgb(color);
     const connectionDistance = 150;
 
+    // Cached dimensions: reading parent.clientWidth/Height every frame
+    // forces layout while other code dirties styles -> layout thrash.
+    let cw = 0;
+    let ch = 0;
+
     function resize() {
       const parent = canvas!.parentElement;
       if (!parent) return;
       const dpr = window.devicePixelRatio || 1;
-      const w = parent.clientWidth;
-      const h = parent.clientHeight;
-      canvas!.width = w * dpr;
-      canvas!.height = h * dpr;
-      canvas!.style.width = `${w}px`;
-      canvas!.style.height = `${h}px`;
+      cw = parent.clientWidth;
+      ch = parent.clientHeight;
+      canvas!.width = cw * dpr;
+      canvas!.height = ch * dpr;
+      canvas!.style.width = `${cw}px`;
+      canvas!.style.height = `${ch}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function initParticles() {
-      const parent = canvas!.parentElement;
-      if (!parent) return;
-      const w = parent.clientWidth;
-      const h = parent.clientHeight;
+      const w = cw;
+      const h = ch;
       const particles: Particle[] = [];
       for (let i = 0; i < particleCount; i++) {
         particles.push({
@@ -75,10 +78,8 @@ export function ParticleField({
     }
 
     function animate() {
-      const parent = canvas!.parentElement;
-      if (!parent) return;
-      const w = parent.clientWidth;
-      const h = parent.clientHeight;
+      const w = cw;
+      const h = ch;
       const particles = particlesRef.current;
 
       ctx!.clearRect(0, 0, w, h);
@@ -110,33 +111,50 @@ export function ParticleField({
         ctx!.fill();
       }
 
+      // Single batched path for all connection lines (one stroke call)
+      ctx!.beginPath();
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = dx * dx + dy * dy;
           if (dist < connectionDistance * connectionDistance) {
-            ctx!.beginPath();
             ctx!.moveTo(particles[i].x, particles[i].y);
             ctx!.lineTo(particles[j].x, particles[j].y);
-            ctx!.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`;
-            ctx!.lineWidth = 1;
-            ctx!.stroke();
           }
         }
       }
+      ctx!.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`;
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
 
       animationRef.current = requestAnimationFrame(animate);
     }
 
     resize();
     initParticles();
-    animationRef.current = requestAnimationFrame(animate);
+
+    // Only animate while visible: pause when scrolled out of view
+    let isVisible = false;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          isVisible = true;
+          animationRef.current = requestAnimationFrame(animate);
+        } else if (!entry.isIntersecting && isVisible) {
+          isVisible = false;
+          cancelAnimationFrame(animationRef.current);
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(canvas);
 
     window.addEventListener('resize', resize);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
+      observer.disconnect();
       window.removeEventListener('resize', resize);
     };
   }, [particleCount, color]);

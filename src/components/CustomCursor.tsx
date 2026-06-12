@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 /**
@@ -28,17 +28,28 @@ export function CustomCursor() {
   // Scale spring for hover state
   const ringScale = useSpring(1, { stiffness: 300, damping: 20 });
 
+  // Visibility via ref so the mousemove listener never re-registers
+  const visibleRef = useRef(false);
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setIsVisible(true);
+      }
     },
-    [mouseX, mouseY, isVisible],
+    [mouseX, mouseY],
   );
 
-  const handleMouseEnter = useCallback(() => setIsVisible(true), []);
-  const handleMouseLeave = useCallback(() => setIsVisible(false), []);
+  const handleMouseEnter = useCallback(() => {
+    visibleRef.current = true;
+    setIsVisible(true);
+  }, []);
+  const handleMouseLeave = useCallback(() => {
+    visibleRef.current = false;
+    setIsVisible(false);
+  }, []);
 
   useEffect(() => {
     // Only enable on non-touch desktop devices
@@ -95,9 +106,11 @@ export function CustomCursor() {
 
   return (
     <>
-      {/* Dot: 8px solid, tracks 1:1 */}
+      {/* Dot: 8px solid, tracks 1:1.
+          Note: no mix-blend-difference — blending against large blurred
+          layers forces expensive compositing on every frame. */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9998] mix-blend-difference"
+        className="pointer-events-none fixed top-0 left-0 z-[9998]"
         style={{
           x: mouseX,
           y: mouseY,
