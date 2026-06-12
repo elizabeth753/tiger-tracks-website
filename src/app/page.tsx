@@ -7,6 +7,7 @@ import { LogoBar } from '@/components/LogoBar';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ParticleField } from '@/components/ParticleField';
 import { HeroTestimonial } from '@/components/HeroTestimonial';
+import { HeroDiagnosticForm } from '@/components/HeroDiagnosticForm';
 
 /* ================================================================
    HOOKS
@@ -387,143 +388,155 @@ function HeroSection() {
 
       {/* Content */}
       <div
-        className="relative z-10 mx-auto max-w-5xl px-6 text-center"
+        className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-16 lg:pt-32"
         style={{
           transform: 'translate(calc(var(--mx, 0px) * 0.3), calc(var(--my, 0px) * 0.3))',
           transition: 'transform 0.15s linear',
         }}
       >
-        {/* Status badge */}
-        <motion.div
-          variants={heroFadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0}
-          className="inline-flex items-center gap-2.5 rounded-full border border-tt-teal/20 bg-tt-teal/5 px-5 py-2 mb-10"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
-          </span>
-          <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing, #123 | TIGER TRACKS</span>
-        </motion.div>
-
-        {/* Main headline: TIGER (teal gradient) TRACKS (white) with text shadow */}
-        <motion.div
-          variants={heroFadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0}
-          className="space-y-8"
-        >
-          <h1
-            className="text-6xl font-extrabold tracking-tight sm:text-8xl md:text-9xl"
-            style={{ letterSpacing: '-0.03em', lineHeight: 0.95, textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}
-          >
-            <span
-              className="inline-block bg-clip-text text-transparent bg-gradient-to-br from-[#5BA4A4] via-[#7BC4C4] to-[#A8D4D4]"
-              style={{ textShadow: 'none', filter: 'drop-shadow(0 2px 20px rgba(91,164,164,0.25))' }}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+          {/* ---------------- Left: headline ---------------- */}
+          <div className="text-center lg:text-left">
+            {/* Status badge */}
+            <motion.div
+              variants={heroFadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0}
+              className="inline-flex items-center gap-2.5 rounded-full border border-tt-teal/20 bg-tt-teal/5 px-5 py-2 mb-8"
             >
-              TIGER
-            </span>
-            {' '}
-            <span className="inline-block text-white" style={{ filter: 'drop-shadow(0 2px 16px rgba(0,0,0,0.4))' }}>
-              TRACKS
-            </span>
-          </h1>
-        </motion.div>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-40" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-tt-teal" />
+              </span>
+              <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing, #123 | TIGER TRACKS</span>
+            </motion.div>
 
-        {/* Sub-headline with 0.2s delay */}
-        <motion.div
-          variants={heroFadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.2}
-          className="space-y-6 mt-8"
-        >
-          <p
-            className="text-xl font-medium tracking-wide text-slate-100 sm:text-2xl md:text-3xl"
-            style={{ letterSpacing: '0.04em' }}
-          >
-            Where precision meets growth.
-          </p>
-
-          <p className="mx-auto max-w-2xl text-base text-slate-100 sm:text-lg font-medium leading-relaxed">
-            Ex-Google performance marketing leaders, powered by proprietary AI, delivering
-            measurable revenue growth for the world&apos;s most ambitious brands.
-          </p>
-        </motion.div>
-
-        {/* CTA buttons with 0.4s delay */}
-        <motion.div
-          variants={heroFadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.4}
-          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          {/* Primary CTA with arrow micro-interaction + orange glow */}
-          <Link
-            href="/get-started"
-            className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-tt-orange to-tt-orange-dark px-10 py-4 text-lg font-semibold text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)]"
-          >
-            <span className="relative z-10">Request a Strategic Diagnostic</span>
-            <svg
-              className="relative z-10 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            {/* Main headline: TIGER (teal gradient) TRACKS (white) with text shadow */}
+            <motion.div
+              variants={heroFadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-            {/* Shimmer sweep */}
-            <span
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-              style={{
-                transform: 'translateX(-100%)',
-                animation: 'shimmer 3s cubic-bezier(0.16, 1, 0.3, 1) infinite',
-                animationDelay: '1s',
-              }}
-            />
-          </Link>
+              <h1
+                className="text-5xl font-extrabold tracking-tight sm:text-6xl xl:text-7xl"
+                style={{ letterSpacing: '-0.03em', lineHeight: 0.95, textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}
+              >
+                <span
+                  className="inline-block bg-clip-text text-transparent bg-gradient-to-br from-[#5BA4A4] via-[#7BC4C4] to-[#A8D4D4]"
+                  style={{ textShadow: 'none', filter: 'drop-shadow(0 2px 20px rgba(91,164,164,0.25))' }}
+                >
+                  TIGER
+                </span>
+                {' '}
+                <span className="inline-block text-white" style={{ filter: 'drop-shadow(0 2px 16px rgba(0,0,0,0.4))' }}>
+                  TRACKS
+                </span>
+              </h1>
+            </motion.div>
 
-          {/* Secondary: Ghost button with thin border */}
-          <Link
-            href="/results"
-            className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-transparent px-10 py-4 text-lg font-semibold text-slate-200 transition-all duration-300 hover:bg-white/5 hover:border-white/40 hover:text-white"
+            {/* Sub-headline with 0.2s delay */}
+            <motion.div
+              variants={heroFadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0.2}
+              className="space-y-4 mt-6"
+            >
+              <p
+                className="text-lg font-medium tracking-wide text-slate-100 sm:text-xl xl:text-2xl"
+                style={{ letterSpacing: '0.04em' }}
+              >
+                Where precision meets growth.
+              </p>
+
+              <p className="mx-auto lg:mx-0 max-w-xl text-base text-slate-100 font-medium leading-relaxed">
+                Ex-Google performance marketing leaders, powered by proprietary AI, delivering
+                measurable revenue growth for the world&apos;s most ambitious brands.
+              </p>
+            </motion.div>
+
+            {/* CTAs: mobile anchor to form + secondary link */}
+            <motion.div
+              variants={heroFadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0.4}
+              className="mt-8 flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4"
+            >
+              {/* Mobile-only primary CTA: jumps to the form below */}
+              <a
+                href="#diagnostic-form"
+                className="lg:hidden group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-tt-orange to-tt-orange-dark px-8 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)]"
+              >
+                <span className="relative z-10">Request a Strategic Diagnostic</span>
+                <svg
+                  className="relative z-10 w-5 h-5 transition-transform duration-300 group-hover:translate-y-1"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                {/* Shimmer sweep */}
+                <span
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                  style={{
+                    transform: 'translateX(-100%)',
+                    animation: 'shimmer 3s cubic-bezier(0.16, 1, 0.3, 1) infinite',
+                    animationDelay: '1s',
+                  }}
+                />
+              </a>
+
+              {/* Secondary: Ghost button with thin border */}
+              <Link
+                href="/results"
+                className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-transparent px-8 py-3.5 text-base font-semibold text-slate-200 transition-all duration-300 hover:bg-white/5 hover:border-white/40 hover:text-white"
+              >
+                View Results
+              </Link>
+            </motion.div>
+
+            {/* Compact stat row */}
+            <motion.div
+              variants={heroFadeUp}
+              initial="hidden"
+              animate="visible"
+              custom={0.6}
+              className="mt-10 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0"
+            >
+              {[
+                { value: '2,954%', label: 'Revenue Growth' },
+                { value: '+51%', label: 'Customers YoY (AG1)' },
+                { value: '50+', label: 'Growth Brands' },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-xl backdrop-blur-xl border-t border-l border-white/10 px-3 py-4 text-center transition-all duration-500 hover:-translate-y-0.5"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  <AnimatedCounter value={stat.value} label={stat.label} className="[&>div:first-child]:text-xl sm:[&>div:first-child]:text-2xl [&>div:last-of-type]:mt-1 [&>div:last-of-type]:text-[11px]" />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* ---------------- Right: inline diagnostic form ---------------- */}
+          <motion.div
+            variants={heroFadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.3}
           >
-            View Results
-          </Link>
-        </motion.div>
+            <HeroDiagnosticForm />
+          </motion.div>
+        </div>
 
         {/* Hero Trust Anchor: AG1 Testimonial */}
         <HeroTestimonial />
-
-        {/* Glassmorphism stat cards with 0.6s delay */}
-        <motion.div
-          variants={heroFadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.6}
-          className="mt-16 mx-auto max-w-3xl"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { value: '2,954%', label: 'Revenue Growth' },
-              { value: '+51%', label: 'Customers YoY (AG1)' },
-              { value: '50+', label: 'Growth Brands' },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="group rounded-2xl backdrop-blur-xl border-t border-l border-white/10 px-6 py-6 text-center transition-all duration-500 hover:-translate-y-0.5"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3)',
-                }}
-              >
-                <AnimatedCounter value={stat.value} label={stat.label} className="[&>div:first-child]:text-2xl sm:[&>div:first-child]:text-3xl [&>div:last-of-type]:mt-1.5" />
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </div>
 
       {/* Scroll indicator */}

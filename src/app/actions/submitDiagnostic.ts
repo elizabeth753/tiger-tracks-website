@@ -3,21 +3,100 @@
 import { Resend } from 'resend';
 
 /* ------------------------------------------------------------------ */
+/*  Config                                                             */
+/* ------------------------------------------------------------------ */
+
+const HUBSPOT_PORTAL_ID =
+  process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID || '44278456';
+const HUBSPOT_FORM_GUID =
+  process.env.NEXT_PUBLIC_HUBSPOT_FORM_GUID ||
+  '7ebf07f8-8a2d-4120-8502-e40e863e6126';
+
+const NOTIFY_TO = ['grant@tigertracks.ai', 'info@tigertracks.ai'];
+
+/* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
 export interface DiagnosticPayload {
-  goal: string;
-  budget: string;
-  channels?: string;
   name: string;
   email: string;
-  companyUrl: string;
+  phone?: string;
+  company?: string;
+  website?: string;
+  annualRevenue?: string;
+  goal?: string;
+  budget?: string;
+  channels?: string;
+  /** Legacy field from the original /get-started form */
+  companyUrl?: string;
+  /** HubSpot tracking cookie + page context (passed from client) */
+  hutk?: string;
+  pageUri?: string;
+  pageName?: string;
 }
 
 export interface DiagnosticResult {
   success: boolean;
   message: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  HubSpot Forms API                                                  */
+/* ------------------------------------------------------------------ */
+
+async function submitToHubSpot(p: DiagnosticPayload): Promise<boolean> {
+  const trimmedName = p.name.trim();
+  const spaceIdx = trimmedName.indexOf(' ');
+  const firstname = spaceIdx === -1 ? trimmedName : trimmedName.slice(0, spaceIdx);
+  const lastname = spaceIdx === -1 ? '' : trimmedName.slice(spaceIdx + 1);
+
+  const messageParts: string[] = [];
+  if (p.company?.trim()) messageParts.push(`Company: ${p.company.trim()}`);
+  if (p.goal) messageParts.push(`Primary goal: ${p.goal}`);
+  if (p.budget) messageParts.push(`Monthly ad budget: ${p.budget}`);
+  if (p.channels) messageParts.push(`Current channels: ${p.channels}`);
+  messageParts.push('Source: tigertracks.ai Strategic Diagnostic form');
+
+  const fields: { name: string; value: string }[] = [
+    { name: 'email', value: p.email.trim() },
+    { name: 'firstname', value: firstname },
+    { name: 'message', value: messageParts.join('\n') },
+  ];
+  if (lastname) fields.push({ name: 'lastname', value: lastname });
+  if (p.phone?.trim()) fields.push({ name: 'phone', value: p.phone.trim() });
+  const site = (p.website || p.companyUrl || '').trim();
+  if (site) fields.push({ name: 'website', value: site });
+  if (p.annualRevenue) {
+    fields.push({ name: 'projected_annual_revenue', value: p.annualRevenue });
+  }
+
+  const context: Record<string, string> = {
+    pageUri: p.pageUri || 'https://tigertracks.ai/',
+    pageName: p.pageName || 'Tiger Tracks',
+  };
+  if (p.hutk) context.hutk = p.hutk;
+
+  try {
+    const res = await fetch(
+      `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields, context }),
+      },
+    );
+    if (res.ok) return true;
+    console.error(
+      '[submitDiagnostic] HubSpot error:',
+      res.status,
+      await res.text(),
+    );
+    return false;
+  } catch (err) {
+    console.error('[submitDiagnostic] HubSpot exception:', err);
+    return false;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -28,9 +107,12 @@ function buildEmailHtml(body: Record<string, string>): string {
   const rows = [
     ['Name', body.name],
     ['Email', body.email],
-    ['Company URL', body.companyUrl || 'Not provided'],
-    ['Goal', body.goal],
-    ['Budget', body.budget],
+    ['Phone', body.phone || 'Not provided'],
+    ['Company', body.company || 'Not provided'],
+    ['Website', body.website || 'Not provided'],
+    ['Annual Revenue', body.annualRevenue || 'Not provided'],
+    ['Goal', body.goal || 'Not specified'],
+    ['Budget', body.budget || 'Not specified'],
     ['Channels', body.channels || 'Not specified'],
     ['Submitted', body.submittedAt],
   ];
@@ -65,6 +147,7 @@ function buildEmailHtml(body: Record<string, string>): string {
         <div style="margin-top: 24px; padding: 16px; background: rgba(34,159,161,0.08); border: 1px solid rgba(34,159,161,0.2); border-radius: 8px;">
           <p style="margin: 0; color: #229FA1; font-size: 13px;">
             Reply directly to this email to reach <strong>${body.name}</strong> at <strong>${body.email}</strong>.
+            This lead was also added to HubSpot automatically.
           </p>
         </div>
       </div>
@@ -97,17 +180,24 @@ export async function submitDiagnostic(
 
   /* ---- Build the outbound body ---- */
   const body: Record<string, string> = {
-    goal: payload.goal,
-    budget: payload.budget,
-    channels: payload.channels || '',
     name: payload.name.trim(),
     email: payload.email.trim(),
-    companyUrl: payload.companyUrl?.trim() || '',
+    phone: payload.phone?.trim() || '',
+    company: payload.company?.trim() || '',
+    website: (payload.website || payload.companyUrl || '').trim(),
+    annualRevenue: payload.annualRevenue || '',
+    goal: payload.goal || '',
+    budget: payload.budget || '',
+    channels: payload.channels || '',
     submittedAt: new Date().toISOString(),
     source: 'tiger-tracks-diagnostic-form',
   };
 
-  /* ---- Resend ---- */
+  /* ---- HubSpot (Forms API) ---- */
+  const hubspotOk = await submitToHubSpot(payload);
+
+  /* ---- Resend notification ---- */
+  let resendOk = false;
   const resendKey = process.env.RESEND_API_KEY;
 
   if (resendKey) {
@@ -116,31 +206,32 @@ export async function submitDiagnostic(
 
       const { error } = await resend.emails.send({
         from: 'Tiger Tracks <notifications@tigertracks.ai>',
-        to: ['info@tigertracks.ai'],
+        to: NOTIFY_TO,
         replyTo: payload.email.trim(),
-        subject: `New Diagnostic Request from ${body.name}`,
+        subject: `New Diagnostic Request from ${body.name}${body.company ? ` (${body.company})` : ''}`,
         html: buildEmailHtml(body),
       });
 
-      if (!error) {
-        return { success: true, message: 'Diagnostic request received.' };
+      if (error) {
+        console.error('[submitDiagnostic] Resend error:', error);
+      } else {
+        resendOk = true;
       }
-
-      console.error('[submitDiagnostic] Resend error:', error);
     } catch (err) {
       console.error('[submitDiagnostic] Resend exception:', err);
     }
+  } else {
+    console.warn('[submitDiagnostic] RESEND_API_KEY is not set.');
   }
 
-  /* ---- Resend not configured ---- */
-  if (!resendKey) {
-    console.warn(
-      '[submitDiagnostic] RESEND_API_KEY is not set. Logging payload for dev:',
-      body,
-    );
-    if (process.env.NODE_ENV === 'development') {
-      return { success: true, message: 'Logged locally (dev mode).' };
-    }
+  /* ---- Result: success if either channel worked ---- */
+  if (hubspotOk || resendOk) {
+    return { success: true, message: 'Diagnostic request received.' };
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('[submitDiagnostic] Dev mode, logging payload:', body);
+    return { success: true, message: 'Logged locally (dev mode).' };
   }
 
   return {
