@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CTASection } from '@/components/CTASection';
 import { useInView } from '@/hooks/useInView';
 
@@ -276,11 +278,105 @@ function PillarsSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Dashboard Mockup Section                                            */
+/*  Interactive Budget Reallocation Demo                                */
 /* ------------------------------------------------------------------ */
 
-function DashboardMockupSection() {
+/*
+ * Sample data only. These channels, starting allocations, and efficiency
+ * scores are illustrative numbers used to demonstrate how Wayfinder shifts
+ * budget toward higher-performing channels. They are not from a real account.
+ */
+type Channel = {
+  id: string;
+  name: string;
+  /* Starting share of total budget, as a percentage. Sums to 100. */
+  start: number;
+  /* Relative efficiency / ROAS score. Higher means more revenue per dollar. */
+  efficiency: number;
+};
+
+const DEMO_CHANNELS: Channel[] = [
+  { id: 'google', name: 'Google Ads', start: 30, efficiency: 5.2 },
+  { id: 'meta', name: 'Meta', start: 28, efficiency: 3.4 },
+  { id: 'tiktok', name: 'TikTok', start: 18, efficiency: 2.6 },
+  { id: 'ctv', name: 'CTV', start: 14, efficiency: 4.1 },
+  { id: 'seo', name: 'SEO / Organic', start: 10, efficiency: 6.0 },
+];
+
+/* Baseline blended ROAS, weighted by starting allocation. */
+const BASELINE_ROAS =
+  DEMO_CHANNELS.reduce((sum, c) => sum + (c.start / 100) * c.efficiency, 0);
+
+/*
+ * Reallocate budget toward higher-efficiency channels.
+ * `aggressiveness` (0 to 1) controls how far we move from the starting mix
+ * toward an efficiency-weighted target mix. A simple, transparent client-side
+ * model for illustration.
+ */
+function optimizeAllocation(aggressiveness: number) {
+  const totalEff = DEMO_CHANNELS.reduce((s, c) => s + c.efficiency, 0);
+
+  return DEMO_CHANNELS.map((c) => {
+    const target = (c.efficiency / totalEff) * 100;
+    const next = c.start + (target - c.start) * aggressiveness;
+    return { ...c, allocation: next };
+  });
+}
+
+function WayfinderDemo() {
   const { ref, inView } = useInView({ threshold: 0.15 });
+  const prefersReducedMotion = useReducedMotion();
+
+  /* 0 = starting mix (before), up to 1 = fully optimized (after). */
+  const [aggressiveness, setAggressiveness] = useState(0);
+
+  const allocations = useMemo(
+    () => optimizeAllocation(aggressiveness),
+    [aggressiveness],
+  );
+
+  /* Live computed outputs. */
+  const projectedRoas = useMemo(
+    () =>
+      allocations.reduce(
+        (sum, c) => sum + (c.allocation / 100) * c.efficiency,
+        0,
+      ),
+    [allocations],
+  );
+
+  /* CAC moves inversely with blended ROAS in this simple model. */
+  const cacChangePct = useMemo(() => {
+    if (BASELINE_ROAS === 0) return 0;
+    const change = (BASELINE_ROAS / projectedRoas - 1) * 100;
+    return Math.round(change);
+  }, [projectedRoas]);
+
+  /* Plain-language insight reflecting the current state. */
+  const insight = useMemo(() => {
+    if (aggressiveness <= 0.01) {
+      return 'This is your current mix. Run the optimization to see where Wayfinder would move budget.';
+    }
+    const gainer = [...allocations].sort(
+      (a, b) => b.allocation - b.start - (a.allocation - a.start),
+    )[0];
+    const loser = [...allocations].sort(
+      (a, b) => a.allocation - a.start - (b.allocation - b.start),
+    )[0];
+    const shift = Math.round(loser.start - loser.allocation);
+    return `Shift roughly ${shift}% of budget from ${loser.name} toward ${gainer.name}, the higher-efficiency channel. Projected blended ROAS rises to ${projectedRoas.toFixed(2)}x.`;
+  }, [allocations, aggressiveness, projectedRoas]);
+
+  const roasDelta = projectedRoas - BASELINE_ROAS;
+
+  const handleRun = () => {
+    setAggressiveness((prev) => (prev >= 0.99 ? 0 : 1));
+  };
+
+  /* Reduced motion: skip the spring, snap to the new width. */
+  const barTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 120, damping: 18 };
 
   return (
     <section
@@ -300,6 +396,10 @@ function DashboardMockupSection() {
           >
             This Is What Your Budget Looks Like Inside Wayfinder
           </h2>
+          <p className="mt-4 text-base" style={{ color: '#9CA3AF' }}>
+            Move the slider or run the optimization to watch Wayfinder shift
+            spend toward your highest-efficiency channels.
+          </p>
         </div>
 
         <div
@@ -320,96 +420,374 @@ function DashboardMockupSection() {
           >
             {/* Window chrome */}
             <div className="flex items-center gap-2 px-5 py-3 border-b border-white/5">
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5" aria-hidden="true">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
                 <div className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
               </div>
               <div className="ml-3 flex items-center gap-2">
-                <span className="text-[10px] font-semibold tracking-wider" style={{ color: '#229FA1' }}>WAYFINDER</span>
-                <span className="text-[10px]" style={{ color: '#4A4A5A' }}>|</span>
-                <span className="text-[10px]" style={{ color: '#6B6B7B' }}>Budget Optimization Dashboard</span>
+                <span
+                  className="text-[10px] font-semibold tracking-wider"
+                  style={{ color: '#229FA1' }}
+                >
+                  WAYFINDER
+                </span>
+                <span className="text-[10px]" style={{ color: '#4A4A5A' }}>
+                  |
+                </span>
+                <span className="text-[10px]" style={{ color: '#6B6B7B' }}>
+                  Budget Optimization Demo
+                </span>
               </div>
+              <span
+                className="ml-auto text-[9px] font-semibold uppercase tracking-wider rounded px-2 py-0.5"
+                style={{
+                  color: '#E8793A',
+                  border: '1px solid rgba(232,121,58,0.35)',
+                  backgroundColor: 'rgba(232,121,58,0.08)',
+                }}
+              >
+                Sample data
+              </span>
             </div>
 
-            {/* Dashboard content */}
-            <div className="p-5 md:p-6">
-              <div className="flex gap-5">
-                {/* Sidebar */}
-                <div className="hidden md:block w-32 space-y-2 flex-shrink-0">
-                  {['Overview', 'Attribution', 'MMM', 'GEO', 'Reports'].map((item, i) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-2 rounded-md px-3 py-2 text-[11px]"
-                      style={{
-                        backgroundColor: i === 0 ? 'rgba(34,159,161,0.1)' : 'transparent',
-                        color: i === 0 ? '#229FA1' : '#6B6B7B',
-                      }}
-                    >
-                      <span
-                        className="h-1.5 w-1.5 rounded-full"
-                        style={{ backgroundColor: i === 0 ? '#229FA1' : '#4A4A5A' }}
-                      />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Main area */}
-                <div className="flex-1 space-y-4">
-                  {/* KPI row */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: 'ROAS', value: '4.7x', change: '+23%', up: true },
-                      { label: 'BLENDED CAC', value: '$18.20', change: '-31%', up: false },
-                      { label: 'BUDGET UTIL.', value: '94%', change: '+12%', up: true },
-                    ].map((m) => (
-                      <div
-                        key={m.label}
-                        className="rounded-lg p-3"
-                        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
-                      >
-                        <p className="text-[9px] uppercase tracking-wider" style={{ color: '#6B6B7B' }}>{m.label}</p>
-                        <p className="mt-1 text-lg font-bold text-white">{m.value}</p>
-                        <p className="text-[11px] font-semibold" style={{ color: m.up ? '#229FA1' : '#FF6B35' }}>{m.change}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chart area */}
-                  <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-[10px] uppercase tracking-wider" style={{ color: '#6B6B7B' }}>Channel Performance</p>
-                      <p className="text-[10px]" style={{ color: '#229FA1' }}>Live Optimization</p>
-                    </div>
-                    <div className="flex items-end gap-1.5 h-20">
-                      {[35, 50, 42, 62, 48, 70, 55, 78, 65, 82, 72, 88].map((h, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 rounded-t"
-                          style={{ height: `${h}%`, background: `rgba(34,159,161,${0.35 + h / 200})` }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* AI Insight */}
-                  <div
-                    className="rounded-lg p-3 flex items-center gap-3"
-                    style={{ background: 'rgba(34,159,161,0.05)', border: '1px solid rgba(34,159,161,0.12)' }}
+            {/* Demo content */}
+            <div className="p-5 md:p-8">
+              {/* Live KPI row */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div
+                  className="rounded-lg p-3"
+                  style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                  }}
+                >
+                  <p
+                    className="text-[9px] uppercase tracking-wider"
+                    style={{ color: '#6B6B7B' }}
                   >
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(34,159,161,0.15)' }}>
-                      <svg className="w-3 h-3" style={{ color: '#229FA1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                      </svg>
-                    </div>
-                    <p className="text-xs" style={{ color: '#9C9CAE' }}>
-                      <span className="font-semibold" style={{ color: '#229FA1' }}>Wayfinder:</span> Reallocate 18% of Meta prospecting to Google NB Search. Predicted +$24K incremental revenue.
-                    </p>
-                  </div>
+                    Projected Blended ROAS
+                  </p>
+                  <p
+                    className="mt-1 text-lg font-bold"
+                    style={{ color: '#5BA4A4' }}
+                    aria-live="polite"
+                  >
+                    {projectedRoas.toFixed(2)}x
+                  </p>
+                  <p
+                    className="text-[11px] font-semibold"
+                    style={{ color: roasDelta >= 0 ? '#229FA1' : '#E8793A' }}
+                  >
+                    {roasDelta >= 0 ? '+' : ''}
+                    {roasDelta.toFixed(2)}x vs baseline
+                  </p>
+                </div>
+
+                <div
+                  className="rounded-lg p-3"
+                  style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                  }}
+                >
+                  <p
+                    className="text-[9px] uppercase tracking-wider"
+                    style={{ color: '#6B6B7B' }}
+                  >
+                    Projected CAC Change
+                  </p>
+                  <p
+                    className="mt-1 text-lg font-bold text-white"
+                    aria-live="polite"
+                  >
+                    {cacChangePct > 0 ? '+' : ''}
+                    {cacChangePct}%
+                  </p>
+                  <p
+                    className="text-[11px] font-semibold"
+                    style={{ color: cacChangePct <= 0 ? '#229FA1' : '#E8793A' }}
+                  >
+                    {cacChangePct <= 0
+                      ? 'Lower acquisition cost'
+                      : 'Higher acquisition cost'}
+                  </p>
+                </div>
+
+                <div
+                  className="rounded-lg p-3"
+                  style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                  }}
+                >
+                  <p
+                    className="text-[9px] uppercase tracking-wider"
+                    style={{ color: '#6B6B7B' }}
+                  >
+                    Optimization
+                  </p>
+                  <p
+                    className="mt-1 text-lg font-bold text-white"
+                    aria-live="polite"
+                  >
+                    {Math.round(aggressiveness * 100)}%
+                  </p>
+                  <p
+                    className="text-[11px] font-semibold"
+                    style={{ color: '#6B6B7B' }}
+                  >
+                    aggressiveness
+                  </p>
                 </div>
               </div>
+
+              {/* Channel bars (before vs after) */}
+              <div
+                className="rounded-lg p-4 mb-6"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.04)',
+                }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <p
+                    className="text-[10px] uppercase tracking-wider"
+                    style={{ color: '#6B6B7B' }}
+                  >
+                    Budget Allocation by Channel
+                  </p>
+                  <div className="flex items-center gap-4 text-[10px]">
+                    <span className="flex items-center gap-1.5" style={{ color: '#6B7280' }}>
+                      <span
+                        className="inline-block h-2 w-3 rounded-sm"
+                        style={{ backgroundColor: 'rgba(148,163,184,0.35)' }}
+                        aria-hidden="true"
+                      />
+                      Before
+                    </span>
+                    <span className="flex items-center gap-1.5" style={{ color: '#5BA4A4' }}>
+                      <span
+                        className="inline-block h-2 w-3 rounded-sm"
+                        style={{ backgroundColor: '#229FA1' }}
+                        aria-hidden="true"
+                      />
+                      After
+                    </span>
+                  </div>
+                </div>
+
+                <ul className="space-y-4">
+                  {allocations.map((c) => {
+                    const moved = c.allocation - c.start;
+                    return (
+                      <li key={c.id}>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span
+                            className="text-xs font-medium"
+                            style={{ color: '#F4F1EB' }}
+                          >
+                            {c.name}
+                            <span
+                              className="ml-2 text-[10px] font-normal"
+                              style={{ color: '#6B7280' }}
+                            >
+                              {c.efficiency.toFixed(1)}x efficiency
+                            </span>
+                          </span>
+                          <span
+                            className="text-xs font-semibold tabular-nums"
+                            style={{ color: '#5BA4A4' }}
+                          >
+                            {c.allocation.toFixed(0)}%
+                            {Math.abs(moved) >= 0.5 && (
+                              <span
+                                className="ml-1.5 text-[10px]"
+                                style={{
+                                  color: moved > 0 ? '#229FA1' : '#E8793A',
+                                }}
+                              >
+                                ({moved > 0 ? '+' : ''}
+                                {moved.toFixed(0)})
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        {/* Track with a faint "before" reference and an animated "after" fill. */}
+                        <div
+                          className="relative h-3 w-full rounded-full overflow-hidden"
+                          style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
+                          role="img"
+                          aria-label={`${c.name}: starting allocation ${c.start} percent, projected allocation ${c.allocation.toFixed(0)} percent`}
+                        >
+                          {/* Before reference marker */}
+                          <div
+                            className="absolute inset-y-0 left-0 rounded-full"
+                            style={{
+                              width: `${c.start}%`,
+                              backgroundColor: 'rgba(148,163,184,0.22)',
+                            }}
+                            aria-hidden="true"
+                          />
+                          {/* Animated after fill */}
+                          <motion.div
+                            className="absolute inset-y-0 left-0 rounded-full"
+                            style={{
+                              background:
+                                'linear-gradient(90deg, #229FA1, #5BA4A4)',
+                            }}
+                            initial={false}
+                            animate={{ width: `${c.allocation}%` }}
+                            transition={barTransition}
+                            aria-hidden="true"
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* Controls */}
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+                <div className="flex-1">
+                  <label
+                    htmlFor="wf-aggressiveness"
+                    className="block text-[11px] uppercase tracking-wider mb-2"
+                    style={{ color: '#6B6B7B' }}
+                  >
+                    Optimization aggressiveness
+                  </label>
+                  <input
+                    id="wf-aggressiveness"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={Math.round(aggressiveness * 100)}
+                    onChange={(e) =>
+                      setAggressiveness(Number(e.target.value) / 100)
+                    }
+                    className="w-full accent-[#229FA1] cursor-pointer"
+                    aria-label="Optimization aggressiveness, percent"
+                    aria-valuetext={`${Math.round(aggressiveness * 100)} percent`}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleRun}
+                  className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ backgroundColor: '#E8793A', outlineColor: '#E8793A' }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = '#d96a2d')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = '#E8793A')
+                  }
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
+                    />
+                  </svg>
+                  {aggressiveness >= 0.99
+                    ? 'Reset to current mix'
+                    : 'Run Wayfinder optimization'}
+                </button>
+              </div>
+
+              {/* AI insight */}
+              <div
+                className="rounded-lg p-4 flex items-start gap-3"
+                style={{
+                  background: 'rgba(34,159,161,0.05)',
+                  border: '1px solid rgba(34,159,161,0.12)',
+                }}
+              >
+                <div
+                  className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5"
+                  style={{ backgroundColor: 'rgba(34,159,161,0.15)' }}
+                  aria-hidden="true"
+                >
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: '#229FA1' }}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
+                    />
+                  </svg>
+                </div>
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: '#9C9CAE' }}
+                  aria-live="polite"
+                >
+                  <span
+                    className="font-semibold"
+                    style={{ color: '#229FA1' }}
+                  >
+                    Wayfinder:
+                  </span>{' '}
+                  {insight}
+                </p>
+              </div>
             </div>
+          </div>
+
+          {/* Disclaimer */}
+          <p
+            className="mx-auto mt-4 max-w-[1000px] text-center text-[11px]"
+            style={{ color: '#6B7280' }}
+          >
+            Illustrative model with sample data. Numbers shown are for
+            demonstration only and do not represent a specific account or a
+            guaranteed result.
+          </p>
+        </div>
+
+        {/* How your data is handled */}
+        <div className="mx-auto mt-12 max-w-3xl">
+          <div
+            className="rounded-2xl p-6 sm:p-8"
+            style={{
+              backgroundColor: 'rgba(27,33,38,0.6)',
+              border: '1px solid rgba(34,159,161,0.18)',
+            }}
+          >
+            <h3
+              className="text-lg font-bold mb-3"
+              style={{ color: '#F4F1EB' }}
+            >
+              How your data is handled
+            </h3>
+            <p
+              className="text-sm leading-relaxed"
+              style={{ color: '#9CA3AF' }}
+            >
+              Wayfinder connects to your ad platforms with read-only access, so
+              it can analyze performance without changing your campaigns unless
+              you ask it to. We never sell or share your data, and your account
+              data stays yours. {/* TODO(founder): confirm SOC 2 Type II status and audit date before publishing this claim. */}
+              We maintain a security posture aligned with SOC 2 practices
+              (certification status to be confirmed by the team).
+            </p>
           </div>
         </div>
       </div>
@@ -426,7 +804,7 @@ export default function WayfinderPage() {
     <main>
       <HeroSection />
       <PillarsSection />
-      <DashboardMockupSection />
+      <WayfinderDemo />
       <CTASection
         headline="See What Wayfinder Can Do For Your Brand"
         subheadline="Run Wayfinder on Your Account / 30-minute live diagnostic"

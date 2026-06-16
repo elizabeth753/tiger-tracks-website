@@ -34,6 +34,8 @@ export interface DiagnosticPayload {
   hutk?: string;
   pageUri?: string;
   pageName?: string;
+  /** Honeypot field - must stay empty. If a value arrives, it's a bot. */
+  hp?: string;
 }
 
 export interface DiagnosticResult {
@@ -161,12 +163,56 @@ function buildEmailHtml(body: Record<string, string>): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Slack notification                                                 */
+/* ------------------------------------------------------------------ */
+
+async function postToSlack(body: Record<string, string>): Promise<boolean> {
+  const webhook = process.env.SLACK_WEBHOOK_URL;
+  if (!webhook) {
+    console.warn('[submitDiagnostic] SLACK_WEBHOOK_URL is not set.');
+    return false;
+  }
+
+  const lines = [
+    `*New Diagnostic Request* - ${body.name}${body.company ? ` (${body.company})` : ''}`,
+    `:email: ${body.email}`,
+    body.phone ? `:phone: ${body.phone}` : '',
+    body.website ? `:globe_with_meridians: ${body.website}` : '',
+    body.annualRevenue ? `:moneybag: Revenue: ${body.annualRevenue}` : '',
+    body.goal ? `:dart: Goal: ${body.goal}` : '',
+    body.budget ? `:chart_with_upwards_trend: Budget: ${body.budget}` : '',
+    body.channels ? `:satellite: Channels: ${body.channels}` : '',
+  ].filter(Boolean);
+
+  try {
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: lines.join('\n') }),
+    });
+    if (res.ok) return true;
+    console.error('[submitDiagnostic] Slack error:', res.status, await res.text());
+    return false;
+  } catch (err) {
+    console.error('[submitDiagnostic] Slack exception:', err);
+    return false;
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /*  Server Action                                                      */
 /* ------------------------------------------------------------------ */
 
 export async function submitDiagnostic(
   payload: DiagnosticPayload,
 ): Promise<DiagnosticResult> {
+  /* ---- Spam protection (honeypot) ----
+     Bots fill every field, including the hidden one. Pretend success so the
+     bot doesn't retry, but skip all downstream processing. */
+  if (payload.hp && payload.hp.trim() !== '') {
+    return { success: true, message: 'Diagnostic request received.' };
+  }
+
   /* ---- Validation ---- */
   if (!payload.name?.trim()) {
     return { success: false, message: 'Name is required.' };
@@ -193,8 +239,12 @@ export async function submitDiagnostic(
     source: 'tiger-tracks-diagnostic-form',
   };
 
-  /* ---- HubSpot (Forms API) ---- */
-  const hubspotOk = await submitToHubSpot(payload);
+  /* ---- HubSpot (Forms API) + Slack, in parallel ---- */
+  const [hubspotOk, slackOk] = await Promise.all([
+    submitToHubSpot(payload),
+    postToSlack(body),
+  ]);
+  void slackOk; // Slack is best-effort; not required for success.
 
   /* ---- Resend notification ---- */
   let resendOk = false;

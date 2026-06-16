@@ -190,13 +190,73 @@ export function RhoNutritionLogo() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Additional current-client wordmarks                                */
+/* ------------------------------------------------------------------ */
+
+function Wordmark({
+  label,
+  text,
+  fontFamily = 'system-ui, sans-serif',
+  fontWeight = 700,
+  fontSize = 20,
+  letterSpacing = 1,
+  width = 150,
+}: {
+  label: string;
+  text: string;
+  fontFamily?: string;
+  fontWeight?: number;
+  fontSize?: number;
+  letterSpacing?: number;
+  width?: number;
+}) {
+  return (
+    <svg viewBox={`0 0 ${width} 40`} xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto" role="img" aria-label={`${label} logo`}>
+      <text
+        x={width / 2}
+        y="27"
+        textAnchor="middle"
+        fill="currentColor"
+        fontFamily={fontFamily}
+        fontSize={fontSize}
+        fontWeight={fontWeight}
+        letterSpacing={letterSpacing}
+      >
+        {text}
+      </text>
+    </svg>
+  );
+}
+
+export const AuraHealthLogo = () => <Wordmark label="Aura Health" text="aura" fontWeight={500} fontSize={24} letterSpacing={2} width={120} />;
+export const LightyearLogo = () => <Wordmark label="Lightyear" text="Lightyear" fontWeight={600} fontSize={20} width={150} />;
+export const CapezioLogo = () => <Wordmark label="Capezio" text="CAPEZIO" fontFamily="Georgia, serif" fontWeight={400} fontSize={18} letterSpacing={3} width={150} />;
+export const DovetailLogo = () => <Wordmark label="Dovetail Furniture" text="Dovetail" fontFamily="Georgia, serif" fontWeight={500} fontSize={20} letterSpacing={1} width={150} />;
+
+/* ------------------------------------------------------------------ */
+/*  Logo groups                                                        */
+/*  IMPORTANT: keep these two lists separate. Google-era brands are    */
+/*  founder experience from their time at Google - NOT Tiger Tracks    */
+/*  clients - and must never appear under a "client" label.            */
+/* ------------------------------------------------------------------ */
+
+// Current Tiger Tracks clients (each has a case study or testimonial).
 export const clientLogos = [
   { key: 'ag1', Component: AG1Logo },
   { key: 'anastasia', Component: AnastasiaLogo },
+  { key: 'monarchmoney', Component: MonarchMoneyLogo },
+  { key: 'rhonutrition', Component: RhoNutritionLogo },
+  { key: 'aura', Component: AuraHealthLogo },
+  { key: 'lightyear', Component: LightyearLogo },
+  { key: 'capezio', Component: CapezioLogo },
+  { key: 'dovetail', Component: DovetailLogo },
+] as const;
+
+// Brands the founders built while at Google (founder experience, NOT TT clients).
+export const googleEraLogos = [
   { key: 'att', Component: ATTLogo },
   { key: 'verizon', Component: VerizonLogo },
   { key: 'underarmour', Component: UnderArmourLogo },
   { key: 'snapchat', Component: SnapchatLogo },
-  { key: 'monarchmoney', Component: MonarchMoneyLogo },
-  { key: 'rhonutrition', Component: RhoNutritionLogo },
 ] as const;

@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# never commit build cache or large asset archives
+.next_stale_*/
+.next/
+public/images/*.zip

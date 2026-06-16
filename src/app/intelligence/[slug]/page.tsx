@@ -12,12 +12,12 @@ export const dynamicParams = true;
 /* ------------------------------------------------------------------ */
 
 const CATEGORY_OG_IMAGES: Record<string, string> = {
-  'AI & Automation': '/images/u7815321835_Act_as_an_elite_3D_UIUX_conceptual_artist_special_74b5fb3c-ed00-4c91-a0e7-860928ebe252_2.png',
-  'Platform Strategy': '/images/u7815321835_Prompt_for_Article_2_SEOOrganic_Discovery_Abstrac_d2cca25d-600d-402d-8f6c-5e757eda639d_2.png',
-  'Measurement & Attribution': '/images/u7815321835_Prompt_for_Article_4_Conversion_Rate_Optimization_72cfca36-1e4b-413a-921f-1f59ea26c504_3.png',
-  'Creative & Content': '/images/u7815321835_Prompt_for_Article_3_CreativeUGC_Performance_High_b5888fe1-9bcf-448f-a37f-299e6bf00bb3_2.png',
-  'Agency Strategy': '/images/u7815321835_System_Persona_Act_as_an_elite_creative_art_direc_8ad21d42-af5c-4802-a878-67b0de780348_1.png',
-  'PE/VC': '/images/u7815321835_High-end_3D_render_minimalist_financial_technolog_ec076a26-4eea-4540-8a0a-71a45f4e61d2_1.png',
+  'AI & Automation': '/images/ai-automation-abstract.png',
+  'Platform Strategy': '/images/seo-organic-discovery.png',
+  'Measurement & Attribution': '/images/conversion-optimization-abstract.png',
+  'Creative & Content': '/images/creative-ugc-performance.png',
+  'Agency Strategy': '/images/agency-strategy-abstract.png',
+  'PE/VC': '/images/pe-vc-financial-tech.png',
 };
 
 const SITE_URL = 'https://tigertracks.ai';
@@ -155,5 +155,68 @@ export default async function ArticlePage({
     ...(coverImage && { coverImage }),
   };
 
-  return <ArticlePageClient article={enrichedArticle} blocks={blocks} />;
+  const articleImage =
+    coverImage ||
+    article.coverImage ||
+    CATEGORY_OG_IMAGES[article.category] ||
+    '/images/og-default.png';
+  const articleImageUrl = articleImage.startsWith('http')
+    ? articleImage
+    : `${SITE_URL}${articleImage}`;
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt || FALLBACK_DESCRIPTION,
+    image: articleImageUrl,
+    datePublished: article.date || undefined,
+    dateModified: article.date || undefined,
+    author: {
+      '@type': article.author ? 'Person' : 'Organization',
+      name: article.author || 'Tiger Tracks',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Tiger Tracks',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/images/TT.LOGO-02.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/intelligence/${slug}`,
+    },
+    articleSection: article.category,
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Intelligence', item: `${SITE_URL}/intelligence` },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.title,
+        item: `${SITE_URL}/intelligence/${slug}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ArticlePageClient article={enrichedArticle} blocks={blocks} />
+    </>
+  );
 }

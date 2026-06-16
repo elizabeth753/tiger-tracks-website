@@ -4,6 +4,35 @@ import Image from 'next/image';
 import type { NotionBlock, NotionRichText } from '@/lib/notion';
 
 /* ------------------------------------------------------------------ */
+/*  Heading helpers (shared with the Table of Contents)                */
+/* ------------------------------------------------------------------ */
+
+/** Flatten a block's rich_text into a plain string. */
+export function richTextToPlain(segments?: NotionRichText[]): string {
+  if (!segments || segments.length === 0) return '';
+  return segments.map((s) => s.plain_text).join('');
+}
+
+/** Stable, URL-safe anchor id derived from a heading's text. */
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/** The anchor id for a heading block (empty string if not a heading). */
+export function headingId(block: NotionBlock): string {
+  const text = richTextToPlain(block.data.rich_text);
+  const base = slugifyHeading(text);
+  // Suffix with the block id tail to guarantee uniqueness across duplicate text.
+  return base ? `${base}-${block.id.slice(0, 4)}` : block.id.slice(0, 8);
+}
+
+/* ------------------------------------------------------------------ */
 /*  Rich Text Renderer                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -91,7 +120,7 @@ function Paragraph({ block }: { block: NotionBlock }) {
 
 function Heading1({ block }: { block: NotionBlock }) {
   return (
-    <h2 className="mt-6 mb-[6px] text-[24px] font-semibold text-[#F0EFED] leading-[31.2px] font-sans print:text-black print:text-xl print:mt-10 print:mb-4">
+    <h2 id={headingId(block)} className="scroll-mt-24 mt-6 mb-[6px] text-[24px] font-semibold text-[#F0EFED] leading-[31.2px] font-sans print:text-black print:text-xl print:mt-10 print:mb-4">
       <RichText segments={block.data.rich_text ?? []} />
     </h2>
   );
@@ -99,7 +128,7 @@ function Heading1({ block }: { block: NotionBlock }) {
 
 function Heading2({ block }: { block: NotionBlock }) {
   return (
-    <h3 className="mt-6 mb-[6px] text-[24px] font-semibold text-[#F0EFED] leading-[31.2px] font-sans print:text-black print:text-lg print:mt-8 print:mb-3">
+    <h3 id={headingId(block)} className="scroll-mt-24 mt-6 mb-[6px] text-[24px] font-semibold text-[#F0EFED] leading-[31.2px] font-sans print:text-black print:text-lg print:mt-8 print:mb-3">
       <RichText segments={block.data.rich_text ?? []} />
     </h3>
   );
@@ -107,7 +136,7 @@ function Heading2({ block }: { block: NotionBlock }) {
 
 function Heading3({ block }: { block: NotionBlock }) {
   return (
-    <h4 className="mt-5 mb-1 text-xl font-semibold text-[#F0EFED] leading-[26px] font-sans print:text-black print:text-base print:mt-6 print:mb-2">
+    <h4 id={headingId(block)} className="scroll-mt-24 mt-5 mb-1 text-xl font-semibold text-[#F0EFED] leading-[26px] font-sans print:text-black print:text-base print:mt-6 print:mb-2">
       <RichText segments={block.data.rich_text ?? []} />
     </h4>
   );

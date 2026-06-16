@@ -1,5 +1,42 @@
 import type { NextConfig } from 'next';
 
+/**
+ * Content-Security-Policy.
+ *
+ * Rolled out in REPORT-ONLY mode first (header: Content-Security-Policy-Report-Only)
+ * so violations are logged without blocking anything. Once the reports show no
+ * first-party breakage, switch the header name to `Content-Security-Policy` to
+ * enforce. Inline scripts (GTM bootstrap + JSON-LD) currently rely on
+ * 'unsafe-inline'; hardening to a per-request nonce via middleware is the
+ * recommended follow-up before enforcing.
+ */
+const cspReportOnly = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://assets.calendly.com https://js.hsforms.net https://js.hs-scripts.com https://js.hscollectedforms.net https://js.hs-banner.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "connect-src 'self' https://api.hsforms.com https://forms.hubspot.com https://www.google-analytics.com https://*.calendly.com https://vitals.vercel-insights.com https://*.hubspot.com",
+  "frame-src https://calendly.com https://*.calendly.com https://meetings.hubspot.com https://www.googletagmanager.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://api.hsforms.com",
+  "object-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ');
+
+const securityHeaders = [
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=()',
+  },
+  { key: 'Content-Security-Policy-Report-Only', value: cspReportOnly },
+];
+
 // Vercel handles Next.js natively with SSR/ISR — no need for static export.
 // The previous `output: 'export'` has been removed to enable full Next.js
 // features on Vercel (API routes, ISR, middleware, image optimization, etc.).
@@ -51,6 +88,40 @@ const nextConfig: NextConfig = {
         source: '/pe-vc-partners',
         destination: '/pe-vc',
         permanent: true,
+      },
+      // Legacy / duplicate routes → canonical equivalents (avoid duplicate content).
+      {
+        source: '/about',
+        destination: '/company',
+        permanent: true,
+      },
+      {
+        source: '/services',
+        destination: '/capabilities',
+        permanent: true,
+      },
+      {
+        source: '/case-studies/:slug',
+        destination: '/results/:slug',
+        permanent: true,
+      },
+      {
+        source: '/insights',
+        destination: '/intelligence',
+        permanent: true,
+      },
+      {
+        source: '/insights/:slug',
+        destination: '/intelligence/:slug',
+        permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
       },
     ];
   },

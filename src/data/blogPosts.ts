@@ -348,7 +348,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-03',
     excerpt:
-      'Executive Summary Most marketers are leaving significant performance on the table because they are writing prompts the same way they write emails. Claude, Anthropic\'s AI assistant, can act as a dedicated prompt engineer, designing, testing, and re...',
+      'Executive Summary: Most marketers are leaving significant performance on the table because they are writing prompts the same way they write emails. Claude, Anthropic\'s AI assistant, can act as a dedicated prompt engineer, designing, testing, and re...',
     readTime: '7 min',
     source: 'notion',
     pageId: '33781f05-1e83-811f-8250-eaa46db61fde',
@@ -372,7 +372,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Platform Strategy',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary The rise of AI-powered search transforms how people find information online. Instead of scanning lists of links, users ask AI direct questions and receive concise answers. This shift signals the decline of traditional SEO and t...',
+      'Executive Summary: The rise of AI-powered search transforms how people find information online. Instead of scanning lists of links, users ask AI direct questions and receive concise answers. This shift signals the decline of traditional SEO and t...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-810f-a7be-c13ce73e0d62',
@@ -384,7 +384,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Measurement & Attribution',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary The 2026 third-party cookie deprecation forces organizations to own legal compliance and data consent. Marketers must pivot to cookieless attribution methods, incrementality testing, and marketing mix modeling (MMM). First-part...',
+      'Executive Summary: The 2026 third-party cookie deprecation forces organizations to own legal compliance and data consent. Marketers must pivot to cookieless attribution methods, incrementality testing, and marketing mix modeling (MMM). First-part...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-81ac-abce-cd7a264fd4e8',
@@ -396,7 +396,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Creative & Content',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary Over half of UK and US content professionals now use AI to accelerate creative production. However, the greatest evolution in Meta advertising for 2026 is not the creative itself, but targeting strategy. Manual interest stackin...',
+      'Executive Summary: Over half of UK and US content professionals now use AI to accelerate creative production. However, the greatest evolution in Meta advertising for 2026 is not the creative itself, but targeting strategy. Manual interest stackin...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-81a2-a762-f515efe559e5',
@@ -408,7 +408,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary The SaaSpocalypse signals a monumental shift from traditional software to AI-driven, agentic workflows. By the end of 2026, 40% of applications will integrate task-specific AI agents that drive continuous outcomes. Marketing le...',
+      'Executive Summary: The SaaSpocalypse signals a monumental shift from traditional software to AI-driven, agentic workflows. By the end of 2026, 40% of applications will integrate task-specific AI agents that drive continuous outcomes. Marketing le...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-8180-ae51-fec9e405d3f1',
@@ -420,7 +420,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary OpenAI’s GPT-5.4 raises the bar with a 1 million token context window and enhanced native coding capabilities. Google’s Gemini 2.5 Pro and Anthropic’s Claude 4.5 battle for dominance across real-world benchmarks. The future of ...',
+      'Executive Summary: OpenAI\'s GPT-5.4 raises the bar with a 1 million token context window and enhanced native coding capabilities. Google\'s Gemini 2.5 Pro and Anthropic\'s Claude 4.5 battle for dominance across real-world benchmarks. The future of ...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-816d-978b-fad86b852688',
@@ -432,7 +432,7 @@ export const blogPosts: BlogPost[] = [
     category: 'Measurement & Attribution',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary Marketing leaders in 2026 face new challenges measuring incremental revenue due to privacy changes and cookie deprecation. Media Mix Modeling (MMM), combined with experimental incrementality data, fills critical measurement gap...',
+      'Executive Summary: Marketing leaders in 2026 face new challenges measuring incremental revenue due to privacy changes and cookie deprecation. Media Mix Modeling (MMM), combined with experimental incrementality data, fills critical measurement gap...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-813d-bc1e-c6ef5a740c54',
@@ -444,7 +444,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary Privacy and trust remain nonnegotiable pillars of consumer relationships in the digital age. AI enables brands to scale micro-moments of trust by personalizing interactions at unprecedented levels. However, navigating the uncan...',
+      'Executive Summary: Privacy and trust remain nonnegotiable pillars of consumer relationships in the digital age. AI enables brands to scale micro-moments of trust by personalizing interactions at unprecedented levels. However, navigating the uncan...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-8159-98fe-d12ffdf27ab4',
@@ -456,7 +456,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary AI-driven advertising transforms paid social media across Meta, Google, and Amazon. By 2026, digital ads will claim 69% of global ad spend, with AI agents autonomously managing media buying workflows. This article explores how ...',
+      'Executive Summary: AI-driven advertising transforms paid social media across Meta, Google, and Amazon. By 2026, digital ads will claim 69% of global ad spend, with AI agents autonomously managing media buying workflows. This article explores how ...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-81a1-bc21-ccd81c45136e',
@@ -468,7 +468,7 @@ export const blogPosts: BlogPost[] = [
     category: 'AI & Automation',
     date: '2026-04-01',
     excerpt:
-      'Executive Summary AI transforms marketing by eliminating poor positioning, not jobs. Success depends on marketers who can clearly define goals for AI agents to execute. The future favors those who design effective systems over those who simply u...',
+      'Executive Summary: AI transforms marketing by eliminating poor positioning, not jobs. Success depends on marketers who can clearly define goals for AI agents to execute. The future favors those who design effective systems over those who simply u...',
     readTime: '5 min',
     source: 'notion',
     pageId: '33581f05-1e83-814f-b4e8-d06660e49bf6',

@@ -30,7 +30,7 @@ const whyCards = [
   {
     title: 'Growth Trajectory',
     description:
-      'Inc. 5000 #123 with 2,954% revenue growth. We grew from 3 to 24 people in 4 years. There’s room to grow with us.',
+      'Inc. 5000 #123 with 2,954% revenue growth. We grew from 3 people to a team of 40 specialists. There’s room to grow with us.',
   },
 ];
 

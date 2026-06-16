@@ -155,6 +155,7 @@ export function DiagnosticForm() {
     email: '',
     companyUrl: '',
   });
+  const [hp, setHp] = useState(''); // honeypot — must stay empty
   const [errorMsg, setErrorMsg] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -187,6 +188,13 @@ export function DiagnosticForm() {
     );
   };
 
+  // Read the HubSpot tracking cookie so submissions attribute correctly.
+  const getHutk = () => {
+    if (typeof document === 'undefined') return undefined;
+    const match = document.cookie.match(/hubspotutk=([^;]+)/);
+    return match ? match[1] : undefined;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
@@ -204,6 +212,10 @@ export function DiagnosticForm() {
         name: formData.name,
         email: formData.email,
         companyUrl: formData.companyUrl,
+        hp,
+        hutk: getHutk(),
+        pageUri: typeof window !== 'undefined' ? window.location.href : undefined,
+        pageName: typeof document !== 'undefined' ? document.title : undefined,
       });
 
       if (result.success) {
@@ -496,6 +508,20 @@ export function DiagnosticForm() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5 max-w-md mx-auto">
+                {/* Honeypot: hidden from users, bots fill it. Keep off-screen
+                    and out of the tab order; never required. */}
+                <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden">
+                  <label htmlFor="company_website">Company website (leave blank)</label>
+                  <input
+                    id="company_website"
+                    type="text"
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={hp}
+                    onChange={(e) => setHp(e.target.value)}
+                  />
+                </div>
                 <div className="space-y-1">
                   <label
                     className="text-xs font-semibold uppercase tracking-wider"

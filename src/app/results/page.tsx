@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { caseStudies, industryFilters, challengeTypes } from '@/data/caseStudies';
+import { STATS } from '@/lib/stats';
 import { CaseStudyCard } from '@/components/CaseStudyCard';
 import { CTASection } from '@/components/CTASection';
 import { useInView } from '@/hooks/useInView';
@@ -50,9 +51,9 @@ function HeroSection() {
         {/* Aggregate stats */}
         <div className="mt-10 flex flex-wrap gap-8">
           {[
-            { value: '50+', label: 'Brands Served' },
-            { value: '$500M+', label: 'Ad Spend Managed' },
-            { value: '12', label: 'Industries' },
+            { value: STATS.brandsServed, label: 'Brands Served' },
+            { value: STATS.adSpendLifetime, label: 'Ad Spend Managed to Date' },
+            { value: STATS.industries, label: 'Industries' },
           ].map((stat) => (
             <div key={stat.label}>
               <p className="text-3xl font-extrabold text-white">{stat.value}</p>

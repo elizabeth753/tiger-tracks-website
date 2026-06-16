@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     description:
       'Eye of the Tiger Thought Leadership & Intelligence -- AI strategy briefings for business leaders.',
     url: 'https://tigertracks.ai/intelligence',
+    images: [{ url: 'https://tigertracks.ai/images/social-share-card-bg.png' }],
     type: 'website',
   },
   twitter: {

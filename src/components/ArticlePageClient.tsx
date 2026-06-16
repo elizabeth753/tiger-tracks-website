@@ -1,13 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { BlogPost, blogPosts } from '@/data/blogPosts';
 import { CTASection } from '@/components/CTASection';
-import { NotionBlockRenderer, shouldSkipOptimizer } from '@/components/NotionBlockRenderer';
+import {
+  NotionBlockRenderer,
+  shouldSkipOptimizer,
+  richTextToPlain,
+  headingId,
+} from '@/components/NotionBlockRenderer';
 import type { NotionBlock } from '@/lib/notion';
+import { submitNewsletter } from '@/app/actions/submitNewsletter';
 
 /* ------------------------------------------------------------------ */
 /*  Category Image Mapping (for related cards)                         */
@@ -246,6 +252,241 @@ function formatDate(dateStr?: string): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Table of Contents                                                   */
+/*  Built from the article's heading blocks. Anchors match the ids      */
+/*  emitted by NotionBlockRenderer's heading components.                */
+/* ------------------------------------------------------------------ */
+
+interface TocEntry {
+  id: string;
+  text: string;
+  level: number;
+}
+
+function extractHeadings(blocks?: NotionBlock[]): TocEntry[] {
+  if (!blocks) return [];
+  const levels: Record<string, number> = {
+    heading_1: 1,
+    heading_2: 2,
+    heading_3: 3,
+  };
+  const entries: TocEntry[] = [];
+  for (const b of blocks) {
+    const level = levels[b.type];
+    if (!level) continue;
+    const text = richTextToPlain(b.data.rich_text).trim();
+    if (!text) continue;
+    entries.push({ id: headingId(b), text, level });
+  }
+  return entries;
+}
+
+function TableOfContents({ blocks }: { blocks?: NotionBlock[] }) {
+  const [open, setOpen] = useState(true);
+  const headings = extractHeadings(blocks);
+
+  // Only worth showing when there are at least three headings.
+  if (headings.length < 3) return null;
+
+  // Normalise so the shallowest heading sits flush-left.
+  const minLevel = Math.min(...headings.map((h) => h.level));
+
+  return (
+    <nav
+      aria-label="Table of contents"
+      className="mb-10 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 print:hidden"
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-3 text-left"
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-[3px] text-[#229FA1]">
+          On this page
+        </span>
+        <svg
+          className={`h-4 w-4 text-[#9C9CAE] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <ol className="mt-4 space-y-1.5">
+          {headings.map((h) => (
+            <li key={h.id} style={{ paddingLeft: `${(h.level - minLevel) * 16}px` }}>
+              <a
+                href={`#${h.id}`}
+                className="block text-sm leading-snug text-[#9C9CAE] transition-colors duration-200 hover:text-[#229FA1]"
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </nav>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Author Bio                                                          */
+/* ------------------------------------------------------------------ */
+
+function AuthorBio({ article }: { article: BlogPost }) {
+  const isPerson = !!article.author && article.author !== 'Tiger Tracks';
+  const name = isPerson ? (article.author as string) : 'Tiger Tracks';
+  const role = isPerson
+    ? article.authorPedigree || 'Tiger Tracks'
+    : 'Performance marketing, built by ex-Google leaders';
+  const bio = isPerson
+    ? `${article.authorPedigree ? article.authorPedigree + '. ' : ''}Writing for the Eye of the Tiger intelligence series.`
+    : 'Tiger Tracks is an Inc. 5000 performance marketing agency founded by former Google leaders. The Eye of the Tiger series shares the strategic research and tactical playbooks we use to manage ad spend across our client portfolio.';
+
+  const initials = name
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+  return (
+    <aside className="mt-10 flex items-start gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 print:hidden">
+      <div
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+        style={{ background: 'linear-gradient(135deg, #229FA1, #1e8b8d)' }}
+        aria-hidden="true"
+      >
+        {initials}
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[2px] text-[#229FA1]">
+          {isPerson ? 'Author' : 'About the author'}
+        </p>
+        <p className="mt-1 text-base font-semibold text-[#F0EFED]">{name}</p>
+        <p className="text-sm text-[#9C9CAE]">{role}</p>
+        <p className="mt-2 text-sm leading-relaxed text-[#9C9CAE]">{bio}</p>
+        <Link
+          href="/company"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[#229FA1] transition hover:gap-2.5"
+        >
+          Meet the team
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
+      </div>
+    </aside>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Newsletter Signup                                                   */
+/* ------------------------------------------------------------------ */
+
+function NewsletterSignup({ title }: { title: string }) {
+  const [email, setEmail] = useState('');
+  const [hp, setHp] = useState(''); // honeypot - must stay empty
+  const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<'idle' | 'ok' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const getHutk = () => {
+    if (typeof document === 'undefined') return undefined;
+    const match = document.cookie.match(/hubspotutk=([^;]+)/);
+    return match ? match[1] : undefined;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    startTransition(async () => {
+      const result = await submitNewsletter({
+        email,
+        hp,
+        source: title,
+        hutk: getHutk(),
+        pageUri: typeof window !== 'undefined' ? window.location.href : undefined,
+        pageName: typeof document !== 'undefined' ? document.title : undefined,
+      });
+      setStatus(result.success ? 'ok' : 'error');
+      setMessage(result.message);
+      if (result.success) setEmail('');
+    });
+  };
+
+  return (
+    <section
+      className="mt-10 rounded-2xl border border-[#229FA1]/20 p-6 sm:p-8 print:hidden"
+      style={{ background: 'linear-gradient(135deg, rgba(34,159,161,0.10), rgba(34,159,161,0.02))' }}
+    >
+      <p className="text-[11px] font-semibold uppercase tracking-[3px] text-[#229FA1]">
+        Eye of the Tiger
+      </p>
+      <h3 className="mt-2 text-xl font-bold text-[#F0EFED]">
+        Get our research in your inbox
+      </h3>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-[#9C9CAE]">
+        Strategic research and tactical playbooks for operators and investors. No spam, unsubscribe anytime.
+      </p>
+
+      {status === 'ok' ? (
+        <p className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#229FA1]">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          {message}
+        </p>
+      ) : (
+        <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row">
+          {/* Honeypot: hidden from real users, catches bots. */}
+          <input
+            type="text"
+            name="company_website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            className="hidden"
+            aria-hidden="true"
+          />
+          <label htmlFor="newsletter-email" className="sr-only">
+            Email address
+          </label>
+          <input
+            id="newsletter-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@company.com"
+            className="w-full flex-1 rounded-full border border-white/10 bg-[#0A1119] px-5 py-3 text-sm text-[#F0EFED] placeholder-[#9C9CAE]/60 outline-none transition focus:border-[#229FA1]/60"
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="shrink-0 rounded-full bg-[#229FA1] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1e8b8d] disabled:opacity-60"
+          >
+            {isPending ? 'Subscribing...' : 'Subscribe'}
+          </button>
+        </form>
+      )}
+
+      {status === 'error' && (
+        <p className="mt-3 text-sm text-red-400" role="alert">
+          {message}
+        </p>
+      )}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Article Page (Main Export) - Notion-Style Layout                    */
 /* ------------------------------------------------------------------ */
 
@@ -344,6 +585,11 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
           <hr className="border-t border-white/[0.08] mb-6 print:border-gray-300" />
 
           {/* ====================================================== */}
+          {/*  Table of Contents (auto-built from headings)            */}
+          {/* ====================================================== */}
+          {hasNotionContent && <TableOfContents blocks={blocks} />}
+
+          {/* ====================================================== */}
           {/*  Article Body                                            */}
           {/* ====================================================== */}
           {hasNotionContent ? (
@@ -351,6 +597,12 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
           ) : (
             <ContentFallback article={article} />
           )}
+
+          {/* ====================================================== */}
+          {/*  Author Bio + Newsletter Capture                         */}
+          {/* ====================================================== */}
+          <AuthorBio article={article} />
+          <NewsletterSignup title={article.title} />
 
           {/* ====================================================== */}
           {/*  Footer                                                  */}

@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { LogoBar } from '@/components/LogoBar';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ParticleField } from '@/components/ParticleField';
 import { HeroTestimonial } from '@/components/HeroTestimonial';
 import { HeroDiagnosticForm } from '@/components/HeroDiagnosticForm';
+import { STATS } from '@/lib/stats';
 
 /* ================================================================
    HOOKS
@@ -313,6 +314,7 @@ const heroFadeUp = {
 function HeroSection() {
   const parallaxRef = useMouseParallax(0.012);
   const cursorGlowRef = useCursorGlow();
+  const reduceMotion = useReducedMotion();
 
   return (
     <section
@@ -433,7 +435,7 @@ function HeroSection() {
             {/* Status badge */}
             <motion.div
               variants={heroFadeUp}
-              initial="hidden"
+              initial={reduceMotion ? false : 'hidden'}
               animate="visible"
               custom={0}
               className="inline-flex items-center gap-2.5 rounded-full border border-tt-teal/20 bg-tt-teal/5 px-5 py-2 mb-8"
@@ -445,10 +447,12 @@ function HeroSection() {
               <span className="text-sm font-medium text-tt-teal tracking-wide">Inc. 5000 Fastest-Growing, #123 | TIGER TRACKS</span>
             </motion.div>
 
-            {/* Main headline: TIGER (teal gradient) TRACKS (white) with text shadow */}
+            {/* Main headline: TIGER (teal gradient) TRACKS (white).
+                LCP element — paints immediately (no blur-in / opacity-0) so
+                Largest Contentful Paint is not delayed by the entrance animation. */}
             <motion.div
               variants={heroFadeUp}
-              initial="hidden"
+              initial={false}
               animate="visible"
               custom={0}
             >
@@ -472,7 +476,7 @@ function HeroSection() {
             {/* Sub-headline with 0.2s delay */}
             <motion.div
               variants={heroFadeUp}
-              initial="hidden"
+              initial={reduceMotion ? false : 'hidden'}
               animate="visible"
               custom={0.2}
               className="space-y-4 mt-6"
@@ -493,7 +497,7 @@ function HeroSection() {
             {/* CTAs: mobile anchor to form + secondary link */}
             <motion.div
               variants={heroFadeUp}
-              initial="hidden"
+              initial={reduceMotion ? false : 'hidden'}
               animate="visible"
               custom={0.4}
               className="mt-8 flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4"
@@ -533,7 +537,7 @@ function HeroSection() {
             {/* Compact stat row */}
             <motion.div
               variants={heroFadeUp}
-              initial="hidden"
+              initial={reduceMotion ? false : 'hidden'}
               animate="visible"
               custom={0.6}
               className="mt-10 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0"
@@ -560,7 +564,7 @@ function HeroSection() {
           {/* ---------------- Right: inline diagnostic form ---------------- */}
           <motion.div
             variants={heroFadeUp}
-            initial="hidden"
+            initial={reduceMotion ? false : 'hidden'}
             animate="visible"
             custom={0.3}
           >
@@ -619,7 +623,7 @@ const capabilities = [
     ),
     accent: 'teal' as const,
     stat: '+147%',
-    statLabel: 'Avg ROAS lift',
+    statLabel: 'Top client ROAS lift',
     bgImage: '/images/media-buying-dashboard.png',
   },
   {
@@ -647,7 +651,7 @@ const capabilities = [
     ),
     accent: 'teal' as const,
     stat: '+42%',
-    statLabel: 'Avg CVR lift',
+    statLabel: 'Top client CVR lift',
     bgImage: '/images/ab-testing-browser-mockup.png',
   },
   {
@@ -739,9 +743,9 @@ function BentoCapabilities() {
               href={cap.href}
               className={`reveal stagger-${i + 1} group relative h-full flex flex-col justify-between rounded-2xl p-8 no-underline bento-cap-card hover:-translate-y-1 focus:ring-2 focus:ring-orange-500 focus:outline-none overflow-hidden`}
             >
-              {/* Background image */}
+              {/* Background image — decorative only (alt="" intentional) */}
               {cap.bgImage && (
-                <div className="pointer-events-none absolute inset-0 z-0">
+                <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
                   <img
                     src={cap.bgImage}
                     alt=""
@@ -790,6 +794,14 @@ function BentoCapabilities() {
             </Link>
           ))}
         </div>
+        <p className="mt-8 text-xs text-tt-gray-500 max-w-3xl">
+          Figures shown are representative results from individual client engagements, not
+          portfolio averages. See our{' '}
+          <Link href="/capabilities#measure" className="underline hover:text-tt-teal">
+            verified portfolio averages
+          </Link>{' '}
+          for typical outcomes.
+        </p>
       </div>
     </section>
   );
@@ -800,11 +812,11 @@ function BentoCapabilities() {
    ================================================================ */
 
 const metrics = [
-  { value: '2,954%', label: 'Three-year revenue growth', glow: true },
-  { value: '34%', label: 'Avg CAC reduction in 90 days', glow: false },
-  { value: '2x', label: 'Avg ROAS improvement', glow: false },
-  { value: '50+', label: 'Brands served', glow: false },
-  { value: '18 mo', label: 'Avg client tenure', glow: false },
+  { value: STATS.revenueGrowth, label: 'Three-year revenue growth', glow: true },
+  { value: STATS.avg.cacReduction, label: 'Avg CAC reduction', glow: false },
+  { value: STATS.avg.roas, label: 'Avg ROAS', glow: false },
+  { value: STATS.brandsServed, label: 'Brands served', glow: false },
+  { value: STATS.avgClientTenure, label: 'Avg client tenure', glow: false },
 ] as const;
 
 function MetricsSection() {

@@ -654,7 +654,7 @@ export const caseStudies: CaseStudy[] = [
       ],
     },
     logoPlaceholder: 'CZ',
-    heroImage: '/images/u7815321835_Close-up_cinematic_portrait_of_professional_satin_82fcb77f-e229-455a-b0dc-373b9ba5da18_3.png',
+    heroImage: '/images/case-study-portrait.png',
   },
   {
     slug: 'dovetail',
@@ -704,7 +704,7 @@ export const caseStudies: CaseStudy[] = [
       company: 'Dovetail Furniture',
     },
     logoPlaceholder: 'DT',
-    heroImage: '/images/u7815321835_Architectural_minimalist_product_visualization_fe_98c468f7-2a68-4904-aba1-853fc23864b3_2.png',
+    heroImage: '/images/case-study-product-viz.png',
   },
   // --- PLACEHOLDER CASE STUDIES: Missing Industries ---
   {

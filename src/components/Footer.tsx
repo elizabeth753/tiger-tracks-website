@@ -12,11 +12,13 @@ const companyLinks = [
   { label: 'Company', href: '/company' },
   { label: 'Careers', href: '/careers' },
   { label: 'Press', href: '/press' },
+  { label: 'Trust & Security', href: '/trust' },
 ];
 
 const solutionLinks = [
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Results', href: '/results' },
+  { label: 'How We Measure Results', href: '/results/methodology' },
   { label: 'Thought Leadership & Intelligence', href: '/intelligence' },
   { label: 'PE & VC Partners', href: '/pe-vc' },
 ];

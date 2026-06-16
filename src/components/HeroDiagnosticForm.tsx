@@ -81,6 +81,7 @@ export function HeroDiagnosticForm() {
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [hp, setHp] = useState(''); // honeypot — must stay empty
 
   const [data, setData] = useState({
     name: '',
@@ -136,6 +137,7 @@ export function HeroDiagnosticForm() {
         goal: data.goal || undefined,
         budget: data.budget || undefined,
         channels: data.channels.length ? data.channels.join(', ') : undefined,
+        hp,
         hutk: getHutk(),
         pageUri:
           typeof window !== 'undefined' ? window.location.href : undefined,
@@ -236,6 +238,19 @@ export function HeroDiagnosticForm() {
             </p>
 
             <form onSubmit={handleStage1} className="space-y-3.5">
+              {/* Honeypot: off-screen, not tabbable; bots fill it, humans don't. */}
+              <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden">
+                <label htmlFor="hero_company_website">Company website (leave blank)</label>
+                <input
+                  id="hero_company_website"
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={hp}
+                  onChange={(e) => setHp(e.target.value)}
+                />
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <input
                   type="text"

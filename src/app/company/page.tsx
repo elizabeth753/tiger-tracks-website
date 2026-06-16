@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useInView } from '@/hooks/useInView';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { CTASection } from '@/components/CTASection';
+import { STATS } from '@/lib/stats';
 import { useState } from 'react';
 
 /* ------------------------------------------------------------------ */
@@ -20,7 +21,7 @@ const milestones = [
   {
     year: '2018',
     title: 'Ready',
-    description: 'Chief Growth Officer, $50M to $500M+ valuation.',
+    description: 'Chief Growth Officer, $50M to $350M+ valuation.',
   },
   {
     year: '2021',
@@ -45,7 +46,7 @@ const founders = [
     title: 'CEO & Co-Founder',
     initials: 'CS',
     image: '/cliff-headshot.jpeg',
-    bio: 'Started career at Google overseeing campaign design and management for Google’s top client brands across Paid Search, YouTube, Shopping, and others. After Google, served as Chief Growth Officer of Ready where he oversaw consumer business and managed over $250K per week in performance marketing spend. His teams captured and converted demand responsible for over 90% of Ready’s revenue, propelling the company from $50M to $500M+ valuation.',
+    bio: 'Started career at Google overseeing campaign design and management for Google’s top client brands across Paid Search, YouTube, Shopping, and others. After Google, served as Chief Growth Officer of Ready where he oversaw consumer business and managed over $250K per week in performance marketing spend. His teams captured and converted demand responsible for over 90% of Ready’s revenue, propelling the company from $50M to $350M+ valuation.',
     credentials: ['Ex-Google', 'Former CGO, Ready', 'Inc. 5000 Founder'],
   },
   {
@@ -142,11 +143,15 @@ const clientTestimonials = [
 ];
 
 /* Logo components for the trust bar */
+// Current Tiger Tracks clients (each has a case study or testimonial).
 const logoNames = [
-  'AG1', 'Anastasia Beverly Hills', 'AT&T', 'Verizon',
-  'Under Armour', 'Snapchat', 'Monarch Money', 'Aura Health',
-  'Online Labels', 'Honeydew', 'Lightyear',
+  'AG1', 'Anastasia Beverly Hills', 'Monarch Money', 'Rho Nutrition',
+  'Aura Health', 'Online Labels', 'Honeydew', 'Lightyear',
+  'Capezio', 'Dovetail', 'Sovereign Labs', 'Leonard Truck',
 ];
+
+// Brands the founders built while at Google (founder experience, NOT TT clients).
+const googleEraNames = ['AT&T', 'Verizon', 'Under Armour', 'Snapchat', 'Dell', 'Etsy'];
 
 /* ------------------------------------------------------------------ */
 /*  Headshot component with fallback                                   */
@@ -198,7 +203,7 @@ function LogoTrustBar() {
     }}>
       <div className="mx-auto max-w-6xl px-6">
         <p className="text-center text-sm uppercase tracking-[4px] text-tt-gray-500 mb-10">
-          Trusted by growth teams at
+          Our clients
         </p>
 
         {/* Scrolling logo rail */}
@@ -222,10 +227,20 @@ function LogoTrustBar() {
           </div>
         </div>
 
-        {/* Sub-label for credibility */}
-        <p className="text-center text-xs text-tt-gray-600 mt-8">
-          Plus the brands we managed at Google: Dell, Etsy, and more
+        {/* Founder experience — clearly separated from current clients */}
+        <p className="text-center text-sm uppercase tracking-[4px] text-tt-gray-500 mt-14 mb-8">
+          Brands our founders built at Google
         </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          {googleEraNames.map((name) => (
+            <span
+              key={name}
+              className="text-sm font-semibold tracking-wide uppercase text-tt-gray-600 hover:text-tt-gray-400 transition-colors duration-300"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -255,10 +270,10 @@ function GrowthSection() {
           }`}
         >
           {[
-            { value: '2,954%', label: 'Three-year revenue growth' },
-            { value: '#123', label: 'Inc. 5000 Fastest-Growing' },
-            { value: '40', label: 'Performance Specialists' },
-            { value: '$100M+', label: 'Ad Spend Managed' },
+            { value: STATS.revenueGrowth, label: 'Three-year revenue growth' },
+            { value: STATS.incRank, label: 'Inc. 5000 Fastest-Growing' },
+            { value: String(STATS.teamSize), label: 'Performance Specialists' },
+            { value: STATS.adSpendAnnual, label: 'Annual Ad Spend Managed' },
           ].map((stat) => (
             <div
               key={stat.label}

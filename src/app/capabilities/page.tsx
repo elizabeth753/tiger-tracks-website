@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { CTASection } from '@/components/CTASection';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { STATS } from '@/lib/stats';
 import { useInView } from '@/hooks/useInView';
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView as useFramerInView } from 'framer-motion';
@@ -97,7 +98,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-meta',
     gradient: { from: '#5BA4A4', to: '#2d7a7a', orb: '#E8793A' },
     imagePlaceholder: { label: 'Campaign Performance Dashboard', icon: 'chart-bar' },
-    image: '/images/u7815321835_ultra_premium_dark_mode_advertising_performance_d_e8b94a81-21c0-451c-b37e-90035e938aab_0.png',
+    image: '/images/media-buying-dashboard.png',
   },
   {
     id: 'creative',
@@ -127,7 +128,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/anastasia-beverly-hills',
     gradient: { from: '#E8793A', to: '#c45a20', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Creative Testing Matrix', icon: 'sparkles' },
-    image: '/images/u7815321835_premium_dark_mode_phone_mockup_displaying_UGC_wel_bf09b5ca-d52d-4685-b4e0-b9974df67db0_1.png',
+    image: '/images/creative-ugc-phone-mockup.png',
   },
   {
     id: 'website-cro',
@@ -157,7 +158,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/online-labels',
     gradient: { from: '#5BA4A4', to: '#3d8888', orb: '#E8793A' },
     imagePlaceholder: { label: 'Funnel Conversion Heatmap', icon: 'cursor-arrow-rays' },
-    image: '/images/u7815321835_ultra_premium_dark_browser_mockup_showing_AB_test_7cd223ae-133a-4713-b614-37ebcaa5db5a_0.png',
+    image: '/images/ab-testing-browser-mockup.png',
   },
   {
     id: 'analytics',
@@ -192,7 +193,7 @@ const capabilities: Capability[] = [
     linkHref: '/results/ag1-brand-search',
     gradient: { from: '#5BA4A4', to: '#4a9494', orb: '#E8793A' },
     imagePlaceholder: { label: 'Attribution Model Architecture', icon: 'chart-pie' },
-    image: '/images/u7815321835_3D_scatter_plot_data_visualization_floating_in_da_83e774fa-7b2a-4b0c-9db0-1adf0f9509bf_0.png',
+    image: '/images/scatter-plot-data-viz.png',
   },
   {
     id: 'organic-growth',
@@ -222,7 +223,7 @@ const capabilities: Capability[] = [
     linkHref: '/intelligence',
     gradient: { from: '#2d7a7a', to: '#1a5c5c', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'AI Search Visibility Map', icon: 'globe-alt' },
-    image: '/images/u7815321835_premium_dark_mode_network_connection_map_five_out_5860a76b-2606-4adc-b368-272d7e2ddf71_0.png',
+    image: '/images/network-connection-map.png',
   },
   {
     id: 'lifecycle',
@@ -252,7 +253,7 @@ const capabilities: Capability[] = [
     linkHref: '/get-started',
     gradient: { from: '#E8793A', to: '#d06628', orb: '#5BA4A4' },
     imagePlaceholder: { label: 'Cohort LTV Curves', icon: 'arrow-trending-up' },
-    image: '/images/u7815321835_abstract_customer_lifecycle_journey_visualization_c577cc13-eae4-4c6c-915c-d309ca643edd_1.png',
+    image: '/images/lifecycle-journey-visualization.png',
   },
   {
     id: 'partnerships',
@@ -282,17 +283,17 @@ const capabilities: Capability[] = [
     linkHref: '/pe-vc',
     gradient: { from: '#2d7a7a', to: '#1f6565', orb: '#E8793A' },
     imagePlaceholder: { label: 'Portfolio Growth Network', icon: 'users' },
-    image: '/images/u7815321835_ultra_premium_dark_mode_project_timeline_UI_showi_5bc59994-d85e-49e5-9fbc-8f25e0a1431a_0.png',
+    image: '/images/project-timeline-ui.png',
   },
 ];
 
 const outcomes = [
-  { title: 'Acquisition Efficiency', stat: '-18%', statLabel: 'avg. CAC reduction', description: 'Sustained downward pressure on cost-per-acquisition through continuous optimization and creative iteration.' },
-  { title: 'Incremental Revenue', stat: '4.2x', statLabel: 'avg. ROAS', description: 'Attributable revenue validated through incrementality testing, not just platform-reported ROAS.' },
-  { title: 'Conversion Yield', stat: '+29%', statLabel: 'avg. CVR lift', description: 'Measurable lifts to conversion rate, AOV, and funnel efficiency through structured testing.' },
-  { title: 'Lifetime Value', stat: '2.3x', statLabel: 'avg. LTV increase', description: 'LTV:CAC ratio improvements from segmented lifecycle and retention programs that drive EBITDA alignment.' },
-  { title: 'Budget Acceleration', stat: '67%', statLabel: 'clients scale spend', description: 'Majority of clients increase managed media budget within 6 months as efficiency improves.' },
-  { title: 'Recurring Revenue', stat: '85%', statLabel: 'project-to-retainer', description: 'Conversion of audit and project work into long-term retained partnerships.' },
+  { title: 'Acquisition Efficiency', stat: STATS.avg.cacReduction, statLabel: 'avg. CAC reduction', description: 'Sustained downward pressure on cost-per-acquisition through continuous optimization and creative iteration.' },
+  { title: 'Incremental Revenue', stat: STATS.avg.roas, statLabel: 'avg. ROAS', description: 'Attributable revenue validated through incrementality testing, not just platform-reported ROAS.' },
+  { title: 'Conversion Yield', stat: STATS.avg.cvrLift, statLabel: 'avg. CVR lift', description: 'Measurable lifts to conversion rate, AOV, and funnel efficiency through structured testing.' },
+  { title: 'Lifetime Value', stat: STATS.avg.ltvIncrease, statLabel: 'avg. LTV increase', description: 'LTV:CAC ratio improvements from segmented lifecycle and retention programs that drive EBITDA alignment.' },
+  { title: 'Budget Acceleration', stat: STATS.avg.scaleSpend6mo, statLabel: 'clients scale spend', description: 'Majority of clients increase managed media budget within 6 months as efficiency improves.' },
+  { title: 'Recurring Revenue', stat: STATS.avg.projectToRetainer, statLabel: 'project-to-retainer', description: 'Conversion of audit and project work into long-term retained partnerships.' },
 ];
 
 const tiers = [
@@ -706,7 +707,7 @@ function OutcomesSection() {
   const isInView = framerInView || fallback;
 
   return (
-    <section className="py-24 px-6 border-t border-white/[0.04]" style={{
+    <section id="measure" className="py-24 px-6 border-t border-white/[0.04] scroll-mt-24" style={{
       background: `radial-gradient(ellipse 60% 50% at 50% 0%, rgba(91,164,164,0.04) 0%, transparent 60%), #0d1520`,
     }}>
       <div ref={ref} className="mx-auto max-w-6xl">
