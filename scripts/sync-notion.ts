@@ -473,8 +473,17 @@ async function main() {
   // 4. Write the output file
   console.log('\nStep 4: Writing blogPosts.ts...');
 
+  // Escape for embedding inside a single-quoted TS string literal.
+  // Crucially, collapse any newlines/tabs/runs of whitespace to single spaces:
+  // Notion callouts and paragraphs can contain hard line breaks (\n) in their
+  // plain_text, and a raw newline inside a single-quoted literal is an
+  // "Unterminated string constant" syntax error that breaks the production build.
   const escapeStr = (s: string): string =>
-    s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    s
+      .replace(/\\/g, '\\\\')
+      .replace(/'/g, "\\'")
+      .replace(/\s+/g, ' ')
+      .trim();
 
   let output = `export interface BlogPost {
   slug: string;
