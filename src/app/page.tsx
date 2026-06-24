@@ -1328,7 +1328,7 @@ function TestimonialSection() {
         </div>
 
         {/* SXSW video: Cliff Simmons + AG1 CMO */}
-        <div className="reveal stagger-2 mt-12">
+        <div className="mt-12">
           <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
             <video
               controls
