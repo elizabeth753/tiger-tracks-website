@@ -55,6 +55,37 @@ export default function PressPage() {
         </div>
       </section>
 
+      {/* ── Section: Featured Speaking (SXSW) ── */}
+      <section className="bg-tt-black py-20 px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <p className="text-tt-teal uppercase tracking-[4px] text-sm font-semibold mb-4">
+              ON STAGE
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-tt-white">
+              SXSW: Under the AI Microscope
+            </h2>
+            <p className="text-tt-gray-400 mt-4 max-w-2xl mx-auto text-lg">
+              CEO &amp; Co-Founder Cliff Simmons joins the CMO of AG1 at SXSW to
+              talk about how AI is reshaping media buying and creative.
+            </p>
+          </div>
+
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+            <video
+              controls
+              preload="none"
+              playsInline
+              poster="/cliff-sxsw-ag1-poster.jpg"
+              className="w-full h-auto bg-tt-black"
+            >
+              <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </section>
+
       {/* ── Section 2: Awards & Recognition ── */}
       <section className="bg-tt-white py-20 px-6">
         <div className="mx-auto max-w-7xl">

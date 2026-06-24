@@ -1326,6 +1326,26 @@ function TestimonialSection() {
             </div>
           </div>
         </div>
+
+        {/* SXSW video: Cliff Simmons + AG1 CMO */}
+        <div className="reveal stagger-2 mt-12">
+          <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+            <video
+              controls
+              preload="none"
+              playsInline
+              poster="/cliff-sxsw-ag1-poster.jpg"
+              className="w-full h-auto bg-tt-black"
+            >
+              <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <p className="mt-4 text-center text-sm text-tt-gray-400">
+            CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
+            &ldquo;Under the AI Microscope.&rdquo;
+          </p>
+        </div>
       </div>
     </section>
   );
