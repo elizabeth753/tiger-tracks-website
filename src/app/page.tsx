@@ -1332,10 +1332,10 @@ function TestimonialSection() {
           <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
             <video
               controls
-              preload="none"
+              preload="metadata"
               playsInline
               poster="/cliff-sxsw-ag1-poster.jpg"
-              className="w-full h-auto bg-tt-black"
+              className="w-full aspect-video object-cover bg-tt-black"
             >
               <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
               Your browser does not support the video tag.
