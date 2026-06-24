@@ -574,6 +574,26 @@ function HeroSection() {
 
         {/* Hero Trust Anchor: AG1 Testimonial */}
         <HeroTestimonial />
+
+        {/* SXSW video: Cliff Simmons + AG1 CMO */}
+        <div className="mx-auto mt-10 w-3/4">
+          <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+            <video
+              controls
+              preload="metadata"
+              playsInline
+              poster="/cliff-sxsw-ag1-poster.jpg"
+              className="w-full aspect-video object-cover bg-tt-black"
+            >
+              <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <p className="mt-4 text-center text-sm text-tt-gray-400">
+            CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
+            &ldquo;Under the AI Microscope.&rdquo;
+          </p>
+        </div>
       </div>
 
       {/* Scroll indicator */}
@@ -1271,87 +1291,6 @@ function TechSection() {
 }
 
 /* ================================================================
-   SECTION 7 TESTIMONIAL
-   ================================================================ */
-
-function TestimonialSection() {
-  const sectionRef = useReveal(0.2);
-
-  return (
-    <section className="relative bg-atmosphere-dark py-28 sm:py-36 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        {/* Dramatic center glow */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[700px] rounded-full animate-mesh-pulse"
-          style={{ background: 'radial-gradient(ellipse, rgba(91,164,164,0.08) 0%, transparent 55%)', filter: 'blur(80px)' }}
-        />
-        {/* Corner accents */}
-        <div
-          className="absolute top-[-10%] left-[-5%] h-[300px] w-[300px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.04) 0%, transparent 60%)', filter: 'blur(60px)' }}
-        />
-        <div
-          className="absolute bottom-[-10%] right-[-5%] h-[300px] w-[300px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(91,164,164,0.04) 0%, transparent 60%)', filter: 'blur(60px)' }}
-        />
-        <div className="absolute inset-0 dot-grid-subtle opacity-40" />
-        <div className="absolute inset-0 crosshatch-grid opacity-20" />
-      </div>
-
-      <div ref={sectionRef} className="relative z-10 mx-auto max-w-4xl px-6 lg:px-8">
-        <div className="reveal stagger-1">
-          <div className="relative gradient-border gradient-border-active rounded-2xl">
-            <div className="relative bg-tt-black rounded-2xl p-10 md:p-16">
-              <div className="absolute top-6 left-8 md:top-8 md:left-12 text-tt-teal/10">
-                <svg width="80" height="64" viewBox="0 0 40 32" fill="currentColor">
-                  <path d="M12.8 0C5.728 0 0 5.728 0 12.8c0 10.752 9.6 19.2 19.2 19.2l1.6-6.4C14.4 25.6 6.4 20.48 6.4 12.8h6.4c3.52 0 6.4-2.88 6.4-6.4S16.32 0 12.8 0zm20.8 0c-7.072 0-12.8 5.728-12.8 12.8 0 10.752 9.6 19.2 19.2 19.2l1.6-6.4C35.2 25.6 27.2 20.48 27.2 12.8h6.4c3.52 0 6.4-2.88 6.4-6.4S37.12 0 33.6 0z" />
-                </svg>
-              </div>
-
-              <blockquote className="relative z-10 text-2xl md:text-3xl font-medium leading-relaxed text-white">
-                &ldquo;Partnering with Tiger Tracks has been amazing. They work fast, execute
-                flawlessly and apply specialized knowledge of ad platforms with a relentless
-                focus on hitting growth goals.&rdquo;
-              </blockquote>
-
-              <div className="relative z-10 mt-10 flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-tt-teal/30 to-tt-teal/10 flex items-center justify-center">
-                  <span className="text-sm font-bold text-tt-teal">JM</span>
-                </div>
-                <div>
-                  <p className="font-semibold text-white">Jason Marshall</p>
-                  <p className="text-sm text-tt-gray-400">Chief Growth Officer, AG1</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* SXSW video: Cliff Simmons + AG1 CMO */}
-        <div className="mt-12">
-          <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
-            <video
-              controls
-              preload="metadata"
-              playsInline
-              poster="/cliff-sxsw-ag1-poster.jpg"
-              className="w-full aspect-video object-cover bg-tt-black"
-            >
-              <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <p className="mt-4 text-center text-sm text-tt-gray-400">
-            CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
-            &ldquo;Under the AI Microscope.&rdquo;
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================
    SECTION 8 PE PARTNERSHIP (interactive timeline + progress ring)
    ================================================================ */
 
@@ -1818,8 +1757,6 @@ export default function Home() {
       <CaseStudiesSection />
       <SectionBoundary />
       <TechSection />
-      <SectionBoundary />
-      <TestimonialSection />
       <SectionBoundary />
       <PEPartnershipSection />
       <SectionBoundary />
