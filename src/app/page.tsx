@@ -534,7 +534,7 @@ function HeroSection() {
               initial={reduceMotion ? false : 'hidden'}
               animate="visible"
               custom={0.6}
-              className="mt-10 grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0"
+              className="mt-10 grid grid-cols-3 gap-3 max-w-md mx-auto lg:max-w-none lg:mx-0"
             >
               {[
                 { value: '2,954%', label: 'Revenue Growth' },
@@ -563,6 +563,15 @@ function HeroSection() {
             custom={0.3}
             className="w-full"
           >
+            <div className="mb-4 flex justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-tt-teal/30 bg-tt-teal/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-tt-teal">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-tt-teal opacity-50" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-tt-teal" />
+                </span>
+                Featured at SXSW
+              </span>
+            </div>
             <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
               <video
                 controls
@@ -575,10 +584,14 @@ function HeroSection() {
                 Your browser does not support the video tag.
               </video>
             </div>
-            <p className="mt-4 text-center text-sm text-tt-gray-400">
-              CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
-              &ldquo;Under the AI Microscope.&rdquo;
-            </p>
+            <div className="mt-5 text-center">
+              <p className="text-lg sm:text-xl font-bold text-white">
+                <span className="text-tt-teal">CMO of AG1</span>{' '}&amp; CEO of Tiger Tracks
+              </p>
+              <p className="mt-1.5 text-sm text-slate-300">
+                &ldquo;Under the AI Microscope&rdquo;
+              </p>
+            </div>
           </motion.div>
         </div>
 
