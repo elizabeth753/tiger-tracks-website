@@ -7,7 +7,6 @@ import { LogoBar } from '@/components/LogoBar';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ParticleField } from '@/components/ParticleField';
 import { HeroTestimonial } from '@/components/HeroTestimonial';
-import { HeroDiagnosticForm } from '@/components/HeroDiagnosticForm';
 import { STATS } from '@/lib/stats';
 
 /* ================================================================
@@ -494,7 +493,7 @@ function HeroSection() {
               </p>
             </motion.div>
 
-            {/* CTAs: mobile anchor to form + secondary link */}
+            {/* CTAs: primary + secondary */}
             <motion.div
               variants={heroFadeUp}
               initial={reduceMotion ? false : 'hidden'}
@@ -502,28 +501,23 @@ function HeroSection() {
               custom={0.4}
               className="mt-8 flex flex-col sm:flex-row items-center lg:justify-start justify-center gap-4"
             >
-              {/* Mobile-only primary CTA: jumps to the form below */}
-              <a
-                href="#diagnostic-form"
-                className="lg:hidden group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-tt-orange to-tt-orange-dark px-8 py-3.5 text-base font-semibold text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)]"
+              {/* Primary CTA */}
+              <Link
+                href="/get-started"
+                className="group relative inline-flex items-center justify-center rounded-full bg-tt-orange px-8 py-3.5 text-base font-normal tracking-[-0.16px] text-white transition-shadow duration-200 hover:shadow-[0_0_20px_rgba(232,121,58,0.45)]"
               >
-                <span className="relative z-10">Request a Strategic Diagnostic</span>
-                <svg
-                  className="relative z-10 w-5 h-5 transition-transform duration-300 group-hover:translate-y-1"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                {/* Shimmer sweep */}
-                <span
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-                  style={{
-                    transform: 'translateX(-100%)',
-                    animation: 'shimmer 3s cubic-bezier(0.16, 1, 0.3, 1) infinite',
-                    animationDelay: '1s',
-                  }}
-                />
-              </a>
+                <span className="relative block h-6 overflow-hidden leading-6">
+                  <span className="block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:transform-none motion-reduce:transition-none">
+                    Get Your Growth Audit
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-full block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:hidden"
+                  >
+                    Get Your Growth Audit
+                  </span>
+                </span>
+              </Link>
 
               {/* Secondary: Ghost button with thin border */}
               <Link
@@ -561,39 +555,35 @@ function HeroSection() {
             </motion.div>
           </div>
 
-          {/* ---------------- Right: inline diagnostic form ---------------- */}
+          {/* ---------------- Right: SXSW video ---------------- */}
           <motion.div
             variants={heroFadeUp}
             initial={reduceMotion ? false : 'hidden'}
             animate="visible"
             custom={0.3}
+            className="w-full"
           >
-            <HeroDiagnosticForm />
+            <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <video
+                controls
+                preload="metadata"
+                playsInline
+                poster="/cliff-sxsw-ag1-poster.jpg"
+                className="w-full aspect-video object-cover bg-tt-black"
+              >
+                <source src="/cliffypt2.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <p className="mt-4 text-center text-sm text-tt-gray-400">
+              CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
+              &ldquo;Under the AI Microscope.&rdquo;
+            </p>
           </motion.div>
         </div>
 
-        {/* Hero Trust Anchor: AG1 Testimonial */}
+        {/* Hero Trust Anchor: AG1 Testimonial — bottom of the hero */}
         <HeroTestimonial />
-
-        {/* SXSW video: Cliff Simmons + AG1 CMO */}
-        <div className="mx-auto mt-10 w-3/4">
-          <div className="relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
-            <video
-              controls
-              preload="metadata"
-              playsInline
-              poster="/cliff-sxsw-ag1-poster.jpg"
-              className="w-full aspect-video object-cover bg-tt-black"
-            >
-              <source src="/cliff-sxsw-ag1.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <p className="mt-4 text-center text-sm text-tt-gray-400">
-            CEO &amp; Co-Founder Cliff Simmons with the CMO of AG1 at SXSW,
-            &ldquo;Under the AI Microscope.&rdquo;
-          </p>
-        </div>
       </div>
 
       {/* Scroll indicator */}

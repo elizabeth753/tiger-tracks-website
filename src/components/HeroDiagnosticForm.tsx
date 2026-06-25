@@ -341,23 +341,18 @@ export function HeroDiagnosticForm() {
 
               <button
                 type="submit"
-                className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-tt-orange to-tt-orange-dark py-3.5 text-base font-semibold text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)]"
+                className="group relative w-full rounded-full bg-tt-orange py-3.5 text-sm font-normal tracking-[-0.16px] text-white transition-shadow duration-200 hover:shadow-[0_0_20px_rgba(232,121,58,0.45)]"
               >
-                <span className="relative z-10 inline-flex items-center gap-2">
-                  Request a Strategic Diagnostic
-                  <svg
-                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+                <span className="relative mx-auto block h-5 overflow-hidden leading-5">
+                  <span className="block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:transform-none motion-reduce:transition-none">
+                    Request a Strategic Diagnostic
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-full block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:hidden"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
+                    Request a Strategic Diagnostic
+                  </span>
                 </span>
               </button>
 
