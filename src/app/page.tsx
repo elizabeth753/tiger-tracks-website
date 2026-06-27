@@ -503,7 +503,7 @@ function HeroSection() {
             >
               {/* Primary CTA */}
               <Link
-                href="/get-started"
+                href="/growth-audit"
                 className="group relative inline-flex items-center justify-center rounded-full bg-tt-orange px-8 py-3.5 text-base font-normal tracking-[-0.16px] text-white transition-shadow duration-200 hover:shadow-[0_0_20px_rgba(232,121,58,0.45)]"
               >
                 <span className="relative block h-6 overflow-hidden leading-6">
