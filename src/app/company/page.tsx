@@ -1006,7 +1006,7 @@ export default function AboutPage() {
 
       <CTASection
         headline="Ready to Work with Us?"
-        subheadline="Book a free audit and see what ex-Google performance marketing can do for your brand."
+        subheadline="Book a free Strategic Diagnostic and see what ex-Google performance marketing can do for your brand."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         secondaryCTA={{ text: 'View Case Studies', href: '/results' }}
         dark

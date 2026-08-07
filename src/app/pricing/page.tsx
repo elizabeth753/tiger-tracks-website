@@ -219,7 +219,7 @@ export default function PricingPage() {
             href="/growth-audit"
             className="inline-flex items-center justify-center rounded-full bg-tt-orange px-9 py-4 text-base font-semibold text-white transition-all duration-300 hover:shadow-[0_0_24px_rgba(232,121,58,0.5)]"
           >
-            Start with a free Growth Audit
+            Start with a free Strategic Diagnostic
           </Link>
         </div>
       </section>

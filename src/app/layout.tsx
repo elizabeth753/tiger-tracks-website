@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: '%s | Tiger Tracks',
   },
   description:
-    'Inc. 5000 #123 agency with 2,954% growth. Tiger Tracks delivers full-funnel performance marketing powered by proprietary AI for brands spending $100K–$5M/month. Book your free audit.',
+    'Inc. 5000 #123 agency with 2,954% growth. Tiger Tracks delivers full-funnel performance marketing powered by proprietary AI for brands spending $100K–$5M/month. Book your free Strategic Diagnostic.',
   alternates: {
     canonical: '/',
   },

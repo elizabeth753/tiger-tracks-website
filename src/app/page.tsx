@@ -508,13 +508,13 @@ function HeroSection() {
               >
                 <span className="relative block h-6 overflow-hidden leading-6">
                   <span className="block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:transform-none motion-reduce:transition-none">
-                    Get Your Growth Audit
+                    Request a Strategic Diagnostic
                   </span>
                   <span
                     aria-hidden="true"
                     className="absolute inset-x-0 top-full block transition-transform duration-[340ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-full motion-reduce:hidden"
                   >
-                    Get Your Growth Audit
+                    Request a Strategic Diagnostic
                   </span>
                 </span>
               </Link>
@@ -636,79 +636,23 @@ function LogoBarSection() {
 
 const capabilities = [
   {
-    title: 'Media Buying',
+    title: 'Demand Gen',
     href: '/capabilities#media-buying',
-    description: 'Paid search, social, programmatic, retail media, and CTV at scale.',
+    description: 'Profitable scale across every paid channel, measured on ROAS and CAC, not impressions.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
       </svg>
     ),
     accent: 'teal' as const,
-    stat: '+147%',
+    stat: STATS.representative.roasLift,
     statLabel: 'Top client ROAS lift',
     bgImage: '/images/media-buying-dashboard.png',
   },
   {
-    title: 'Creative & UGC',
-    href: '/capabilities#creative',
-    description: 'Thumb-stopping image, video, UGC, and influencer creative tested and iterated weekly.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
-      </svg>
-    ),
-    accent: 'orange' as const,
-    stat: '3x',
-    statLabel: 'Creative win rate',
-    bgImage: '/images/creative-ugc-phone-mockup.png',
-  },
-  {
-    title: 'Website & CRO',
-    href: '/capabilities#website-cro',
-    description: 'Landing pages, site builds, and conversion rate optimization that turns traffic into revenue.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-      </svg>
-    ),
-    accent: 'teal' as const,
-    stat: '+42%',
-    statLabel: 'Top client CVR lift',
-    bgImage: '/images/ab-testing-browser-mockup.png',
-  },
-  {
-    title: 'Organic Growth',
-    href: '/capabilities#organic-growth',
-    description: 'SEO, ASO, and generative engine optimization (GEO) own the search results AI reads.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-      </svg>
-    ),
-    accent: 'teal' as const,
-    stat: '+89%',
-    statLabel: 'Organic traffic',
-    bgImage: '/images/network-connection-map.png',
-  },
-  {
-    title: 'Lifecycle & Retention',
-    href: '/capabilities#lifecycle',
-    description: 'Email, SMS, and LTV programs that make every acquired customer worth more.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
-      </svg>
-    ),
-    accent: 'orange' as const,
-    stat: '+34%',
-    statLabel: 'LTV increase',
-    bgImage: '/images/lifecycle-journey-visualization.png',
-  },
-  {
-    title: 'Analytics & Intelligence',
+    title: 'Analytics',
     href: '/capabilities#analytics',
-    description: 'Attribution, media mix modeling, incrementality testing, and the data layer that makes every other channel smarter.',
+    description: 'Media mix modeling powered by LLMs, deduplicated attribution, and channel-level LTV that unlocks channel-level CAC targets.',
     icon: (
       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
@@ -719,7 +663,63 @@ const capabilities = [
     statLabel: 'Data visibility',
     bgImage: '/images/scatter-plot-data-viz.png',
   },
-] as const;
+
+  {
+    title: 'CRO',
+    href: '/capabilities#website-cro',
+    description: 'Landing pages, site builds, and conversion rate optimization that turns traffic into revenue.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    stat: STATS.representative.cvrLift,
+    statLabel: 'Top client CVR lift',
+    bgImage: '/images/ab-testing-browser-mockup.png',
+  },
+  {
+    title: 'Creative',
+    href: '/capabilities#creative',
+    description: 'Content strategy, production, UGC, and influencer programs built to perform, with educational video in the mix.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+      </svg>
+    ),
+    accent: 'orange' as const,
+    stat: STATS.representative.creativeWinRate,
+    statLabel: 'Creative win rate',
+    bgImage: '/images/creative-ugc-phone-mockup.png',
+  },
+  {
+    title: 'Organic',
+    href: '/capabilities#organic-growth',
+    description: 'Social, SEO, GEO/AEO, and ASO that win the rankings and the AI answers. Top client: average Google ranking up 21 positions.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+      </svg>
+    ),
+    accent: 'teal' as const,
+    stat: STATS.representative.organicTraffic,
+    statLabel: 'Top client organic traffic lift',
+    bgImage: '/images/network-connection-map.png',
+  },
+  {
+    title: 'Lifecycle',
+    href: '/capabilities#lifecycle',
+    description: 'An AI lifecycle engine on top of the ESP you already run. It predicts churn and fires the right save, win-back, or cross-sell at the right moment, measured on LTV, not opens.',
+    icon: (
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+      </svg>
+    ),
+    accent: 'orange' as const,
+    stat: STATS.representative.ltvIncrease,
+    statLabel: 'Top client LTV increase',
+    bgImage: '/images/lifecycle-journey-visualization.png',
+  },] as const;
 
 function BentoCapabilities() {
   const sectionRef = useReveal(0.08);
@@ -919,30 +919,30 @@ const caseStudies = [
     patternOpacity: 0.15,
   },
   {
-    slug: 'monarch-money',
-    client: 'Monarch Money',
-    heroMetric: '+368%',
-    heroMetricLabel: 'Users',
-    category: 'Finance',
+    slug: 'national-broadband-provider',
+    client: 'National Broadband Provider',
+    heroMetric: STATS.broadband.cvrLift,
+    heroMetricLabel: 'Website Conversion Rate (CVR)',
+    category: 'Broadband & Telecom / 2026',
     channels: ['Multi-Channel'],
-    summary: 'Scaled user acquisition for the personal finance platform PE funds are watching.',
-    gradientFrom: 'rgba(232,121,58,0.20)',
-    gradientTo: 'rgba(91,164,164,0.05)',
-    accentOrb: 'rgba(91,164,164,0.15)',
-    patternOpacity: 0.12,
-  },
-  {
-    slug: 'online-labels',
-    client: 'Online Labels',
-    heroMetric: '+151%',
-    heroMetricLabel: 'Profit in 90 Days',
-    category: 'E-Commerce',
-    channels: ['Google'],
-    summary: 'From 18,000 keywords and declining performance to record-breaking profitability.',
+    summary: 'Purchases up 32%, revenue up 15%, and average Google ranking up 21 positions, from two test markets to the national footprint in six months.',
     gradientFrom: 'rgba(91,164,164,0.20)',
     gradientTo: 'rgba(232,121,58,0.06)',
     accentOrb: 'rgba(232,121,58,0.10)',
     patternOpacity: 0.18,
+  },
+  {
+    slug: 'monarch-money',
+    client: 'Monarch Money',
+    heroMetric: STATS.monarch.seriesB,
+    heroMetricLabel: 'Series B at an $850M Valuation',
+    category: 'Finance',
+    channels: ['Multi-Channel'],
+    summary: 'Users up 368% with unit economics that held under investor scrutiny. Monarch went on to raise a $75M Series B.',
+    gradientFrom: 'rgba(232,121,58,0.20)',
+    gradientTo: 'rgba(91,164,164,0.05)',
+    accentOrb: 'rgba(91,164,164,0.15)',
+    patternOpacity: 0.12,
   },
 ] as const;
 
@@ -1314,7 +1314,7 @@ function PEPartnershipSection() {
   }, []);
 
   const timeline = [
-    { time: 'Week 1-2', label: 'Forensic audit & diagnostics', percent: 100 },
+    { time: 'Week 1-2', label: 'Strategic Diagnostic & forensics', percent: 100 },
     { time: 'Week 3-4', label: 'Strategy & quick wins deployed', percent: 100 },
     { time: 'Month 2-3', label: 'Full-funnel execution at scale', percent: 75 },
   ];
@@ -1355,7 +1355,7 @@ function PEPartnershipSection() {
             </h2>
             <p className="reveal stagger-3 mt-6 text-lg leading-relaxed text-tt-gray-400">
               We partner with PE and VC funds to inject performance marketing muscle into
-              portfolio companies. Forensic audits, proprietary AI tooling, and a team built at Google deployed on your timeline.
+              portfolio companies. Strategic Diagnostics, proprietary AI tooling, and a team built at Google deployed on your timeline.
             </p>
 
             {/* Mini stats with progress rings */}
@@ -1660,6 +1660,11 @@ function FinalCTA() {
           creative, and attribution.
         </p>
 
+        <p className="reveal stagger-2 mt-4 text-base text-tt-teal/90 max-w-2xl mx-auto">
+          Start with a free Strategic Diagnostic. Continue on terms where our fees are
+          tied to the numbers we sign up for. You win, we win.
+        </p>
+
         <div className="reveal stagger-3 mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
           <div className="relative">
             <div className="absolute -inset-5 rounded-[50px] z-[-1]" style={{
@@ -1685,6 +1690,260 @@ function FinalCTA() {
               {badge}
             </span>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   ENTERPRISE PAIN MESSAGE BLOCK
+   ================================================================ */
+
+function EnterprisePainSection() {
+  const sectionRef = useReveal(0.1);
+
+  return (
+    <section data-tint="ink" className="relative bg-atmosphere py-24 sm:py-32 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-orange/25 to-transparent" />
+        <div className="absolute inset-0 dot-grid opacity-40" />
+        <div
+          className="absolute top-[0%] right-[-12%] h-[500px] w-[500px] rounded-full animate-float-slower"
+          style={{ background: 'radial-gradient(circle, rgba(232,121,58,0.07) 0%, transparent 60%)', filter: 'blur(90px)' }}
+        />
+      </div>
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-4xl px-6 lg:px-8 text-center">
+        <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-orange uppercase tracking-widest mb-4">
+          For subscription and e-commerce-driven enterprises
+        </span>
+        <h2 className="reveal stagger-2 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" aria-label="Traffic down. Conversion flat. That is exactly what we fix.">
+          Traffic down. Conversion flat.<br />
+          <span className="gradient-text">That is exactly what we fix.</span>
+        </h2>
+        <p className="reveal stagger-3 mt-6 text-lg text-slate-300 leading-relaxed">
+          The two numbers keeping enterprise growth leaders up at night are declining site
+          traffic and a website conversion rate that will not move. Recovering both is the
+          core of what Tiger Tracks does: a Strategic Diagnostic that finds where revenue is
+          leaking, CRO waves that compound week over week, and organic programs built for how
+          customers search now, including the AI engines that answer before Google does.
+        </p>
+        <div className="reveal stagger-4 mt-10">
+          <Link href="/get-started" className="btn-primary">
+            Request a Strategic Diagnostic
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   INDUSTRIES STRIP
+   ================================================================ */
+
+function IndustriesStrip() {
+  const sectionRef = useReveal(0.2);
+
+  return (
+    <section className="relative bg-atmosphere overflow-hidden">
+      <div className="section-divider" />
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 py-14 text-center">
+        <span className="reveal stagger-1 inline-block text-xs font-semibold text-tt-teal uppercase tracking-[3px] mb-4">
+          Industries
+        </span>
+        <p className="reveal stagger-2 text-lg sm:text-xl font-semibold text-white tracking-wide">
+          Broadband &amp; Telecom
+          <span className="mx-3 text-tt-gray-600">|</span>
+          Subscription
+          <span className="mx-3 text-tt-gray-600">|</span>
+          Fintech
+          <span className="mx-3 text-tt-gray-600">|</span>
+          DTC &amp; E-commerce
+        </p>
+        <p className="reveal stagger-3 mt-3 text-sm text-tt-gray-500">
+          Built for businesses where recurring revenue, LTV, and CAC discipline decide the winner.
+        </p>
+      </div>
+      <div className="section-divider" />
+    </section>
+  );
+}
+
+/* ================================================================
+   TRUST BLOCK: YOUR ACCOUNTS, YOUR DATA, YOUR CONTRACTS
+   ================================================================ */
+
+function TrustBlock() {
+  const sectionRef = useReveal(0.15);
+
+  return (
+    <section data-tint="ink" className="relative bg-atmosphere py-20 sm:py-24 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/20 to-transparent" />
+      </div>
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-3xl px-6 lg:px-8 text-center">
+        <h2 className="reveal stagger-1 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Your accounts. Your data. <span className="gradient-text">Your contracts.</span>
+        </h2>
+        <p className="reveal stagger-2 mt-5 text-lg text-slate-300 leading-relaxed">
+          We work inside your ad accounts, your platforms, and your tools. Every account,
+          audience, asset, and insight we build stays yours from day one, and if we ever part
+          ways, you keep all of it. No hostage accounts, no black boxes, no handover fees.
+        </p>
+        <p className="reveal stagger-3 mt-6">
+          <Link href="/trust" className="inline-flex items-center gap-2 text-tt-teal font-semibold transition-colors hover:text-white">
+            How we handle access and security
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   SERVICES OVERVIEW (deep-linked subheadings) + ADVISORY + CULTURE
+   ================================================================ */
+
+const servicesOverview = [
+  {
+    heading: 'Demand Gen',
+    href: '/capabilities#media-buying',
+    line: 'Paid search to retail media, one accountable growth engine.',
+    subs: [
+      { label: 'Paid Search', href: '/capabilities#paid-search' },
+      { label: 'Paid Social', href: '/capabilities#paid-social' },
+      { label: 'Programmatic', href: '/capabilities#programmatic' },
+      { label: 'Retail', href: '/capabilities#retail' },
+    ],
+  },
+  {
+    heading: 'Creative',
+    href: '/capabilities#creative',
+    line: 'From content strategy to influencer programs, creative that answers to revenue.',
+    subs: [
+      { label: 'Content Strategy', href: '/capabilities#creative-strategy' },
+      { label: 'Production', href: '/capabilities#production' },
+      { label: 'UGC', href: '/capabilities#ugc' },
+      { label: 'Influencer', href: '/capabilities#influencer' },
+    ],
+  },
+  {
+    heading: 'CRO',
+    href: '/capabilities#website-cro',
+    line: 'Conversion rate lifts that compound wave over wave.',
+    subs: [
+      { label: 'Website Design & Development', href: '/capabilities#web-design-dev' },
+      { label: 'A/B Testing', href: '/capabilities#ab-testing' },
+    ],
+  },
+  {
+    heading: 'Analytics',
+    href: '/capabilities#analytics',
+    line: 'The measurement layer boards and CFOs can act on.',
+    subs: [
+      { label: 'MMM', href: '/capabilities#mmm' },
+      { label: 'Attribution', href: '/capabilities#attribution' },
+      { label: 'Reporting', href: '/capabilities#reporting' },
+      { label: 'Data Architecture', href: '/capabilities#data-architecture' },
+    ],
+  },
+  {
+    heading: 'Organic',
+    href: '/capabilities#organic-growth',
+    line: 'Social, SEO, GEO/AEO, and ASO built for how customers search now.',
+    subs: [
+      { label: 'Social', href: '/capabilities#organic-social' },
+      { label: 'SEO', href: '/capabilities#seo' },
+      { label: 'GEO/AEO', href: '/capabilities#geo-aeo' },
+      { label: 'ASO', href: '/capabilities#aso' },
+    ],
+  },
+  {
+    heading: 'Lifecycle',
+    href: '/capabilities#lifecycle',
+    line: 'Email, SMS, CRM, and personalization that grow LTV without touching the media budget.',
+    subs: [
+      { label: 'Email & SMS', href: '/capabilities#email-sms' },
+      { label: 'CRM', href: '/capabilities#crm' },
+      { label: 'Personalization', href: '/capabilities#personalization' },
+    ],
+  },
+] as const;
+
+function ServicesOverviewSection() {
+  const sectionRef = useReveal(0.05);
+
+  return (
+    <section data-tint="ink" className="relative bg-atmosphere py-24 sm:py-32 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tt-teal/25 to-transparent" />
+        <div className="absolute inset-0 dot-grid opacity-30" />
+      </div>
+      <div ref={sectionRef} className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center mb-14">
+          <span className="reveal stagger-1 inline-block text-sm font-semibold text-tt-teal uppercase tracking-widest mb-4">
+            Everything we do
+          </span>
+          <h2 className="reveal stagger-2 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+            The full menu, <span className="gradient-text">one view.</span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+          {servicesOverview.map((svc, i) => (
+            <div key={svc.heading} className={`reveal stagger-${(i % 6) + 1} rounded-2xl border border-white/[0.05] p-6 transition-colors hover:bg-white/[0.02]`}>
+              <Link href={svc.href} className="group inline-flex items-baseline gap-2">
+                <span className="text-lg font-bold text-white transition-colors group-hover:text-tt-teal">{svc.heading}</span>
+                <svg className="w-4 h-4 text-tt-gray-600 transition-all group-hover:text-tt-orange group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              <p className="mt-1.5 text-sm text-tt-gray-400 leading-relaxed">{svc.line}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {svc.subs.map((sub) => (
+                  <Link
+                    key={sub.href}
+                    href={sub.href}
+                    className="rounded-full border border-tt-teal/25 bg-tt-teal/[0.06] px-3 py-1 text-xs font-medium text-tt-teal transition-colors hover:bg-tt-teal/15 hover:text-white"
+                  >
+                    {sub.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div className="reveal stagger-1 rounded-2xl border border-white/[0.05] p-6 transition-colors hover:bg-white/[0.02] md:col-span-2">
+            <Link href="/capabilities#partnerships" className="group inline-flex items-baseline gap-2">
+              <span className="text-lg font-bold text-white transition-colors group-hover:text-tt-teal">Strategic Advisory &amp; PE/VC</span>
+              <svg className="w-4 h-4 text-tt-gray-600 transition-all group-hover:text-tt-orange group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <p className="mt-1.5 text-sm text-tt-gray-400 leading-relaxed">
+              The operators who run your channels, in the room with your leadership.
+              Strategic advisory, not just execution: the same team advises on pricing,
+              positioning, measurement, and org design. Consultancy is a first-class
+              engagement, not an upsell.
+            </p>
+          </div>
+        </div>
+
+        <div className="reveal stagger-2 mt-10 rounded-2xl border border-white/[0.05] bg-white/[0.015] p-6 text-center">
+          <p className="text-base text-slate-300 leading-relaxed max-w-4xl mx-auto">
+            <span className="font-bold text-white">{STATS.teamSize} senior specialists. Zero generalists.</span>{' '}
+            Tiger Tracks was founded by operators who built growth at Google for AT&amp;T,
+            Verizon, Under Armour, and Snapchat, and runs from Palm Beach, New York, Chicago,
+            and LA. Small enough that seniors do the work, big enough to move {STATS.adSpendAnnual} in
+            annual ad spend.
+          </p>
         </div>
       </div>
     </section>
@@ -1753,15 +2012,21 @@ export default function Home() {
       <DiagonalDivider />
       <LogoBarSection />
       <SectionBoundary />
+      <EnterprisePainSection />
+      <SectionBoundary />
       <BentoCapabilities />
       <SectionBoundary />
       <MetricsSection />
       <DiagonalDivider />
       <CaseStudiesSection />
-      <SectionBoundary />
+      <IndustriesStrip />
       <TechSection />
       <SectionBoundary />
       <PEPartnershipSection />
+      <SectionBoundary />
+      <TrustBlock />
+      <SectionBoundary />
+      <ServicesOverviewSection />
       <SectionBoundary />
       <IntelligenceSection />
       <SectionBoundary />

@@ -428,7 +428,7 @@ export function CaseStudyPageClient({ caseStudy }: { caseStudy: CaseStudy }) {
       {caseStudy.testimonial && <TestimonialSection testimonial={caseStudy.testimonial} />}
       <CTASection
         headline="Get Results Like These"
-        subheadline="Book a free audit and see what's possible for your brand."
+        subheadline="Book a free Strategic Diagnostic and see what's possible for your brand."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         secondaryCTA={{ text: 'View More Case Studies', href: '/results' }}
         dark

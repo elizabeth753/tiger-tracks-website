@@ -645,7 +645,7 @@ export function ArticlePageClient({ article, blocks }: ArticlePageClientProps) {
       <div className="print:hidden">
         <CTASection
           headline="Put This Research Into Action"
-          subheadline="Book a free audit and see how these insights apply to your specific business."
+          subheadline="Book a free Strategic Diagnostic and see how these insights apply to your specific business."
           primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
           secondaryCTA={{ text: 'Read More Research', href: '/intelligence' }}
           dark

@@ -53,6 +53,51 @@ export const industryFilters = [
 
 export const caseStudies: CaseStudy[] = [
   {
+    slug: 'national-broadband-provider',
+    client: 'National Broadband Provider',
+    heroMetric: '+46%',
+    heroMetricLabel: 'Website Conversion Rate (CVR)',
+    category: 'Broadband & Telecom / Full-Funnel',
+    channels: ['Multi-Channel'],
+    industry: 'Telecom',
+    challengeType: 'Full-Funnel Build',
+    summary:
+      'Website conversion rate up 46%, purchases up 32%, and revenue up 15% for a national broadband provider, with average organic Google ranking up 21 positions.',
+    problem:
+      'A national broadband provider faced the two problems every subscription enterprise knows: site traffic trending down and a website conversion rate that would not move. The funnel leaked at every stage, organic visibility was eroding, and e-commerce was underweighted as a share of sales.',
+    solution:
+      'We took over site optimization and organic growth inside the provider\'s own accounts and tools. Compounding CRO waves restructured the purchase funnel while targeting, creative, and messaging were rebuilt around what actually converts, and the organic program recovered visibility across the terms that matter.',
+    impact:
+      'Website conversion rate rose 46%, purchases rose 32%, and revenue rose 15%, with average organic ranking on Google\'s results page up 21 positions. An engagement that began in two test markets expanded to the provider\'s entire national footprint within six months.',
+    results: [
+      { metric: 'Website Conversion Rate (CVR)', value: '+46%', metricType: 'efficiency' },
+      { metric: 'Purchases', value: '+32%', metricType: 'leads' },
+      { metric: 'Revenue', value: '+15%', metricType: 'revenue' },
+      { metric: 'Avg Google Ranking Positions', value: '+21', metricType: 'efficiency' },
+    ],
+    wayfinderTactic: {
+      title: 'Compounding CRO Waves',
+      description: 'Structured optimization waves shipped week over week, each wave informed by the last, so conversion gains stacked instead of plateauing.',
+    },
+    attribution: 'Measured inside the client\'s own analytics stack: conversion rate indexed against pre-engagement baseline, organic rankings tracked across the priority keyword set.',
+    timeline: {
+      before: [
+        { label: 'Q1', value: 97 },
+        { label: 'Q2', value: 99 },
+        { label: 'Q3', value: 98 },
+        { label: 'Q4', value: 100 },
+      ],
+      after: [
+        { label: 'M1', value: 118 },
+        { label: 'M2', value: 129 },
+        { label: 'M4', value: 138 },
+        { label: 'M6', value: 146 },
+      ],
+    },
+    logoPlaceholder: 'NBP',
+  },
+
+  {
     slug: 'ag1-meta',
     client: 'AG1',
     heroMetric: '+51%',
@@ -201,22 +246,23 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: 'monarch-money',
     client: 'Monarch Money',
-    heroMetric: '+368%',
-    heroMetricLabel: 'Increase in Users',
+    heroMetric: '$75M',
+    heroMetricLabel: 'Series B at an $850M Valuation',
     category: 'Finance / Multi-Channel',
     channels: ['Multi-Channel'],
     industry: 'Finance',
     challengeType: 'Scaling Spend',
     summary:
-      'Scaling user acquisition 368% for the personal finance platform PE funds are watching.',
+      'Users up 368% with unit economics that held under investor scrutiny. Monarch went on to raise a $75M Series B at an $850M valuation.',
     problem:
       'Monarch Money needed to rapidly scale user acquisition to establish category leadership in personal finance. Efficient unit economics were non-negotiable given investor scrutiny. Existing channels were near capacity, and scaling further risked CAC inflation that would damage the company\'s growth narrative.',
     solution:
       'We built a full-funnel user acquisition strategy across multiple channels with rigorous measurement at every stage. Wayfinder AI continuously rebalanced budget allocation across channels based on real-time CAC and LTV signals, shifting spend toward whichever channel offered the best marginal unit economics at any given moment.',
     impact:
-      'Users grew 368% while maintaining the efficient unit economics that matter to investors. The diversified channel mix reduced dependency on any single platform.',
+      'Users grew 368% while maintaining the efficient unit economics that matter to investors. The diversified channel mix reduced dependency on any single platform. Monarch went on to raise a $75M Series B at an $850M valuation.',
     results: [
       { metric: 'Users', value: '+368%', metricType: 'leads' },
+      { metric: 'Series B (at $850M valuation)', value: '$75M', metricType: 'revenue' },
     ],
     wayfinderTactic: {
       title: 'Real-Time Cross-Channel Budget Rebalancing',

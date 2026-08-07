@@ -43,10 +43,33 @@ export const STATS = {
   // NEVER present these as averages. Always label "representative" / per-client.
   representative: {
     roasLift: '+147%',
-    cvrLift: '+42%',
+    cvrLift: '+46%', // broadband engagement figure, cleared 2026-08-07
     organicTraffic: '+89%',
     ltvIncrease: '+34%',
     creativeWinRate: '3x',
+    feedQualityLift: '+34%', // Platform Feed Optimization avg feed quality lift
+  },
+
+  // --- National broadband provider engagement (anonymized; NEVER name the client) ---
+  // Percentages only. Cleared as accurate 2026-08-07. No raw conversion values,
+  // no dollar figures, no client name anywhere.
+  broadband: {
+    cvrLift: '+46%', // website conversion rate
+    purchases: '+32%',
+    revenue: '+15%',
+    rankingPositions: '+21', // avg organic Google ranking positions gained
+  },
+
+  // --- Monarch Money (public funding facts, verified via CNBC May 2025) ---
+  monarch: {
+    seriesB: '$75M',
+    valuation: '$850M',
+    usersGrowth: '+368%',
+  },
+
+  // --- Industry references (cited third-party figures) ---
+  industry: {
+    searchDeclineGartner: '25%', // Gartner: projected traditional search volume decline by 2026
   },
 } as const;
 

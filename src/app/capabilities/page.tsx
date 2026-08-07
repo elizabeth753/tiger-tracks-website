@@ -35,6 +35,12 @@ const transition = { duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, 
 
 type GrowthObjective = 'acquisition' | 'profitability' | 'retention';
 
+interface ServiceGroup {
+  id: string; // anchor id, deep-linkable from anywhere on the site
+  heading: string;
+  items: string[];
+}
+
 interface Capability {
   id: string;
   number: string;
@@ -45,7 +51,8 @@ interface Capability {
   description: string;
   extendedDescription: string;
   insiderTactic?: { title: string; detail: string };
-  services: string[];
+  services?: string[];
+  serviceGroups?: ServiceGroup[];
   proof: { headline: string; detail: string };
   linkLabel: string;
   linkHref: string;
@@ -81,13 +88,43 @@ const capabilities: Capability[] = [
       detail:
         'We deploy Alpha/Beta campaign architecture (exact-match "alpha" campaigns siphon proven converters from broad-match "beta" campaigns), Quality Score engineering that reduces CPCs 15-30% before a single bid change, and proprietary auction-time signal layering. On YouTube, we leverage TrueView for Action sequencing and custom intent audiences built from Search query data.',
     },
-    services: [
-      'Paid Search with Alpha/Beta architecture (Google, Bing, Apple Search Ads)',
-      'Paid Social full-funnel builds (Meta, TikTok, Pinterest, Snapchat, Reddit)',
-      'Programmatic & Display (DV360, The Trade Desk)',
-      'YouTube TrueView for Action & demand gen campaigns',
-      'Retail Media (Amazon, Walmart, Instacart, Target)',
-      'Connected TV & Streaming Audio',
+    serviceGroups: [
+      {
+        id: 'paid-search',
+        heading: 'Paid Search',
+        items: [
+          'Paid Search with Alpha/Beta architecture (Google, Bing, Apple Search Ads)',
+          'Quality Score engineering and auction-time signal layering',
+        ],
+      },
+      {
+        id: 'paid-social',
+        heading: 'Paid Social',
+        items: [
+          'Full-funnel builds across Meta, TikTok, Pinterest, Snapchat, and Reddit',
+          'Creative-led audience expansion and scaling strategy',
+        ],
+      },
+      {
+        id: 'programmatic',
+        heading: 'Programmatic',
+        items: [
+          'Programmatic & Display (DV360, The Trade Desk)',
+          'YouTube TrueView for Action and demand gen campaigns',
+          'Connected TV and Streaming Audio',
+        ],
+      },
+      {
+        id: 'retail',
+        heading: 'Retail',
+        items: [
+          'Amazon Ads: Sponsored Products, Sponsored Brands, Display, and DSP',
+          'Walmart Connect, Target Roundel, Instacart, Criteo',
+          'Digital shelf optimization: PDP content, ratings, availability',
+          'Product feed optimization (the technology behind our +34% average feed quality lift)',
+          'Incrementality measurement and branded-term hygiene',
+        ],
+      },
     ],
     proof: {
       headline: 'AG1: +51% monthly acquired customers, -5% CAC YoY',
@@ -110,14 +147,44 @@ const capabilities: Capability[] = [
     description:
       'Turn creative from a cost center into your highest-leverage growth driver. We produce 500+ data-born assets per month, each designed to lower CAC and scale winning concepts.',
     extendedDescription:
-      'Creative is the single biggest lever in paid media, yet most agencies separate creative from performance. We don\'t. Every concept is born from data and built to be tested in structured experiments.',
-    services: [
-      'Image & Video Ad Creative (static, motion, full-production)',
-      'UGC & Creator Content with Paid Allowlisting',
-      'Creative Testing Programs (structured A/B and multivariate)',
-      'Landing Page Design & Optimization',
-      'Brand-to-Performance Creative Strategy',
-      'AI-Assisted Creative Concepting & Iteration',
+      'Creative is the single biggest lever in paid media, yet most agencies separate creative from performance. We don\'t. From content strategy and educational video to creator and influencer programs, creative here is built to perform, not just to look the part.',
+    serviceGroups: [
+      {
+        id: 'creative-strategy',
+        heading: 'Content Strategy',
+        items: [
+          'Content strategy and editorial programs',
+          'Brand-to-Performance Creative Strategy',
+          'Structured creative testing programs (A/B and multivariate)',
+          'AI-assisted concepting and iteration',
+        ],
+      },
+      {
+        id: 'production',
+        heading: 'Production',
+        items: [
+          'Image and video ad creative (static, motion, full production)',
+          'Educational and explainer video',
+          'Short-form video (TikTok, Reels, Shorts)',
+        ],
+      },
+      {
+        id: 'ugc',
+        heading: 'UGC',
+        items: [
+          'UGC and creator content with paid allowlisting',
+          'Creator sourcing, briefs, and rights management',
+        ],
+      },
+      {
+        id: 'influencer',
+        heading: 'Influencer',
+        items: [
+          'Influencer strategy, sourcing, and negotiation',
+          'Campaign management and whitelisting',
+          'Measured on revenue contribution, not follower counts',
+        ],
+      },
     ],
     proof: {
       headline: 'Anastasia Beverly Hills: +22% Meta ROAS',
@@ -141,13 +208,26 @@ const capabilities: Capability[] = [
       'A 10% lift in conversion rate has the same P&L impact as a 10% reduction in media cost. We find and fix the highest-value friction points so every dollar of traffic works harder.',
     extendedDescription:
       'Our team runs continuous experimentation programs, combining quantitative analytics with qualitative user research to deliver compounding gains. We measure impact in revenue, not just statistical significance.',
-    services: [
-      'Full Site Builds & Redesigns (Shopify, Custom)',
-      'Landing Page A/B & Multivariate Testing',
-      'Conversion Rate Optimization Programs',
-      'Checkout Flow Optimization',
-      'Heatmap & Session Recording Analysis',
-      'Post-Purchase Experience Design',
+    serviceGroups: [
+      {
+        id: 'web-design-dev',
+        heading: 'Website Design & Development',
+        items: [
+          'Full site builds and redesigns (Shopify, custom)',
+          'Landing page design and development',
+          'Post-purchase experience design',
+        ],
+      },
+      {
+        id: 'ab-testing',
+        heading: 'A/B Testing',
+        items: [
+          'Landing page A/B and multivariate testing',
+          'Conversion rate optimization programs',
+          'Checkout flow optimization',
+          'Heatmap and session recording analysis',
+        ],
+      },
     ],
     proof: {
       headline: 'Online Labels: +37% AOV, +41% Conversion Rate',
@@ -170,19 +250,46 @@ const capabilities: Capability[] = [
     description:
       'You can\'t scale profitably if you can\'t measure profitably. We build the attribution and measurement infrastructure most agencies skip.',
     extendedDescription:
-      'In a post-iOS 14 world, measurement is broken for most brands. We fix it. Our analytics practice builds custom attribution models, implements server-side tracking, runs incrementality tests, and deploys media mix models.',
+      'The measurement layer boards and CFOs can act on: LLM-powered media mix modeling, deduplicated attribution, and channel-level LTV that unlocks channel-level CAC targets. In a post-iOS 14 world, measurement is broken for most brands. We fix it.',
     insiderTactic: {
       title: 'Ex-Google Insider Advantage',
       detail:
         'Our team includes former Google Analytics and Ads measurement engineers who understand exactly how Google\'s conversion modeling, data-driven attribution, and consent mode work under the hood. We configure enhanced conversions and server-side tagging at a level of precision most agencies can\'t match.',
     },
-    services: [
-      'Analytics Setup & Server-Side Tracking',
-      'Multi-Touch Attribution Modeling',
-      'Media Mix Modeling (MMM)',
-      'Incrementality Testing',
-      'Dashboard & Reporting Infrastructure',
-      'Data Warehouse & Integration Architecture',
+    serviceGroups: [
+      {
+        id: 'mmm',
+        heading: 'MMM',
+        items: [
+          'Media mix modeling powered by LLMs',
+          'Incrementality testing',
+          'Channel-level LTV and CAC targets',
+        ],
+      },
+      {
+        id: 'attribution',
+        heading: 'Attribution',
+        items: [
+          'Multi-touch, deduplicated attribution modeling',
+          'Analytics setup and server-side tracking',
+        ],
+      },
+      {
+        id: 'reporting',
+        heading: 'Reporting',
+        items: [
+          'Dashboard and reporting infrastructure',
+          'Board and CFO-ready measurement narratives',
+        ],
+      },
+      {
+        id: 'data-architecture',
+        heading: 'Data Architecture',
+        items: [
+          'Data warehouse and integration architecture',
+          'CDP and customer data layer design',
+        ],
+      },
     ],
     proof: {
       headline: 'AG1: -31% Brand Search CAC via attribution audit',
@@ -205,14 +312,43 @@ const capabilities: Capability[] = [
     description:
       'Be found where your customers are looking, including AI-powered search engines. We\'re pioneering Generative Engine Optimization to future-proof your organic visibility.',
     extendedDescription:
-      'Search is fragmenting: Google, TikTok, Amazon, ChatGPT, Perplexity. We build organic strategies that work across all of them, with particular depth in GEO.',
-    services: [
-      'Technical & Content SEO',
-      'App Store Optimization (ASO)',
-      'Generative Engine Optimization (GEO/AEO)',
-      'Content Strategy & Production',
-      'Local SEO & Google Business Profile',
-      'AI Search Monitoring & Optimization',
+      'Search is fragmenting: Google, TikTok, Amazon, ChatGPT, Perplexity. Gartner projects traditional search volume down 25% by 2026. We build organic strategies that work across all of them, and we make sure the engines answering are citing you.',
+    serviceGroups: [
+      {
+        id: 'organic-social',
+        heading: 'Social',
+        items: [
+          'Channel strategy and brand voice systems',
+          'Always-on publishing and community management',
+          'Platform-native programming and distribution',
+          'Social search and discovery optimization',
+          'Reporting tied to traffic, conversions, and revenue',
+        ],
+      },
+      {
+        id: 'seo',
+        heading: 'SEO',
+        items: [
+          'Technical and content SEO',
+          'SEO-aligned content production',
+          'Local SEO and Google Business Profile',
+        ],
+      },
+      {
+        id: 'geo-aeo',
+        heading: 'GEO/AEO',
+        items: [
+          'Generative engine optimization for AI answer engines',
+          'AI search monitoring across platforms',
+        ],
+      },
+      {
+        id: 'aso',
+        heading: 'ASO',
+        items: [
+          'App store optimization (listings, creative, keyword strategy)',
+        ],
+      },
     ],
     proof: {
       headline: 'Pioneering GEO intelligence for AI-era visibility',
@@ -228,21 +364,42 @@ const capabilities: Capability[] = [
   {
     id: 'lifecycle',
     number: '06',
-    title: 'Retention & Lifetime Value Growth',
+    title: 'Lifecycle That Makes Every Customer Worth More',
     shortTitle: 'Lifecycle',
     objective: 'retention',
     objectiveLabel: 'Retention & LTV',
     description:
-      'The brands that win long-term aren\'t the ones with the lowest CAC. They\'re the ones with the highest LTV. We build lifecycle programs that compound your growth.',
+      'Lifecycle is the cheapest growth. Keeping and expanding a customer beats acquiring a new one, and it moves without touching the media budget.',
     extendedDescription:
-      'Our lifecycle team builds segmented, behavior-triggered programs across email, SMS, and push that increase repeat purchase rate, reduce churn, and maximize customer lifetime value.',
-    services: [
-      'Email & SMS Strategy and Execution',
-      'Behavioral Segmentation & Personalization',
-      'LTV-Focused Retention Programs',
-      'Win-Back & Re-Engagement Campaigns',
-      'Post-Purchase & Loyalty Flows',
-      'Subscription Optimization',
+      'On top of whatever ESP or lifecycle platform you already run, we layer an AI lifecycle engine that predicts churn risk and next-best-action at the individual level, so the right save, win-back, or cross-sell message fires at the right moment instead of everyone getting the same Tuesday blast. The engine optimizes send-time, channel, cadence, and offer per user, then continuously reallocates toward what is actually retaining and expanding customers. We measure it on LTV, not opens.',
+    serviceGroups: [
+      {
+        id: 'email-sms',
+        heading: 'Email & SMS',
+        items: [
+          'Email and SMS strategy and execution',
+          'The four fastest lifecycle wins, built first: onboarding, churn-save, win-back, cross-sell',
+          'Send-time, channel, cadence, and offer optimization per user',
+        ],
+      },
+      {
+        id: 'crm',
+        heading: 'CRM',
+        items: [
+          'API integration with your existing ESP and CDP, no migration: an intelligence layer, not a replatform',
+          'Salesforce Marketing Cloud, Adobe, Braze, Iterable, and Klaviyo, plus Segment, mParticle, and Salesforce Data Cloud underneath',
+          'Subscription, loyalty, and post-purchase flows',
+        ],
+      },
+      {
+        id: 'personalization',
+        heading: 'Personalization',
+        items: [
+          'AI churn prediction and next-best-action / next-best-offer modeling',
+          'Behavioral segmentation and individual-level personalization',
+          'LTV-measured program optimization and continuous reallocation',
+        ],
+      },
     ],
     proof: {
       headline: '2-3x LTV increases across lifecycle clients',
@@ -649,20 +806,46 @@ function CapabilitySection({ capability, index }: { capability: Capability; inde
                 <h3 className="text-xs font-semibold uppercase tracking-[3px] text-tt-teal mb-5">
                   What This Includes
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {capability.services.map((service, i) => (
-                    <motion.div
-                      key={service}
-                      variants={fadeUp}
-                      transition={{ ...transition, delay: i * 0.05 }}
-                      className="flex items-start gap-3 rounded-xl px-4 py-3 transition-colors hover:bg-white/[0.03]"
-                      style={{ border: '1px solid rgba(255,255,255,0.04)' }}
-                    >
-                      <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tt-teal/60" />
-                      <span className="text-sm text-tt-gray-300 leading-relaxed">{service}</span>
-                    </motion.div>
-                  ))}
-                </div>
+                {capability.serviceGroups ? (
+                  <div className="space-y-8">
+                    {capability.serviceGroups.map((group) => (
+                      <div key={group.id} id={group.id} style={{ scrollMarginTop: '120px' }}>
+                        <h4 className="text-sm font-bold uppercase tracking-[2px] text-tt-orange mb-3">
+                          {group.heading}
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {group.items.map((service, i) => (
+                            <motion.div
+                              key={service}
+                              variants={fadeUp}
+                              transition={{ ...transition, delay: i * 0.05 }}
+                              className="flex items-start gap-3 rounded-xl px-4 py-3 transition-colors hover:bg-white/[0.03]"
+                              style={{ border: '1px solid rgba(255,255,255,0.04)' }}
+                            >
+                              <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tt-teal/60" />
+                              <span className="text-sm text-tt-gray-300 leading-relaxed">{service}</span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(capability.services ?? []).map((service, i) => (
+                      <motion.div
+                        key={service}
+                        variants={fadeUp}
+                        transition={{ ...transition, delay: i * 0.05 }}
+                        className="flex items-start gap-3 rounded-xl px-4 py-3 transition-colors hover:bg-white/[0.03]"
+                        style={{ border: '1px solid rgba(255,255,255,0.04)' }}
+                      >
+                        <span className="mt-2 block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tt-teal/60" />
+                        <span className="text-sm text-tt-gray-300 leading-relaxed">{service}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </motion.div>
 
               {/* Proof Point - Bento Card with orange left border */}
@@ -1134,7 +1317,7 @@ export default function ServicesPage() {
 
       <CTASection
         headline="Let's Build Your Growth Engine"
-        subheadline="Book a free audit and see exactly where your revenue is leaking."
+        subheadline="Book a free Strategic Diagnostic and see exactly where your revenue is leaking."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         secondaryCTA={{ text: 'View Case Studies', href: '/results' }}
         dark

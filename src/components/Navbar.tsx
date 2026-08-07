@@ -15,6 +15,7 @@ interface MegaMenuItem {
   label: string;
   href: string;
   description: string;
+  subs?: { label: string; href: string }[];
 }
 
 interface MegaMenuConfig {
@@ -31,29 +32,67 @@ const megaMenus: Record<string, MegaMenuConfig> = {
   Capabilities: {
     items: [
       {
-        label: 'Paid Media',
-        href: '/capabilities#paid-media',
-        description: 'Google, Meta, TikTok, and CTV at scale',
+        label: 'Demand Gen',
+        href: '/capabilities#media-buying',
+        description: 'Paid search, social, programmatic, and retail media',
+        subs: [
+          { label: 'Paid Search', href: '/capabilities#paid-search' },
+          { label: 'Paid Social', href: '/capabilities#paid-social' },
+          { label: 'Programmatic', href: '/capabilities#programmatic' },
+          { label: 'Retail', href: '/capabilities#retail' },
+        ],
       },
       {
-        label: 'Organic & SEO',
-        href: '/capabilities#organic',
-        description: 'Technical SEO and generative engine optimization',
-      },
-      {
-        label: 'Creative Strategy',
+        label: 'Creative',
         href: '/capabilities#creative',
         description: 'Performance creative that converts',
+        subs: [
+          { label: 'Content Strategy', href: '/capabilities#creative-strategy' },
+          { label: 'Production', href: '/capabilities#production' },
+          { label: 'UGC', href: '/capabilities#ugc' },
+          { label: 'Influencer', href: '/capabilities#influencer' },
+        ],
       },
       {
-        label: 'Analytics & Attribution',
+        label: 'CRO',
+        href: '/capabilities#website-cro',
+        description: 'Conversion lifts that compound wave over wave',
+        subs: [
+          { label: 'Website Design & Development', href: '/capabilities#web-design-dev' },
+          { label: 'A/B Testing', href: '/capabilities#ab-testing' },
+        ],
+      },
+      {
+        label: 'Analytics',
         href: '/capabilities#analytics',
-        description: 'Measurement stack and incrementality modeling',
+        description: 'Measurement boards and CFOs can act on',
+        subs: [
+          { label: 'MMM', href: '/capabilities#mmm' },
+          { label: 'Attribution', href: '/capabilities#attribution' },
+          { label: 'Reporting', href: '/capabilities#reporting' },
+          { label: 'Data Architecture', href: '/capabilities#data-architecture' },
+        ],
       },
       {
-        label: 'CRO & Landing Pages',
-        href: '/capabilities#cro',
-        description: 'Conversion rate optimization at every stage',
+        label: 'Organic',
+        href: '/capabilities#organic-growth',
+        description: 'Own the rankings and the AI answers',
+        subs: [
+          { label: 'Social', href: '/capabilities#organic-social' },
+          { label: 'SEO', href: '/capabilities#seo' },
+          { label: 'GEO/AEO', href: '/capabilities#geo-aeo' },
+          { label: 'ASO', href: '/capabilities#aso' },
+        ],
+      },
+      {
+        label: 'Lifecycle',
+        href: '/capabilities#lifecycle',
+        description: 'An AI engine on your ESP that grows LTV',
+        subs: [
+          { label: 'Email & SMS', href: '/capabilities#email-sms' },
+          { label: 'CRM', href: '/capabilities#crm' },
+          { label: 'Personalization', href: '/capabilities#personalization' },
+        ],
       },
     ],
     feature: {
@@ -177,19 +216,30 @@ function MobileAccordion({
           >
             <div className="pb-3 pl-3 space-y-0.5">
               {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onNavigate}
-                  className="block rounded-lg px-3 py-2.5 transition-colors duration-200 hover:bg-white/[0.04]"
-                >
-                  <span className="block text-sm font-medium text-white/80 transition-colors duration-200 hover:text-[#229FA1]">
-                    {item.label}
-                  </span>
-                  <span className="block text-xs mt-0.5 text-[#5A5A6A]">
-                    {item.description}
-                  </span>
-                </Link>
+                <div key={item.href} className="rounded-lg px-3 py-2.5 transition-colors duration-200 hover:bg-white/[0.04]">
+                  <Link href={item.href} onClick={onNavigate} className="block">
+                    <span className="block text-sm font-medium text-white/80 transition-colors duration-200 hover:text-[#229FA1]">
+                      {item.label}
+                    </span>
+                    <span className="block text-xs mt-0.5 text-[#5A5A6A]">
+                      {item.description}
+                    </span>
+                  </Link>
+                  {item.subs && (
+                    <span className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+                      {item.subs.map((sub) => (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          onClick={onNavigate}
+                          className="text-[11px] font-medium text-tt-teal/80 transition-colors duration-200 hover:text-white"
+                        >
+                          {sub.label}
+                        </Link>
+                      ))}
+                    </span>
+                  )}
+                </div>
               ))}
             </div>
           </motion.div>
@@ -438,10 +488,8 @@ export function Navbar() {
                 {/* Left: Nav links */}
                 <div className="col-span-3 grid grid-cols-2 gap-x-8 gap-y-1">
                   {megaData.items.map((item, i) => (
-                    <Link
+                    <div
                       key={item.href}
-                      href={item.href}
-                      onClick={() => setActiveMega(null)}
                       className="group rounded-lg px-4 py-3 transition-colors duration-200 hover:bg-white/[0.04]"
                     >
                       <motion.div
@@ -453,14 +501,30 @@ export function Navbar() {
                           ease: 'easeOut',
                         }}
                       >
-                        <span className="block text-sm font-medium text-white transition-colors duration-200 group-hover:text-[#229FA1]">
-                          {item.label}
-                        </span>
-                        <span className="block text-xs mt-0.5 text-[#7B7B8E] transition-colors duration-200 group-hover:text-[#9E9E9E]">
-                          {item.description}
-                        </span>
+                        <Link href={item.href} onClick={() => setActiveMega(null)} className="block">
+                          <span className="block text-sm font-medium text-white transition-colors duration-200 group-hover:text-[#229FA1]">
+                            {item.label}
+                          </span>
+                          <span className="block text-xs mt-0.5 text-[#7B7B8E] transition-colors duration-200 group-hover:text-[#9E9E9E]">
+                            {item.description}
+                          </span>
+                        </Link>
+                        {item.subs && (
+                          <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                            {item.subs.map((sub) => (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                onClick={() => setActiveMega(null)}
+                                className="text-[11px] font-medium text-tt-teal/80 transition-colors duration-200 hover:text-white"
+                              >
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </span>
+                        )}
                       </motion.div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
 

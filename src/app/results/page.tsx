@@ -233,7 +233,7 @@ export default function CaseStudiesPage() {
       />
       <CTASection
         headline="Get Results Like These"
-        subheadline="Book a free audit and get a 90-day roadmap built around your actual numbers."
+        subheadline="Book a free Strategic Diagnostic and get a 90-day roadmap built around your actual numbers."
         primaryCTA={{ text: 'Request a Strategic Diagnostic', href: '/get-started' }}
         dark
       />

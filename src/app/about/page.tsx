@@ -946,7 +946,7 @@ export default function AboutPage() {
               href="/get-started"
               className="inline-block rounded-full bg-tt-orange px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-tt-orange-dark hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
             >
-              Book Your Free Audit
+              Get Your Free Strategic Diagnostic
             </Link>
             <Link
               href="/case-studies"
@@ -991,8 +991,8 @@ export default function AboutPage() {
 
       <CTASection
         headline="Ready to Work with Us?"
-        subheadline="Book a free audit and see what ex-Google performance marketing can do for your brand."
-        primaryCTA={{ text: 'Book Your Free Audit', href: '/get-started' }}
+        subheadline="Book a free Strategic Diagnostic and see what ex-Google performance marketing can do for your brand."
+        primaryCTA={{ text: 'Get Your Free Strategic Diagnostic', href: '/get-started' }}
         secondaryCTA={{ text: 'View Case Studies', href: '/case-studies' }}
         dark
         badges={['Inc. 5000 #123', 'Meta Business Partner', '40 Specialists', '$200M+ Ad Spend Managed']}

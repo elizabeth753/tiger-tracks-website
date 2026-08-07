@@ -124,7 +124,7 @@ function HeroSection() {
           className="mt-7 max-w-2xl text-lg leading-relaxed text-slate-400 md:text-xl"
         >
           Tiger Tracks is the scalable marketing partner PE and VC funds trust to
-          drive EBITDA growth across entire portfolios. Forensic audits, proprietary
+          drive EBITDA growth across entire portfolios. Strategic Diagnostics, proprietary
           AI, and a team built at Google.
         </motion.p>
 
@@ -364,7 +364,7 @@ const offerings = [
     description:
       'A structured execution plan deployed immediately post-acquisition to drive measurable EBITDA improvement within the first 100 days. We embed with the PortCo marketing team, restructure campaigns, fix tracking, and build fund-level reporting.',
     deliverables: [
-      'Days 1-14: Forensic audit and quick-win identification',
+      'Days 1-14: Strategic Diagnostic and quick-win identification',
       'Days 15-30: Campaign architecture rebuild',
       'Days 31-100: Optimization, scaling, EBITDA impact quantified',
     ],
@@ -819,7 +819,7 @@ const partnerBenefits = [
   },
   {
     title: 'Pre-Deal Diligence on Demand',
-    description: 'Evaluating a new target? We deliver a forensic audit in 14 days to inform your acquisition thesis.',
+    description: 'Evaluating a new target? We deliver a Strategic Diagnostic in 14 days to inform your acquisition thesis.',
     icon: (
       <svg className="h-6 w-6 text-tt-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
@@ -999,7 +999,7 @@ function SocialProofSection() {
 const turnaroundPhases = [
   {
     phase: 'Days 1-14',
-    title: 'Forensic Audit & Wayfinder Diagnostics',
+    title: 'Strategic Diagnostic & Wayfinder Deep Dive',
     description:
       'Deep-dive into every ad account, attribution model, and spend line. Our proprietary Wayfinder platform maps the full acquisition funnel to surface hidden waste, misattributed conversions, and quick-win opportunities before any restructuring begins.',
   },

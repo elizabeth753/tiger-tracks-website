@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { HeroDiagnosticForm } from '@/components/HeroDiagnosticForm';
 
 export const metadata: Metadata = {
-  title: 'Get Your Growth Audit',
+  title: 'Get Your Strategic Diagnostic',
   description:
     'Request a strategic diagnostic. Ex-Google performance marketing leaders build you a 90-day roadmap across paid, organic, creative, and attribution. Free, no strings.',
 };
@@ -16,7 +16,7 @@ export default function GrowthAuditPage() {
             Strategic Diagnostic
           </span>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Get Your Growth Audit
+            Get Your Strategic Diagnostic
           </h1>
           <p className="mx-auto mt-4 max-w-md text-base text-slate-300">
             Tell us about your business and our team will map exactly where your
