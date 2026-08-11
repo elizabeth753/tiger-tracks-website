@@ -34,7 +34,7 @@ const megaMenus: Record<string, MegaMenuConfig> = {
       {
         label: 'Demand Gen',
         href: '/capabilities#media-buying',
-        description: 'Paid search, social, programmatic, and retail media',
+        description: 'Paid media that scales without breaking CAC',
         subs: [
           { label: 'Paid Search', href: '/capabilities#paid-search' },
           { label: 'Paid Social', href: '/capabilities#paid-social' },

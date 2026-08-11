@@ -96,6 +96,135 @@ export const caseStudies: CaseStudy[] = [
     },
     logoPlaceholder: 'NBP',
   },
+  {
+    slug: 'national-broadband-provider-paid-media',
+    client: 'National Broadband Provider',
+    heroMetric: '+81%',
+    heroMetricLabel: 'Purchases YoY on Meta (CPA -50%)',
+    category: 'Broadband & Telecom / Paid Media',
+    channels: ['Google', 'Meta'],
+    industry: 'Telecom',
+    challengeType: 'Lowering CAC',
+    summary:
+      'Purchases up 81% YoY on Meta with CPA down 50%, and up 32% YoY on Google Ads with CPA down 27%, for a national broadband provider.',
+    problem:
+      'Paid media efficiency was being held back by wasted spend in non-serviceable areas and inaccurate purchase tracking. CPAs were inflated, and the team lacked confidence in where to scale because the measurement itself could not be trusted.',
+    solution:
+      'We tightened targeting to eliminate non-serviceable demand, implemented rigorous keyword management with ongoing query controls to cut inefficient spend, and ran frequent tCPA optimizations across campaigns to stabilize efficiency while scaling. In parallel, we fixed the purchase tracking and pixel issues so every optimization decision ran on accurate data.',
+    impact:
+      'Purchases grew 32% year over year on Google Ads while CPA fell 27%, and grew 81% year over year on Meta while CPA fell 50%. Volume and efficiency improved together instead of trading off.',
+    results: [
+      { metric: 'Purchases YoY (Meta)', value: '+81%', metricType: 'leads' },
+      { metric: 'CPA (Meta)', value: '-50%', metricType: 'cac' },
+      { metric: 'Purchases YoY (Google Ads)', value: '+32%', metricType: 'leads' },
+      { metric: 'CPA (Google Ads)', value: '-27%', metricType: 'cac' },
+    ],
+    wayfinderTactic: {
+      title: 'Serviceability-First Targeting',
+      description: 'Query controls and geo targeting excluded demand the provider could not serve, so every dollar competed only where a sale was possible.',
+    },
+    attribution: 'Measured inside the client\'s own ad accounts after restoring purchase tracking accuracy; purchases and CPA compared year over year per platform.',
+    timeline: {
+      before: [
+        { label: 'Q1', value: 96 },
+        { label: 'Q2', value: 100 },
+        { label: 'Q3', value: 98 },
+        { label: 'Q4', value: 100 },
+      ],
+      after: [
+        { label: 'M1', value: 112 },
+        { label: 'M2', value: 126 },
+        { label: 'M4', value: 152 },
+        { label: 'M6', value: 181 },
+      ],
+    },
+    logoPlaceholder: 'NBP',
+  },
+  {
+    slug: 'national-broadband-provider-creative',
+    client: 'National Broadband Provider',
+    heroMetric: '+21%',
+    heroMetricLabel: 'More Purchases per Dollar of Spend',
+    category: 'Broadband & Telecom / Creative',
+    channels: ['Meta', 'Multi-Channel'],
+    industry: 'Telecom',
+    challengeType: 'Improving ROAS',
+    summary:
+      'Offer-led creative drove 21% more purchases per dollar of spend and a 17% lower CPA than the incumbent agency across social campaigns.',
+    problem:
+      'The provider needed creative that could break through heavy promotional competition in the category, driving purchase volume without sacrificing CPA, while keeping messaging matched to real buyer intent.',
+    solution:
+      'We shifted messaging toward price-led, promotion-first positioning instead of people-led storytelling, scaled the static concepts that proved most efficient, and built offer-aligned variants across key products so winning concepts applied broadly. Brand storytelling was refined to support direct-response conversion goals rather than replace them.',
+    impact:
+      'Head to head across all social campaigns, our creative delivered a 17% lower CPA than the incumbent agency and 21% more purchases per dollar of spend.',
+    results: [
+      { metric: 'Purchases per Dollar of Spend', value: '+21%', metricType: 'efficiency' },
+      { metric: 'CPA vs Incumbent Agency (Social)', value: '-17%', metricType: 'cac' },
+    ],
+    wayfinderTactic: {
+      title: 'Offer-Led Creative Matrix',
+      description: 'Winning price-led concepts were systematically rebuilt as offer-aligned variants per product, so proven creative scaled across the portfolio instead of staying siloed.',
+    },
+    attribution: 'Same-period, same-platform comparison against the incumbent agency\'s campaigns, normalized to purchases per dollar of spend.',
+    timeline: {
+      before: [
+        { label: 'Q1', value: 98 },
+        { label: 'Q2', value: 100 },
+        { label: 'Q3', value: 99 },
+        { label: 'Q4', value: 100 },
+      ],
+      after: [
+        { label: 'M1', value: 105 },
+        { label: 'M2', value: 111 },
+        { label: 'M4', value: 117 },
+        { label: 'M6', value: 121 },
+      ],
+    },
+    logoPlaceholder: 'NBP',
+  },
+  {
+    slug: 'national-broadband-provider-ctv',
+    client: 'National Broadband Provider',
+    heroMetric: '99%',
+    heroMetricLabel: 'Video Completion Rate (CTV)',
+    category: 'Broadband & Telecom / CTV',
+    channels: ['CTV'],
+    industry: 'Telecom',
+    challengeType: 'Channel Diversification',
+    summary:
+      'A premium CTV program delivered a 99% video completion rate, 1.7M impressions, and 29,000+ tracked post-click site actions for a national broadband provider.',
+    problem:
+      'The provider needed a scalable CTV program that could deliver efficient reach and measurable site actions, while identifying which offer-led creative and regional waves were most likely to drive conversion outcomes.',
+    solution:
+      'We launched a premium CTV strategy built to balance efficient conversion volume with incremental reach, optimized toward tracked post-view actions, and used offer-led creative variants to isolate the messaging most correlated with purchase behavior. Performance learnings fed directly into an ongoing creative mix strategy.',
+    impact:
+      'The program delivered 1.7M impressions with a 99% video completion rate and more than 29,000 tracked post-click site actions, turning CTV from an awareness expense into a measured, conversion-connected channel.',
+    results: [
+      { metric: 'Video Completion Rate', value: '99%', metricType: 'efficiency' },
+      { metric: 'Impressions', value: '1.7M', metricType: 'leads' },
+      { metric: 'Tracked Post-Click Site Actions', value: '29K+', metricType: 'leads' },
+    ],
+    wayfinderTactic: {
+      title: 'Post-View Action Optimization',
+      description: 'Instead of optimizing to reach alone, delivery was tuned toward the tracked site actions that followed exposure, connecting CTV to actual conversion behavior.',
+    },
+    attribution: 'Post-click and post-view site actions tracked inside the client\'s own measurement stack, mapped to creative variant and regional wave.',
+    timeline: {
+      before: [
+        { label: 'W1', value: 100 },
+        { label: 'W2', value: 102 },
+        { label: 'W3', value: 101 },
+        { label: 'W4', value: 103 },
+      ],
+      after: [
+        { label: 'M1', value: 118 },
+        { label: 'M2', value: 134 },
+        { label: 'M3', value: 149 },
+        { label: 'M4', value: 160 },
+      ],
+    },
+    logoPlaceholder: 'NBP',
+  },
 
   {
     slug: 'ag1-meta',
